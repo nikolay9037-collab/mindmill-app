@@ -3,20 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MINDMILL Trading Journal</title>
+    <title>MINDMILL Trading Journal & Market Intelligence</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <!-- Babel standalone to compile JSX in browser -->
+    <!-- Babel standalone to compile JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
-  <body class="bg-[#08090C] text-slate-100 font-sans selection:bg-amber-400 selection:text-slate-950">
+  <body class="bg-[#08090C] text-slate-100 font-sans selection:bg-amber-400 selection:text-slate-950 min-h-screen">
     <div id="root"></div>
 
     <script type="text/babel">
-      const { useState, useEffect, useMemo } = React;
+      const { useState, useMemo } = React;
 
       const INITIAL_NOTES = [
         {
@@ -28,10 +28,6 @@
           category: 'Breakout',
           type: 'WIN',
           content: 'Caught the morning explosive rally on NAS100 after breaking above resistance level.',
-          open: 21450,
-          high: 21980,
-          low: 21420,
-          close: 21950,
           pnl: 1250.00,
           lessons: 'Letting winners run on index momentum pays off massively.'
         },
@@ -44,10 +40,6 @@
           category: 'Reversal',
           type: 'LOSS',
           content: 'Tried shorting the morning dip on S&P 500 expecting deeper correction.',
-          open: 5880,
-          high: 5910,
-          low: 5855,
-          close: 5905,
           pnl: -350.00,
           lessons: 'Do not fade strong trend days without confirmation.'
         },
@@ -60,22 +52,38 @@
           category: 'Momentum',
           type: 'WIN',
           content: 'Entered long position at $2,640 level following economic news breakout.',
-          open: 2640,
-          high: 2685,
-          low: 2635,
-          close: 2680,
           pnl: 2100.00,
           lessons: 'High impact economic events create clean multi-day continuation trends.'
         }
       ];
 
+      const INITIAL_NEWS = [
+        { id: 'n1', title: 'Core CPI m/m', country: 'USD', date: '2025-02-20', time: '08:30 AM', impact: 'High', forecast: '0.3%', previous: '0.2%' },
+        { id: 'n2', title: 'FOMC Statement & Rate Decision', country: 'USD', date: '2025-02-20', time: '02:00 PM', impact: 'High', forecast: '4.50%', previous: '4.75%' },
+        { id: 'n3', title: 'ECB Monetary Policy Meeting', country: 'EUR', date: '2025-02-21', time: '07:45 AM', impact: 'High', forecast: '3.25%', previous: '3.50%' },
+        { id: 'n4', title: 'Retail Sales m/m', country: 'GBP', date: '2025-02-21', time: '04:30 AM', impact: 'Medium', forecast: '0.5%', previous: '-0.3%' },
+        { id: 'n5', title: 'Unemployment Rate', country: 'CAD', date: '2025-02-22', time: '08:30 AM', impact: 'High', forecast: '6.5%', previous: '6.6%' },
+        { id: 'n6', title: 'Flash Manufacturing PMI', country: 'EUR', date: '2025-02-22', time: '03:30 AM', impact: 'Medium', forecast: '45.8', previous: '46.0' }
+      ];
+
       function App() {
         const [notes, setNotes] = useState(INITIAL_NOTES);
         const [selectedNoteId, setSelectedNoteId] = useState('1');
-        const [activeTab, setActiveTab] = useState('dashboard');
-        const [isModalOpen, setIsModalOpen] = useState(false);
+        const [activeTab, setActiveTab] = useState('news');
+        
+        // Modals
+        const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
+        const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+        const [isCustomNewsModalOpen, setIsCustomNewsModalOpen] = useState(false);
 
-        const [formData, setFormData] = useState({
+        // User Auth
+        const [user, setUser] = useState(null);
+        const [isSignUp, setIsSignUp] = useState(false);
+        const [email, setEmail] = useState('');
+        const [password, setPassword] = useState('');
+
+        // Trade Form
+        const [tradeForm, setTradeForm] = useState({
           symbol: 'NAS100',
           type: 'WIN',
           title: '',
@@ -84,45 +92,90 @@
           lessons: ''
         });
 
+        // News State
+        const [newsEvents, setNewsEvents] = useState(INITIAL_NEWS);
+        const [newsFilterCurrency, setNewsFilterCurrency] = useState('ALL');
+        const [newsDateFilter, setNewsDateFilter] = useState('');
+        const [customNewsData, setCustomNewsData] = useState({
+          title: '',
+          country: 'USD',
+          date: new Date().toISOString().split('T')[0],
+          time: '08:30 AM',
+          impact: 'High',
+          forecast: '',
+          previous: ''
+        });
+
         const selectedNote = useMemo(() => {
           return notes.find(n => n.id === selectedNoteId) || notes[0];
         }, [notes, selectedNoteId]);
 
         const stats = useMemo(() => {
           const total = notes.length;
-          if (total === 0) return { winRate: 0, totalPnl: 0, profitFactor: 0 };
+          if (total === 0) return { winRate: 0, totalPnl: 0 };
           const wins = notes.filter(n => n.type === 'WIN');
           const winRate = ((wins.length / total) * 100).toFixed(1);
           const totalPnl = notes.reduce((acc, n) => acc + (Number(n.pnl) || 0), 0);
           return { winRate, totalPnl, totalTrades: total };
         }, [notes]);
 
-        const handleSaveNote = (e) => {
+        const filteredNews = useMemo(() => {
+          return newsEvents.filter(evt => {
+            const matchesCurrency = newsFilterCurrency === 'ALL' || evt.country === newsFilterCurrency;
+            const matchesDate = !newsDateFilter || evt.date === newsDateFilter;
+            return matchesCurrency && matchesDate;
+          });
+        }, [newsEvents, newsFilterCurrency, newsDateFilter]);
+
+        const handleSaveTrade = (e) => {
           e.preventDefault();
           const newNote = {
             id: Date.now().toString(),
             date: new Date().toISOString().split('T')[0],
-            title: formData.title || 'Trade Entry',
+            title: tradeForm.title || 'Trade Entry',
             marketType: 'Indices',
-            symbol: formData.symbol.toUpperCase(),
-            category: 'Execution',
-            type: formData.type,
-            content: formData.content,
-            lessons: formData.lessons,
-            pnl: parseFloat(formData.pnl) || 0
+            symbol: tradeForm.symbol.toUpperCase(),
+            type: tradeForm.type,
+            content: tradeForm.content,
+            lessons: tradeForm.lessons,
+            pnl: parseFloat(tradeForm.pnl) || 0
           };
           setNotes([newNote, ...notes]);
           setSelectedNoteId(newNote.id);
-          setIsModalOpen(false);
-          setFormData({ symbol: 'NAS100', type: 'WIN', title: '', pnl: '', content: '', lessons: '' });
+          setIsTradeModalOpen(false);
+          setTradeForm({ symbol: 'NAS100', type: 'WIN', title: '', pnl: '', content: '', lessons: '' });
+        };
+
+        const handleAddCustomNews = (e) => {
+          e.preventDefault();
+          const newEvt = {
+            id: `news-${Date.now()}`,
+            title: customNewsData.title,
+            country: customNewsData.country.toUpperCase(),
+            date: customNewsData.date,
+            time: customNewsData.time || 'All Day',
+            impact: customNewsData.impact,
+            forecast: customNewsData.forecast || '--',
+            previous: customNewsData.previous || '--'
+          };
+          setNewsEvents([newEvt, ...newsEvents]);
+          setIsCustomNewsModalOpen(false);
+          setCustomNewsData({ title: '', country: 'USD', date: new Date().toISOString().split('T')[0], time: '08:30 AM', impact: 'High', forecast: '', previous: '' });
+        };
+
+        const handleAuthSubmit = (e) => {
+          e.preventDefault();
+          setUser({ email: email || 'trader@mindmill.io' });
+          setIsAuthModalOpen(false);
         };
 
         return (
-          <div className="min-h-screen flex flex-col">
-            {/* Header */}
-            <header className="border-b border-amber-500/10 bg-[#0C0E14]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+          <div className="min-h-screen flex flex-col relative overflow-x-hidden">
+            
+            {/* Top Navigation Header */}
+            <header className="border-b border-amber-500/15 bg-[#0C0E14]/90 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
               <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-amber-500/20">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-amber-500/20 border border-amber-300/30">
                   MM
                 </div>
                 <div>
@@ -131,157 +184,318 @@
                 </div>
               </div>
 
-              <div className="flex space-x-2">
+              {/* Navigation Bar Pills */}
+              <div className="flex items-center bg-[#050608] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
                 <button 
-                  onClick={() => setActiveTab('dashboard')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeTab === 'dashboard' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                  onClick={() => setActiveTab('news')}
+                  className={`px-5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${activeTab === 'news' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/25' : 'text-slate-400 hover:text-amber-200'}`}
                 >
-                  Dashboard
+                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>
+                  <span>Market Intelligence (News Feed)</span>
                 </button>
                 <button 
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/20"
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`px-5 py-2 rounded-xl text-xs font-bold transition ${activeTab === 'dashboard' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/25' : 'text-slate-400 hover:text-amber-200'}`}
+                >
+                  Candlestick Journal
+                </button>
+              </div>
+
+              {/* User Login & Trade Action */}
+              <div className="flex items-center space-x-3">
+                {user ? (
+                  <div className="flex items-center space-x-2 bg-[#050608] border border-amber-500/20 px-3 py-1.5 rounded-xl text-xs text-amber-300">
+                    <span className="font-mono">{user.email}</span>
+                    <button onClick={() => setUser(null)} className="text-slate-500 hover:text-rose-400 ml-2">Sign Out</button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="px-4 py-2 bg-[#12151D] hover:bg-[#1A1E29] text-amber-200 border border-amber-500/20 rounded-xl text-xs font-bold transition"
+                  >
+                    Login / Sign Up
+                  </button>
+                )}
+
+                <button 
+                  onClick={() => setIsTradeModalOpen(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/20 uppercase"
                 >
                   + Log Trade
                 </button>
               </div>
             </header>
 
-            {/* Main Content */}
+            {/* Main Content Body */}
             <main className="flex-1 p-6 max-w-6xl mx-auto w-full space-y-6">
-              {/* Stats Bar */}
+              
+              {/* Metric Overview Row */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl">
+                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl shadow-xl">
                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Total Net Yield</p>
                   <h3 className={`text-2xl font-mono font-black mt-1 ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    ${stats.totalPnl.toLocaleString()}
+                    ${stats.totalPnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </h3>
                 </div>
-                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl">
-                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Win Rate</p>
+                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl shadow-xl">
+                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Success Ratio</p>
                   <h3 className="text-2xl font-mono font-black mt-1 text-emerald-400">{stats.winRate}%</h3>
                 </div>
-                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl">
-                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Logged Trades</p>
-                  <h3 className="text-2xl font-mono font-black mt-1 text-amber-200">{stats.totalTrades} Executions</h3>
+                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl shadow-xl">
+                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Active Catalysts</p>
+                  <h3 className="text-2xl font-mono font-black mt-1 text-amber-200">{newsEvents.length} Events Synced</h3>
                 </div>
               </div>
 
-              {/* Visual Candlestick Bar */}
-              <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-5 space-y-3">
-                <h2 className="text-xs font-mono font-bold text-amber-200 uppercase tracking-wider">Performance Candlestick Visualizer</h2>
-                <div className="bg-[#050608] p-4 rounded-xl flex items-end justify-start space-x-3 h-48 border border-amber-500/10 overflow-x-auto">
-                  {notes.slice().reverse().map((n) => {
-                    const isWin = n.type === 'WIN';
-                    const height = Math.min(Math.max(Math.abs(n.pnl) / 15, 20), 100);
-                    return (
-                      <div 
-                        key={n.id}
-                        onClick={() => setSelectedNoteId(n.id)}
-                        className="flex flex-col items-center cursor-pointer group"
-                      >
-                        <div className={`w-1 h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
-                        <div 
-                          className={`w-6 rounded-sm ${isWin ? 'bg-emerald-500' : 'bg-rose-500'} ${selectedNoteId === n.id ? 'ring-2 ring-amber-300' : ''}`}
-                          style={{ height: `${height}px` }}
-                        ></div>
-                        <div className={`w-1 h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
-                        <span className="text-[10px] text-slate-500 font-mono mt-1">{n.symbol}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              {/* Tab 1: Market Intelligence News Feed */}
+              {activeTab === 'news' && (
+                <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-6 space-y-5 shadow-xl">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-amber-500/10 pb-4">
+                    <div>
+                      <h2 className="text-lg font-bold text-amber-200 font-mono tracking-wide">GLOBAL MARKET INTELLIGENCE FEED</h2>
+                      <p className="text-xs text-slate-400 mt-1">High-impact economic events & interest rate catalysts.</p>
+                    </div>
 
-              {/* Journal Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 bg-[#0F1118] border border-amber-500/15 rounded-2xl p-6 space-y-4">
-                  {selectedNote ? (
-                    <>
-                      <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-                        <div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold font-mono ${selectedNote.type === 'WIN' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
-                            {selectedNote.symbol} &bull; {selectedNote.type}
-                          </span>
-                          <h2 className="text-lg font-bold text-white mt-2">{selectedNote.title}</h2>
-                        </div>
-                        <span className={`text-xl font-mono font-black ${selectedNote.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                          ${selectedNote.pnl}
-                        </span>
-                      </div>
-                      <p className="text-slate-300 text-sm leading-relaxed">{selectedNote.content}</p>
-                      {selectedNote.lessons && (
-                        <div className="bg-[#050608] p-4 rounded-xl border border-amber-500/10">
-                          <p className="text-xs text-amber-400 font-bold uppercase mb-1">Lesson Learned:</p>
-                          <p className="text-xs text-slate-400 italic">{selectedNote.lessons}</p>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text-center py-10 text-slate-500">Select a trade entry to view details.</div>
-                  )}
-                </div>
-
-                <div className="bg-[#0F1118] border border-amber-500/15 rounded-2xl p-4 space-y-3">
-                  <h3 className="text-xs font-mono font-bold text-amber-200 uppercase">Trade History</h3>
-                  <div className="space-y-2">
-                    {notes.map(n => (
-                      <div 
-                        key={n.id} 
-                        onClick={() => setSelectedNoteId(n.id)}
-                        className={`p-3 rounded-xl text-xs cursor-pointer flex justify-between border ${selectedNoteId === n.id ? 'bg-[#151924] border-amber-400' : 'bg-[#050608] border-slate-800'}`}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <select 
+                        value={newsFilterCurrency}
+                        onChange={(e) => setNewsFilterCurrency(e.target.value)}
+                        className="bg-[#050608] border border-amber-500/20 rounded-xl px-3 py-2 text-xs text-slate-200 font-mono"
                       >
-                        <div>
-                          <p className="font-bold text-white">{n.symbol}</p>
-                          <p className="text-[10px] text-slate-400">{n.date}</p>
-                        </div>
-                        <span className={`font-mono font-bold ${n.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                          ${n.pnl}
-                        </span>
-                      </div>
-                    ))}
+                        <option value="ALL">All Currencies</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="CAD">CAD</option>
+                      </select>
+
+                      <button
+                        onClick={() => setIsCustomNewsModalOpen(true)}
+                        className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-amber-500/20"
+                      >
+                        + Add Custom Event
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* News Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-amber-500/10 text-amber-200/70 font-mono">
+                          <th className="py-3 px-3">Date & Time</th>
+                          <th className="py-3 px-3">Currency</th>
+                          <th className="py-3 px-3">Impact</th>
+                          <th className="py-3 px-3">Catalyst Event Title</th>
+                          <th className="py-3 px-3">Forecast</th>
+                          <th className="py-3 px-3">Previous</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/50 font-mono">
+                        {filteredNews.map((evt) => (
+                          <tr key={evt.id} className="hover:bg-amber-500/5 transition">
+                            <td className="py-3.5 px-3 text-slate-300">{evt.date} &bull; {evt.time}</td>
+                            <td className="py-3.5 px-3 font-bold text-amber-300">{evt.country}</td>
+                            <td className="py-3.5 px-3">
+                              <span className={`px-2.5 py-1 rounded text-[10px] font-bold ${evt.impact === 'High' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}`}>
+                                {evt.impact}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-3 text-white font-semibold text-sm">{evt.title}</td>
+                            <td className="py-3.5 px-3 text-emerald-400 font-bold">{evt.forecast}</td>
+                            <td className="py-3.5 px-3 text-slate-400">{evt.previous}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Tab 2: Dashboard / Candlestick Chart */}
+              {activeTab === 'dashboard' && (
+                <div className="space-y-6">
+                  
+                  {/* Candlestick Visualizer */}
+                  <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-5 space-y-3 shadow-xl">
+                    <h2 className="text-xs font-mono font-bold text-amber-200 uppercase tracking-wider">Performance Candlestick Visualizer</h2>
+                    <div className="bg-[#050608] p-4 rounded-xl flex items-end justify-start space-x-4 h-48 border border-amber-500/10 overflow-x-auto">
+                      {notes.slice().reverse().map((n) => {
+                        const isWin = n.type === 'WIN';
+                        const height = Math.min(Math.max(Math.abs(n.pnl) / 15, 20), 100);
+                        return (
+                          <div 
+                            key={n.id}
+                            onClick={() => setSelectedNoteId(n.id)}
+                            className="flex flex-col items-center cursor-pointer group"
+                          >
+                            <div className={`w-1 h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                            <div 
+                              className={`w-6 rounded-sm ${isWin ? 'bg-emerald-500' : 'bg-rose-500'} ${selectedNoteId === n.id ? 'ring-2 ring-amber-300 ring-offset-2 ring-offset-[#050608]' : ''}`}
+                              style={{ height: `${height}px` }}
+                            ></div>
+                            <div className={`w-1 h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                            <span className="text-[10px] text-slate-500 font-mono mt-1 font-bold">{n.symbol}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Journal Detail Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 bg-[#0F1118] border border-amber-500/15 rounded-2xl p-6 space-y-4 shadow-xl">
+                      {selectedNote ? (
+                        <>
+                          <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <div>
+                              <span className={`px-3 py-1 rounded-full text-xs font-bold font-mono ${selectedNote.type === 'WIN' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
+                                {selectedNote.symbol} &bull; {selectedNote.type}
+                              </span>
+                              <h2 className="text-lg font-bold text-white mt-2">{selectedNote.title}</h2>
+                            </div>
+                            <span className={`text-xl font-mono font-black ${selectedNote.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                              ${selectedNote.pnl}
+                            </span>
+                          </div>
+                          <p className="text-slate-300 text-sm leading-relaxed">{selectedNote.content}</p>
+                          {selectedNote.lessons && (
+                            <div className="bg-[#050608] p-4 rounded-xl border border-amber-500/10">
+                              <p className="text-xs text-amber-400 font-bold uppercase mb-1">Lesson Learned:</p>
+                              <p className="text-xs text-slate-400 italic">{selectedNote.lessons}</p>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-center py-10 text-slate-500">Select a trade entry to view details.</div>
+                      )}
+                    </div>
+
+                    {/* Trade History Side Panel */}
+                    <div className="bg-[#0F1118] border border-amber-500/15 rounded-2xl p-4 space-y-3 shadow-xl">
+                      <h3 className="text-xs font-mono font-bold text-amber-200 uppercase">Trade History Feed</h3>
+                      <div className="space-y-2">
+                        {notes.map(n => (
+                          <div 
+                            key={n.id} 
+                            onClick={() => setSelectedNoteId(n.id)}
+                            className={`p-3 rounded-xl text-xs cursor-pointer flex justify-between border ${selectedNoteId === n.id ? 'bg-[#151924] border-amber-400' : 'bg-[#050608] border-slate-800'}`}
+                          >
+                            <div>
+                              <p className="font-bold text-white">{n.symbol}</p>
+                              <p className="text-[10px] text-slate-400">{n.date}</p>
+                            </div>
+                            <span className={`font-mono font-bold ${n.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                              ${n.pnl}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </main>
 
-            {/* Modal */}
-            {isModalOpen && (
+            {/* Modal: Log Trade */}
+            {isTradeModalOpen && (
               <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div className="bg-[#0F1118] border border-amber-500/30 p-6 rounded-2xl max-w-md w-full space-y-4">
                   <h3 className="text-amber-200 font-bold text-base">Log New Trade</h3>
-                  <form onSubmit={handleSaveNote} className="space-y-3 text-xs">
+                  <form onSubmit={handleSaveTrade} className="space-y-3 text-xs">
                     <div>
                       <label className="text-slate-400 block mb-1">Symbol</label>
-                      <input type="text" required value={formData.symbol} onChange={e => setFormData({...formData, symbol: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white uppercase" />
+                      <input type="text" required value={tradeForm.symbol} onChange={e => setTradeForm({...tradeForm, symbol: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white uppercase font-mono" />
                     </div>
                     <div>
                       <label className="text-slate-400 block mb-1">Outcome</label>
-                      <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white">
-                        <option value="WIN">WIN</option>
-                        <option value="LOSS">LOSS</option>
+                      <select value={tradeForm.type} onChange={e => setTradeForm({...tradeForm, type: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white">
+                        <option value="WIN">WIN (Green Candle)</option>
+                        <option value="LOSS">LOSS (Red Candle)</option>
                       </select>
                     </div>
                     <div>
                       <label className="text-slate-400 block mb-1">Title</label>
-                      <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                      <input type="text" required value={tradeForm.title} onChange={e => setTradeForm({...tradeForm, title: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
                     </div>
                     <div>
                       <label className="text-slate-400 block mb-1">P&L ($)</label>
-                      <input type="number" step="any" required value={formData.pnl} onChange={e => setFormData({...formData, pnl: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                      <input type="number" step="any" required value={tradeForm.pnl} onChange={e => setTradeForm({...tradeForm, pnl: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white font-mono" />
                     </div>
                     <div>
                       <label className="text-slate-400 block mb-1">Trade Notes</label>
-                      <textarea rows="3" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white"></textarea>
+                      <textarea rows="3" required value={tradeForm.content} onChange={e => setTradeForm({...tradeForm, content: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white"></textarea>
                     </div>
                     <div className="flex justify-end space-x-2 pt-2">
-                      <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
+                      <button type="button" onClick={() => setIsTradeModalOpen(false)} className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
                       <button type="submit" className="px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl">Save Entry</button>
                     </div>
                   </form>
                 </div>
               </div>
             )}
+
+            {/* Modal: Add Custom News Event */}
+            {isCustomNewsModalOpen && (
+              <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                <div className="bg-[#0F1118] border border-amber-500/30 p-6 rounded-2xl max-w-md w-full space-y-4">
+                  <h3 className="text-amber-200 font-bold text-base">Add Custom Market Event</h3>
+                  <form onSubmit={handleAddCustomNews} className="space-y-3 text-xs">
+                    <div>
+                      <label className="text-slate-400 block mb-1">Event Title</label>
+                      <input type="text" required value={customNewsData.title} onChange={e => setCustomNewsData({...customNewsData, title: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-slate-400 block mb-1">Currency</label>
+                        <input type="text" required value={customNewsData.country} onChange={e => setCustomNewsData({...customNewsData, country: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white font-mono uppercase" />
+                      </div>
+                      <div>
+                        <label className="text-slate-400 block mb-1">Impact</label>
+                        <select value={customNewsData.impact} onChange={e => setCustomNewsData({...customNewsData, impact: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white">
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex justify-end space-x-2 pt-2">
+                      <button type="button" onClick={() => setIsCustomNewsModalOpen(false)} className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
+                      <button type="submit" className="px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl">Save Event</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Modal: Login / Sign Up */}
+            {isAuthModalOpen && (
+              <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                <div className="bg-[#0F1118] border border-amber-500/30 p-6 rounded-2xl max-w-sm w-full space-y-4">
+                  <h3 className="text-amber-200 font-bold text-base">{isSignUp ? 'Create Account' : 'Trader Login'}</h3>
+                  <form onSubmit={handleAuthSubmit} className="space-y-3 text-xs">
+                    <div>
+                      <label className="text-slate-400 block mb-1">Email</label>
+                      <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="trader@mindmill.io" className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1">Password</label>
+                      <input type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                    </div>
+                    <button type="submit" className="w-full py-2.5 bg-amber-500 text-slate-950 font-bold rounded-xl mt-2">
+                      {isSignUp ? 'Sign Up' : 'Log In'}
+                    </button>
+                  </form>
+                  <div className="text-center text-xs text-slate-400 pt-2">
+                    <button onClick={() => setIsSignUp(!isSignUp)} className="text-amber-400 hover:underline">
+                      {isSignUp ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
         );
       }
