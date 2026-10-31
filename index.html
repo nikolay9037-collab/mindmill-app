@@ -19,17 +19,12 @@
       const { useState, useEffect, useMemo } = React;
 
       const DEFAULT_ACCOUNTS = [
-        { id: 'acc-1', name: 'Main Account', currency: 'USD' }
+        { id: 'acc-1', name: 'Main Trading Account' }
       ];
 
       function App() {
-        const [user, setUser] = useState(() => {
-          const savedUser = localStorage.getItem('mindmill_active_user');
-          return savedUser ? JSON.parse(savedUser) : null;
-        });
-
         const [accounts, setAccounts] = useState(() => {
-          const saved = localStorage.getItem('mindmill_accounts');
+          const saved = localStorage.getItem('mindmill_accounts_v3');
           return saved ? JSON.parse(saved) : DEFAULT_ACCOUNTS;
         });
 
@@ -37,7 +32,7 @@
         const [isNewAccountModalOpen, setIsNewAccountModalOpen] = useState(false);
         const [newAccountTitle, setNewAccountTitle] = useState('');
 
-        const storageKey = user ? `mindmill_trades_${user.email}` : 'mindmill_demo_trades';
+        const storageKey = `mindmill_trades_profile_${activeAccountId}`;
 
         const [notes, setNotes] = useState(() => {
           const stored = localStorage.getItem(storageKey);
@@ -52,20 +47,16 @@
         }, [notes, storageKey]);
 
         useEffect(() => {
-          localStorage.setItem('mindmill_accounts', JSON.stringify(accounts));
+          localStorage.setItem('mindmill_accounts_v3', JSON.stringify(accounts));
         }, [accounts]);
 
-        const accountNotes = useMemo(() => {
-          return notes.filter(n => (n.accountId || accounts[0]?.id) === activeAccountId);
-        }, [notes, activeAccountId, accounts]);
-
-        const [selectedNoteId, setSelectedNoteId] = useState(accountNotes[0]?.id || null);
+        const [selectedNoteId, setSelectedNoteId] = useState(null);
         const [activeTab, setActiveTab] = useState('dashboard');
         
         const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
         const [isCustomNewsModalOpen, setIsCustomNewsModalOpen] = useState(false);
-
         const [editingNoteId, setEditingNoteId] = useState(null);
+
         const [tradeForm, setTradeForm] = useState({
           symbol: 'NAS100',
           type: 'WIN',
@@ -75,8 +66,32 @@
           lessons: ''
         });
 
-        // Live Economic Calendar News State
-        const [newsEvents, setNewsEvents] = useState([]);
+        // Load notes when active account changes
+        useEffect(() => {
+          const stored = localStorage.getItem(`mindmill_trades_profile_${activeAccountId}`);
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              setNotes(parsed);
+              setSelectedNoteId(parsed[0]?.id || null);
+            } catch(e) {
+              setNotes([]);
+              setSelectedNoteId(null);
+            }
+          } else {
+            setNotes([]);
+            setSelectedNoteId(null);
+          }
+        }, [activeAccountId]);
+
+        // Economic News State
+        const [newsEvents, setNewsEvents] = useState([
+          { id: 'eco-1', title: 'Core CPI m/m', country: 'USD', date: new Date().toISOString().slice(0, 10), time: '8:30am', impact: 'High', forecast: '0.3%', previous: '0.2%' },
+          { id: 'eco-2', title: 'FOMC Rate Decision & Statement', country: 'USD', date: new Date().toISOString().slice(0, 10), time: '2:00pm', impact: 'High', forecast: '4.50%', previous: '4.75%' },
+          { id: 'eco-3', title: 'Non-Farm Employment Change', country: 'USD', date: new Date().toISOString().slice(0, 10), time: '8:30am', impact: 'High', forecast: '175K', previous: '142K' },
+          { id: 'eco-4', title: 'ECB Monetary Policy Meeting', country: 'EUR', date: new Date().toISOString().slice(0, 10), time: '1:45pm', impact: 'High', forecast: '3.25%', previous: '3.50%' },
+          { id: 'eco-5', title: 'BOE Official Bank Rate', country: 'GBP', date: new Date().toISOString().slice(0, 10), time: '12:00pm', impact: 'High', forecast: '4.75%', previous: '5.00%' }
+        ]);
         const [isNewsLoading, setIsNewsLoading] = useState(false);
         const [newsFilterCurrency, setNewsFilterCurrency] = useState('ALL');
         const [newsDateFilter, setNewsDateFilter] = useState('');
@@ -90,18 +105,15 @@
           previous: ''
         });
 
-        // Reliable Live Economic Feed Synchronizer
-        const fetchEconomicNews = async () => {
+        const fetchLiveEconomicNews = async () => {
           setIsNewsLoading(true);
           try {
-            // Using reliable CORS proxy to fetch real-time economic calendar data
-            const res = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://nfp.forexfactory.com/ff_calendar_thisweek.json'));
-            if (!res.ok) throw new Error('Live feed response error');
+            const res = await fetch('https://nfp.forexfactory.com/ff_calendar_thisweek.json');
+            if (!res.ok) throw new Error('Network error');
             const data = await res.json();
-            
             if (Array.isArray(data) && data.length > 0) {
-              const formattedEvents = data.map((item, idx) => ({
-                id: `eco-${idx}-${item.date || Date.now()}`,
+              const formatted = data.map((item, idx) => ({
+                id: `ff-${idx}-${item.date || Date.now()}`,
                 title: item.title || 'Economic Event',
                 country: (item.country || 'USD').toUpperCase(),
                 date: item.date ? item.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
@@ -110,49 +122,38 @@
                 forecast: item.forecast || '--',
                 previous: item.previous || '--'
               }));
-              setNewsEvents(formattedEvents);
-            } else {
-              throw new Error('Empty payload');
+              setNewsEvents(formatted);
             }
           } catch (err) {
-            console.warn('Falling back to local high-impact sync feed:', err);
-            const todayStr = new Date().toISOString().slice(0, 10);
-            setNewsEvents([
-              { id: 'eco-1', title: 'Core CPI m/m', country: 'USD', date: todayStr, time: '8:30am', impact: 'High', forecast: '0.3%', previous: '0.2%' },
-              { id: 'eco-2', title: 'FOMC Rate Decision', country: 'USD', date: todayStr, time: '2:00pm', impact: 'High', forecast: '4.50%', previous: '4.75%' },
-              { id: 'eco-3', title: 'Non-Farm Employment Change', country: 'USD', date: todayStr, time: '8:30am', impact: 'High', forecast: '175K', previous: '142K' },
-              { id: 'eco-4', title: 'ECB Monetary Policy Statement', country: 'EUR', date: todayStr, time: '1:45pm', impact: 'High', forecast: '3.25%', previous: '3.50%' },
-              { id: 'eco-5', title: 'BOE Official Bank Rate', country: 'GBP', date: todayStr, time: '12:00pm', impact: 'High', forecast: '4.75%', previous: '5.00%' }
-            ]);
+            console.warn('Using robust fallback economic calendar feed');
           } finally {
             setIsNewsLoading(false);
           }
         };
 
         useEffect(() => {
-          fetchEconomicNews();
+          fetchLiveEconomicNews();
         }, []);
 
         const selectedNote = useMemo(() => {
-          return accountNotes.find(n => n.id === selectedNoteId) || accountNotes[0] || null;
-        }, [accountNotes, selectedNoteId]);
+          return notes.find(n => n.id === selectedNoteId) || notes[0] || null;
+        }, [notes, selectedNoteId]);
 
         const stats = useMemo(() => {
-          const total = accountNotes.length;
+          const total = notes.length;
           if (total === 0) return { winRate: '0.0', totalPnl: 0, totalTrades: 0 };
-          const wins = accountNotes.filter(n => n.type === 'WIN');
+          const wins = notes.filter(n => n.type === 'WIN');
           const winRate = ((wins.length / total) * 100).toFixed(1);
-          const totalPnl = accountNotes.reduce((acc, n) => acc + (Number(n.pnl) || 0), 0);
+          const totalPnl = notes.reduce((acc, n) => acc + (Number(n.pnl) || 0), 0);
           return { winRate, totalPnl, totalTrades: total };
-        }, [accountNotes]);
+        }, [notes]);
 
         const handleCreateAccount = (e) => {
           e.preventDefault();
           if (!newAccountTitle.trim()) return;
           const newAcc = {
             id: `acc-${Date.now()}`,
-            name: newAccountTitle.trim(),
-            currency: 'USD'
+            name: newAccountTitle.trim()
           };
           setAccounts([...accounts, newAcc]);
           setActiveAccountId(newAcc.id);
@@ -175,10 +176,8 @@
           } else {
             const newNote = {
               id: Date.now().toString(),
-              accountId: activeAccountId,
               date: new Date().toISOString().split('T')[0],
-              title: tradeForm.title || 'Trade Entry',
-              marketType: 'Indices',
+              title: tradeForm.title || 'Custom Trade Strategy',
               symbol: tradeForm.symbol.toUpperCase(),
               type: tradeForm.type,
               content: tradeForm.content,
@@ -191,6 +190,16 @@
           setIsTradeModalOpen(false);
           setEditingNoteId(null);
           setTradeForm({ symbol: 'NAS100', type: 'WIN', title: '', pnl: '', content: '', lessons: '' });
+        };
+
+        const handleDeleteNote = (id) => {
+          if (confirm('Delete this trade entry?')) {
+            const remaining = notes.filter(n => n.id !== id);
+            setNotes(remaining);
+            if (selectedNoteId === id) {
+              setSelectedNoteId(remaining[0]?.id || null);
+            }
+          }
         };
 
         const handleAddCustomNews = (e) => {
@@ -229,6 +238,7 @@
         return (
           <div className="min-h-screen flex flex-col relative overflow-x-hidden w-full bg-[#08090C] text-slate-100 font-sans">
             
+            {/* Header */}
             <header className="border-b border-amber-500/15 bg-[#0C0E14]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between sticky top-0 z-30 gap-3">
               <div className="flex items-center space-x-2.5">
                 <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 flex items-center justify-center font-black text-slate-950 text-lg shadow-lg shadow-amber-500/20 border border-amber-300/30">
@@ -245,7 +255,7 @@
                   onClick={() => setActiveTab('dashboard')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === 'dashboard' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-amber-200'}`}
                 >
-                  Dashboard
+                  Dashboard & Journal
                 </button>
                 <button 
                   onClick={() => setActiveTab('news')}
@@ -255,12 +265,12 @@
                 </button>
               </div>
 
-              {/* Account Switcher Bar */}
+              {/* Account Switcher */}
               <div className="flex items-center bg-[#050608] p-1 rounded-xl border border-amber-500/20 max-w-full overflow-x-auto space-x-1">
                 {accounts.map(acc => (
                   <button
                     key={acc.id}
-                    onClick={() => { setActiveAccountId(acc.id); setSelectedNoteId(null); }}
+                    onClick={() => setActiveAccountId(acc.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${activeAccountId === acc.id ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-amber-200'}`}
                   >
                     {acc.name}
@@ -268,16 +278,16 @@
                 ))}
                 <button
                   onClick={() => setIsNewAccountModalOpen(true)}
-                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20"
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 whitespace-nowrap"
                 >
-                  + Profile
+                  + Profile Title
                 </button>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center">
                 <button 
                   onClick={() => { setEditingNoteId(null); setTradeForm({ symbol: 'NAS100', type: 'WIN', title: '', pnl: '', content: '', lessons: '' }); setIsTradeModalOpen(true); }}
-                  className="px-3 py-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-md uppercase"
+                  className="px-3.5 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-md uppercase"
                 >
                   + Log Trade
                 </button>
@@ -288,57 +298,94 @@
               
               {activeTab === 'dashboard' ? (
                 <>
-                  {/* Profile Header Card */}
-                  <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-4 flex justify-between items-center">
-                    <div>
-                      <span className="text-[10px] text-amber-400 font-mono uppercase font-bold tracking-wider">Active Account Profile</span>
-                      <div className="flex items-center space-x-2 mt-0.5">
-                        <h2 className="text-lg font-bold text-white font-mono">
-                          {accounts.find(a => a.id === activeAccountId)?.name}
-                        </h2>
-                        <button 
-                          onClick={() => {
-                            const currentAcc = accounts.find(a => a.id === activeAccountId);
-                            const newTitle = prompt('Rename your account profile / category:', currentAcc?.name);
-                            if (newTitle && newTitle.trim()) {
-                              setAccounts(accounts.map(a => a.id === activeAccountId ? { ...a, name: newTitle.trim() } : a));
-                            }
-                          }}
-                          className="text-xs text-amber-400/80 hover:text-amber-300 underline font-mono ml-1"
-                        >
-                          ✏️ Rename
-                        </button>
-                        {accounts.length > 1 && (
+                  {/* Account Profile Management Bar */}
+                  <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3">
+                    <div className="flex items-center space-x-3">
+                      <div>
+                        <span className="text-[10px] text-amber-400 font-mono uppercase font-bold tracking-wider">Active Profile</span>
+                        <div className="flex items-center space-x-2 mt-0.5">
+                          <h2 className="text-base sm:text-lg font-bold text-white font-mono">
+                            {accounts.find(a => a.id === activeAccountId)?.name}
+                          </h2>
                           <button 
                             onClick={() => {
-                              if (confirm('Delete this profile and all its notes?')) {
-                                const remaining = accounts.filter(a => a.id !== activeAccountId);
-                                setAccounts(remaining);
-                                setActiveAccountId(remaining[0].id);
+                              const curr = accounts.find(a => a.id === activeAccountId);
+                              const rename = prompt('Rename account profile title:', curr?.name);
+                              if (rename && rename.trim()) {
+                                setAccounts(accounts.map(a => a.id === activeAccountId ? { ...a, name: rename.trim() } : a));
                               }
                             }}
-                            className="text-xs text-rose-400/80 hover:text-rose-300 font-mono ml-1"
+                            className="text-xs text-amber-400 hover:underline font-mono"
                           >
-                            🗑️ Delete
+                            ✏️ Rename
                           </button>
-                        )}
+                          {accounts.length > 1 && (
+                            <button 
+                              onClick={() => {
+                                if (confirm('Delete this account profile?')) {
+                                  const rem = accounts.filter(a => a.id !== activeAccountId);
+                                  setAccounts(rem);
+                                  setActiveAccountId(rem[0].id);
+                                }
+                              }}
+                              className="text-xs text-rose-400 hover:underline font-mono"
+                            >
+                              🗑️ Delete
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
+
                     <div className="flex items-center space-x-4 text-right">
                       <div>
-                        <p className="text-[10px] text-slate-400 uppercase font-bold">Total Account P&L</p>
-                        <p className={`text-lg font-mono font-black ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Net P&L</p>
+                        <p className={`text-base sm:text-lg font-mono font-black ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                           ${stats.totalPnl.toLocaleString()}
                         </p>
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 uppercase font-bold">Win Rate</p>
-                        <p className="text-lg font-mono font-black text-amber-300">{stats.winRate}%</p>
+                        <p className="text-base sm:text-lg font-mono font-black text-amber-300">{stats.winRate}%</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Account Candlestick & Trade Logs */}
+                  {/* Candlestick Visualizer & Log View */}
+                  <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+                    <h3 className="text-xs font-mono font-bold text-amber-200 uppercase tracking-wider">Session Candlestick Chart View</h3>
+                    
+                    {notes.length > 0 ? (
+                      <div className="bg-[#050608] rounded-xl p-4 border border-amber-500/10 overflow-x-auto flex items-end h-48 space-x-3 pt-6">
+                        {notes.slice().reverse().map((n) => {
+                          const isWin = n.type === 'WIN';
+                          const isSelected = selectedNote?.id === n.id;
+                          const heightPx = Math.min(Math.max(Math.abs(n.pnl) / 10, 24), 90);
+                          return (
+                            <div 
+                              key={n.id}
+                              onClick={() => setSelectedNoteId(n.id)}
+                              className={`flex flex-col items-center cursor-pointer flex-1 min-w-[32px] h-full justify-end group transition ${isSelected ? 'scale-105' : ''}`}
+                            >
+                              <div className={`w-[2px] h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                              <div 
+                                className={`w-full rounded-[2px] transition-all ${isWin ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : 'bg-rose-600 shadow-[0_0_10px_rgba(244,63,94,0.3)]'} ${isSelected ? 'ring-2 ring-amber-300' : ''}`}
+                                style={{ height: `${heightPx}px` }}
+                              ></div>
+                              <div className={`w-[2px] h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                              <span className="text-[9px] text-slate-400 font-mono mt-2 truncate w-full text-center">{n.symbol}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="bg-[#050608] rounded-xl p-8 text-center border border-slate-800 text-slate-500 text-xs">
+                        No trade entries yet under this profile. Click <span className="text-emerald-400 font-bold">"+ Log Trade"</span> above to add your first entry!
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Detailed Selected Trade View */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                     <div className="md:col-span-2 bg-[#0F1118] border border-amber-500/15 rounded-2xl p-4 sm:p-6 space-y-4 shadow-xl">
                       {selectedNote ? (
@@ -350,27 +397,52 @@
                               </span>
                               <h2 className="text-base sm:text-lg font-bold text-white mt-2">{selectedNote.title}</h2>
                             </div>
-                            <span className={`text-base sm:text-xl font-mono font-black ${selectedNote.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                              ${selectedNote.pnl}
-                            </span>
+                            <div className="flex items-center space-x-2">
+                              <span className={`text-base sm:text-xl font-mono font-black ${selectedNote.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                ${selectedNote.pnl}
+                              </span>
+                              <button 
+                                onClick={() => {
+                                  setEditingNoteId(selectedNote.id);
+                                  setTradeForm({
+                                    symbol: selectedNote.symbol,
+                                    type: selectedNote.type,
+                                    title: selectedNote.title,
+                                    pnl: selectedNote.pnl,
+                                    content: selectedNote.content || '',
+                                    lessons: selectedNote.lessons || ''
+                                  });
+                                  setIsTradeModalOpen(true);
+                                }}
+                                className="px-2.5 py-1 bg-[#171A24] text-amber-200 text-xs rounded-lg border border-amber-500/20"
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteNote(selectedNote.id)}
+                                className="px-2.5 py-1 bg-rose-500/10 text-rose-400 text-xs rounded-lg border border-rose-500/20"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
                           <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">{selectedNote.content}</p>
                           {selectedNote.lessons && (
                             <div className="p-3 bg-[#050608] rounded-xl border border-slate-800 text-xs text-amber-300/90">
-                              <span className="font-bold block text-amber-400 mb-0.5">Lesson Learned:</span>
+                              <span className="font-bold block text-amber-400 mb-0.5">Lesson / Note:</span>
                               {selectedNote.lessons}
                             </div>
                           )}
                         </>
                       ) : (
-                        <div className="text-center py-10 text-slate-500 text-xs">Select or log a trade entry under this account profile.</div>
+                        <div className="text-center py-10 text-slate-500 text-xs">Select a trade entry from the log list.</div>
                       )}
                     </div>
 
                     <div className="bg-[#0F1118] border border-amber-500/15 rounded-2xl p-4 space-y-3 shadow-xl">
-                      <h3 className="text-xs font-mono font-bold text-amber-200 uppercase">Account Trade Log</h3>
+                      <h3 className="text-xs font-mono font-bold text-amber-200 uppercase">Trade Entries Log</h3>
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {accountNotes.map(n => (
+                        {notes.map(n => (
                           <div 
                             key={n.id} 
                             onClick={() => setSelectedNoteId(n.id)}
@@ -390,12 +462,12 @@
                   </div>
                 </>
               ) : (
-                /* Economic News Feed Tab */
+                /* Economic Calendar Tab */
                 <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-4 sm:p-6 space-y-5 shadow-xl">
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/10 pb-4">
                     <div>
-                      <h2 className="text-base font-bold text-amber-100 font-mono">LIVE GLOBAL ECONOMIC CALENDAR</h2>
-                      <p className="text-xs text-slate-400">Synchronized catalysts and volatility metrics.</p>
+                      <h2 className="text-base font-bold text-amber-100 font-mono">GLOBAL ECONOMIC INTELLIGENCE CALENDAR</h2>
+                      <p className="text-xs text-slate-400">High-impact financial catalysts and forecast metrics.</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -421,7 +493,7 @@
                       </select>
 
                       <button
-                        onClick={fetchEconomicNews}
+                        onClick={fetchLiveEconomicNews}
                         className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-200 text-xs rounded-xl font-mono"
                       >
                         🔄 {isNewsLoading ? 'Syncing...' : 'Sync Feed'}
@@ -483,18 +555,18 @@
 
             </main>
 
-            {/* Modal: Add New Account Profile */}
+            {/* Modal: New Account Profile */}
             {isNewAccountModalOpen && (
               <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div className="bg-[#0F1118] border border-amber-500/30 p-5 rounded-2xl max-w-sm w-full space-y-4">
                   <h3 className="text-amber-200 font-bold text-base">Create Account Profile</h3>
                   <form onSubmit={handleCreateAccount} className="space-y-3 text-xs">
                     <div>
-                      <label className="text-slate-400 block mb-1">Account Title / Name</label>
+                      <label className="text-slate-400 block mb-1">Profile Title (e.g. Prop Firm, Live FX)</label>
                       <input 
                         type="text" 
                         required 
-                        placeholder="e.g. Funded Account #4 or Crypto Portfolio" 
+                        placeholder="e.g. FTMO Challenge #1" 
                         value={newAccountTitle} 
                         onChange={e => setNewAccountTitle(e.target.value)} 
                         className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" 
@@ -513,7 +585,7 @@
             {isTradeModalOpen && (
               <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <div className="bg-[#0F1118] border border-amber-500/30 p-5 rounded-2xl max-w-md w-full space-y-4">
-                  <h3 className="text-amber-200 font-bold text-base">{editingNoteId ? 'Edit Entry' : 'Log Trade Entry'}</h3>
+                  <h3 className="text-amber-200 font-bold text-base">{editingNoteId ? 'Edit Trade Entry' : 'Log Trade Entry'}</h3>
                   <form onSubmit={handleSaveTrade} className="space-y-3 text-xs">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
@@ -537,7 +609,7 @@
                       <input type="number" step="any" required value={tradeForm.pnl} onChange={e => setTradeForm({...tradeForm, pnl: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2 rounded-xl text-white font-mono" />
                     </div>
                     <div>
-                      <label className="text-slate-400 block mb-1">Notes / Description</label>
+                      <label className="text-slate-400 block mb-1">Trade Notes / Strategy</label>
                       <textarea rows="2" value={tradeForm.content} onChange={e => setTradeForm({...tradeForm, content: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2 rounded-xl text-white"></textarea>
                     </div>
                     <div className="flex justify-end space-x-2 pt-2">
