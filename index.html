@@ -147,26 +147,47 @@
         const fetchLiveEconomicNews = async () => {
           setIsNewsLoading(true);
           try {
-            const proxyUrl = 'https://api.allorigins.win/raw?url=';
-            const targetUrl = encodeURIComponent('https://nfp.forexfactory.com/ff_calendar_thisweek.json');
-            const res = await fetch(proxyUrl + targetUrl);
-            if (!res.ok) throw new Error('Network error');
-            const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
-              const formatted = data.map((item, idx) => ({
-                id: `ff-${idx}-${item.date || Date.now()}`,
-                title: item.title || 'Economic Event',
-                country: (item.country || 'USD').toUpperCase(),
-                date: item.date ? item.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-                time: item.time || 'All Day',
-                impact: item.impact || 'Medium',
-                forecast: item.forecast || '--',
-                previous: item.previous || '--'
+            // Live ForexFactory json endpoint
+            const ffUrl = 'https://nfp.forexfactory.com/ff_calendar_thisweek.json';
+            
+            // Primary & Fallback Proxy Sources
+            const proxySources = [
+              `https://corsproxy.io/?${encodeURIComponent(ffUrl)}`,
+              `https://api.allorigins.win/raw?url=${encodeURIComponent(ffUrl)}`
+            ];
+
+            let rawData = null;
+
+            for (const proxyUrl of proxySources) {
+              try {
+                const response = await fetch(proxyUrl);
+                if (response.ok) {
+                  const result = await response.json();
+                  if (Array.isArray(result) && result.length > 0) {
+                    rawData = result;
+                    break;
+                  }
+                }
+              } catch (e) {
+                console.warn('Proxy retry in progress...');
+              }
+            }
+
+            if (rawData && Array.isArray(rawData)) {
+              const formattedEvents = rawData.map((event, idx) => ({
+                id: `ff-live-${idx}-${event.date || Date.now()}`,
+                title: event.title || 'Economic Event',
+                country: (event.country || 'USD').toUpperCase(),
+                date: event.date ? event.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
+                time: event.time || 'All Day',
+                impact: event.impact || 'Medium',
+                forecast: event.forecast || '--',
+                previous: event.previous || '--'
               }));
-              setNewsEvents(formatted);
+              setNewsEvents(formattedEvents);
             }
           } catch (err) {
-            console.warn('Using fallback economic calendar feed');
+            console.warn('Unable to sync live news, keeping active feed');
           } finally {
             setIsNewsLoading(false);
           }
