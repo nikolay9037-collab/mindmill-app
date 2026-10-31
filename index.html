@@ -147,11 +147,10 @@
         const fetchLiveEconomicNews = async () => {
           setIsNewsLoading(true);
           try {
-            // Primary & Proxy Endpoints
+            // Attempt 1: Fetch through high-speed CORS proxies directly targeting ForexFactory JSON
             const endpoints = [
               'https://corsproxy.io/?https%3A%2F%2Fnfp.forexfactory.com%2Fff_calendar_thisweek.json',
-              'https://api.allorigins.win/raw?url=https%3A%2F%2Fnfp.forexfactory.com%2Fff_calendar_thisweek.json',
-              'https://financialmodelingprep.com/api/v3/economic_calendar?apikey=demo'
+              'https://api.allorigins.win/raw?url=https%3A%2F%2Fnfp.forexfactory.com%2Fff_calendar_thisweek.json'
             ];
 
             let loadedData = null;
@@ -167,35 +166,87 @@
                   }
                 }
               } catch (e) {
-                console.warn('Attempting secondary economic feed source...');
+                console.warn('Attempting secondary proxy server...');
               }
             }
 
             if (loadedData && Array.isArray(loadedData)) {
               const formattedEvents = loadedData.map((event, idx) => ({
                 id: `eco-live-${idx}-${event.date || Date.now()}`,
-                title: event.title || event.event || 'Economic Catalyst',
-                country: (event.country || event.currency || 'USD').toUpperCase(),
+                title: event.title || 'Economic Catalyst',
+                country: (event.country || 'USD').toUpperCase(),
                 date: event.date ? event.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-                time: event.time || (event.date && event.date.length > 11 ? event.date.slice(11, 16) : 'All Day'),
-                impact: event.impact || (event.importance ? (event.importance === 'High' || event.importance === 3 ? 'High' : 'Medium') : 'Medium'),
-                forecast: event.forecast !== undefined ? `${event.forecast}` : '--',
-                previous: event.previous !== undefined ? `${event.previous}` : '--'
+                time: event.time || 'All Day',
+                impact: event.impact || 'Medium',
+                forecast: event.forecast !== undefined && event.forecast !== '' ? `${event.forecast}` : '--',
+                previous: event.previous !== undefined && event.previous !== '' ? `${event.previous}` : '--'
               }));
               setNewsEvents(formattedEvents);
-            } else {
-              throw new Error('Fallback triggered');
+              setIsNewsLoading(false);
+              return;
             }
-          } catch (err) {
-            // Guaranteed Backup Feed if all external HTTP calls are firewalled
+          } catch (e) {
+            console.warn("Direct JSON endpoints restricted. Initializing Grounded Gemini Economic Intelligence Search...");
+          }
+
+          // Fallback / AI Engine: Real-Time Grounded Gemini 3 Flash Economic Search
+          try {
             const todayStr = new Date().toISOString().slice(0, 10);
-            setNewsEvents([
-              { id: 'ff-1', title: 'Core CPI m/m', country: 'USD', date: todayStr, time: '08:30', impact: 'High', forecast: '0.3%', previous: '0.2%' },
-              { id: 'ff-2', title: 'FOMC Statement & Rate Decision', country: 'USD', date: todayStr, time: '14:00', impact: 'High', forecast: '4.50%', previous: '4.75%' },
-              { id: 'ff-[3]', title: 'Non-Farm Employment Change (NFP)', country: 'USD', date: todayStr, time: '08:30', impact: 'High', forecast: '175K', previous: '142K' },
-              { id: 'ff-4', title: 'ECB Rate Decision', country: 'EUR', date: todayStr, time: '13:45', impact: 'High', forecast: '3.25%', previous: '3.50%' },
-              { id: 'ff-5', title: 'BOE Official Bank Rate', country: 'GBP', date: todayStr, time: '12:00', impact: 'High', forecast: '4.75%', previous: '5.00%' }
-            ]);
+            const systemPrompt = `You are a professional financial data parser. Your objective is to return the exact high-impact weekly economic calendar events matching ForexFactory.com. Search for live ForexFactory economic calendar entries for this week and format the output strictly as a JSON array of objects with keys: title, country, date, time, impact, forecast, previous. Do not output markdown or explanatory text outside the JSON array.`;
+            const userQuery = `Find current week high-impact economic calendar events on ForexFactory for USD, EUR, GBP, JPY, CAD. Reference date: ${todayStr}. Return exact titles, currencies, forecasts, and previous values.`;
+
+            const apiKey = ""; // Canvas runtime environment auto-injects API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                  responseMimeType: "application/json",
+                  responseSchema: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        title: { type: "STRING" },
+                        country: { type: "STRING" },
+                        date: { type: "STRING" },
+                        time: { type: "STRING" },
+                        impact: { type: "STRING" },
+                        forecast: { type: "STRING" },
+                        previous: { type: "STRING" }
+                      },
+                      propertyOrdering: ["title", "country", "date", "time", "impact", "forecast", "previous"]
+                    }
+                  }
+                }
+              })
+            });
+
+            if (response.ok) {
+              const result = await response.json();
+              const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (jsonText) {
+                const aiEvents = JSON.parse(jsonText);
+                const formattedAiEvents = aiEvents.map((evt, idx) => ({
+                  id: `ai-eco-${idx}-${Date.now()}`,
+                  title: evt.title || 'Market Catalyst',
+                  country: (evt.country || 'USD').toUpperCase(),
+                  date: evt.date || todayStr,
+                  time: evt.time || '08:30',
+                  impact: evt.impact || 'High',
+                  forecast: evt.forecast || '--',
+                  previous: evt.previous || '--'
+                }));
+                setNewsEvents(formattedAiEvents);
+              }
+            }
+          } catch (aiErr) {
+            console.error("AI Economic Generator Error:", aiErr);
           } finally {
             setIsNewsLoading(false);
           }
