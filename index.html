@@ -4,33 +4,284 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MINDMILL Trading Journal</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel standalone to compile JSX in browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
-  <body class="bg-[#08090C] text-white">
+  <body class="bg-[#08090C] text-slate-100 font-sans selection:bg-amber-400 selection:text-slate-950">
     <div id="root"></div>
 
     <script type="text/babel">
       const { useState, useEffect, useMemo } = React;
 
+      const INITIAL_NOTES = [
+        {
+          id: '1',
+          date: '2025-02-18',
+          title: 'NAS100 Tech Breakout Surge',
+          marketType: 'Indices',
+          symbol: 'NAS100',
+          category: 'Breakout',
+          type: 'WIN',
+          content: 'Caught the morning explosive rally on NAS100 after breaking above resistance level.',
+          open: 21450,
+          high: 21980,
+          low: 21420,
+          close: 21950,
+          pnl: 1250.00,
+          lessons: 'Letting winners run on index momentum pays off massively.'
+        },
+        {
+          id: '2',
+          date: '2025-02-19',
+          title: 'S&P 500 False Breakdown Reversal',
+          marketType: 'Indices',
+          symbol: 'SP500',
+          category: 'Reversal',
+          type: 'LOSS',
+          content: 'Tried shorting the morning dip on S&P 500 expecting deeper correction.',
+          open: 5880,
+          high: 5910,
+          low: 5855,
+          close: 5905,
+          pnl: -350.00,
+          lessons: 'Do not fade strong trend days without confirmation.'
+        },
+        {
+          id: '3',
+          date: '2025-02-20',
+          title: 'Gold (XAUUSD) Safe Haven Spike',
+          marketType: 'Forex',
+          symbol: 'XAUUSD',
+          category: 'Momentum',
+          type: 'WIN',
+          content: 'Entered long position at $2,640 level following economic news breakout.',
+          open: 2640,
+          high: 2685,
+          low: 2635,
+          close: 2680,
+          pnl: 2100.00,
+          lessons: 'High impact economic events create clean multi-day continuation trends.'
+        }
+      ];
+
       function App() {
+        const [notes, setNotes] = useState(INITIAL_NOTES);
+        const [selectedNoteId, setSelectedNoteId] = useState('1');
+        const [activeTab, setActiveTab] = useState('dashboard');
+        const [isModalOpen, setIsModalOpen] = useState(false);
+
+        const [formData, setFormData] = useState({
+          symbol: 'NAS100',
+          type: 'WIN',
+          title: '',
+          pnl: '',
+          content: '',
+          lessons: ''
+        });
+
+        const selectedNote = useMemo(() => {
+          return notes.find(n => n.id === selectedNoteId) || notes[0];
+        }, [notes, selectedNoteId]);
+
+        const stats = useMemo(() => {
+          const total = notes.length;
+          if (total === 0) return { winRate: 0, totalPnl: 0, profitFactor: 0 };
+          const wins = notes.filter(n => n.type === 'WIN');
+          const winRate = ((wins.length / total) * 100).toFixed(1);
+          const totalPnl = notes.reduce((acc, n) => acc + (Number(n.pnl) || 0), 0);
+          return { winRate, totalPnl, totalTrades: total };
+        }, [notes]);
+
+        const handleSaveNote = (e) => {
+          e.preventDefault();
+          const newNote = {
+            id: Date.now().toString(),
+            date: new Date().toISOString().split('T')[0],
+            title: formData.title || 'Trade Entry',
+            marketType: 'Indices',
+            symbol: formData.symbol.toUpperCase(),
+            category: 'Execution',
+            type: formData.type,
+            content: formData.content,
+            lessons: formData.lessons,
+            pnl: parseFloat(formData.pnl) || 0
+          };
+          setNotes([newNote, ...notes]);
+          setSelectedNoteId(newNote.id);
+          setIsModalOpen(false);
+          setFormData({ symbol: 'NAS100', type: 'WIN', title: '', pnl: '', content: '', lessons: '' });
+        };
+
         return (
-          <div className="min-h-screen bg-[#08090C] text-slate-100 flex flex-col items-center justify-center p-6">
-            <div className="bg-[#0F1118] border border-amber-500/30 p-8 rounded-3xl max-w-md text-center shadow-2xl space-y-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center mx-auto text-slate-950 font-black text-2xl shadow-lg shadow-amber-500/20">
-                MM
+          <div className="min-h-screen flex flex-col">
+            {/* Header */}
+            <header className="border-b border-amber-500/10 bg-[#0C0E14]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+              <div className="flex items-center space-x-3">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-amber-500/20">
+                  MM
+                </div>
+                <div>
+                  <h1 className="text-xl font-black tracking-widest text-amber-200 uppercase font-mono">MINDMILL</h1>
+                  <p className="text-[10px] text-slate-400">Master the Mindset Behind the Chart</p>
+                </div>
               </div>
-              <h1 className="text-2xl font-black text-amber-200 tracking-wider">MINDMILL LIVE</h1>
-              <p className="text-xs text-slate-400">Your luxury trading journal is successfully deployed and running!</p>
-              <div className="pt-2">
-                <span className="px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/20">
-                  ● Status: Active & Operational
-                </span>
+
+              <div className="flex space-x-2">
+                <button 
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeTab === 'dashboard' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                >
+                  Dashboard
+                </button>
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/20"
+                >
+                  + Log Trade
+                </button>
               </div>
-            </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="flex-1 p-6 max-w-6xl mx-auto w-full space-y-6">
+              {/* Stats Bar */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl">
+                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Total Net Yield</p>
+                  <h3 className={`text-2xl font-mono font-black mt-1 ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    ${stats.totalPnl.toLocaleString()}
+                  </h3>
+                </div>
+                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl">
+                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Win Rate</p>
+                  <h3 className="text-2xl font-mono font-black mt-1 text-emerald-400">{stats.winRate}%</h3>
+                </div>
+                <div className="bg-[#0F1118] border border-amber-500/15 p-5 rounded-2xl">
+                  <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Logged Trades</p>
+                  <h3 className="text-2xl font-mono font-black mt-1 text-amber-200">{stats.totalTrades} Executions</h3>
+                </div>
+              </div>
+
+              {/* Visual Candlestick Bar */}
+              <div className="bg-[#0F1118] border border-amber-500/20 rounded-2xl p-5 space-y-3">
+                <h2 className="text-xs font-mono font-bold text-amber-200 uppercase tracking-wider">Performance Candlestick Visualizer</h2>
+                <div className="bg-[#050608] p-4 rounded-xl flex items-end justify-start space-x-3 h-48 border border-amber-500/10 overflow-x-auto">
+                  {notes.slice().reverse().map((n) => {
+                    const isWin = n.type === 'WIN';
+                    const height = Math.min(Math.max(Math.abs(n.pnl) / 15, 20), 100);
+                    return (
+                      <div 
+                        key={n.id}
+                        onClick={() => setSelectedNoteId(n.id)}
+                        className="flex flex-col items-center cursor-pointer group"
+                      >
+                        <div className={`w-1 h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                        <div 
+                          className={`w-6 rounded-sm ${isWin ? 'bg-emerald-500' : 'bg-rose-500'} ${selectedNoteId === n.id ? 'ring-2 ring-amber-300' : ''}`}
+                          style={{ height: `${height}px` }}
+                        ></div>
+                        <div className={`w-1 h-3 ${isWin ? 'bg-emerald-400' : 'bg-rose-400'}`}></div>
+                        <span className="text-[10px] text-slate-500 font-mono mt-1">{n.symbol}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Journal Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 bg-[#0F1118] border border-amber-500/15 rounded-2xl p-6 space-y-4">
+                  {selectedNote ? (
+                    <>
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold font-mono ${selectedNote.type === 'WIN' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
+                            {selectedNote.symbol} &bull; {selectedNote.type}
+                          </span>
+                          <h2 className="text-lg font-bold text-white mt-2">{selectedNote.title}</h2>
+                        </div>
+                        <span className={`text-xl font-mono font-black ${selectedNote.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          ${selectedNote.pnl}
+                        </span>
+                      </div>
+                      <p className="text-slate-300 text-sm leading-relaxed">{selectedNote.content}</p>
+                      {selectedNote.lessons && (
+                        <div className="bg-[#050608] p-4 rounded-xl border border-amber-500/10">
+                          <p className="text-xs text-amber-400 font-bold uppercase mb-1">Lesson Learned:</p>
+                          <p className="text-xs text-slate-400 italic">{selectedNote.lessons}</p>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-10 text-slate-500">Select a trade entry to view details.</div>
+                  )}
+                </div>
+
+                <div className="bg-[#0F1118] border border-amber-500/15 rounded-2xl p-4 space-y-3">
+                  <h3 className="text-xs font-mono font-bold text-amber-200 uppercase">Trade History</h3>
+                  <div className="space-y-2">
+                    {notes.map(n => (
+                      <div 
+                        key={n.id} 
+                        onClick={() => setSelectedNoteId(n.id)}
+                        className={`p-3 rounded-xl text-xs cursor-pointer flex justify-between border ${selectedNoteId === n.id ? 'bg-[#151924] border-amber-400' : 'bg-[#050608] border-slate-800'}`}
+                      >
+                        <div>
+                          <p className="font-bold text-white">{n.symbol}</p>
+                          <p className="text-[10px] text-slate-400">{n.date}</p>
+                        </div>
+                        <span className={`font-mono font-bold ${n.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          ${n.pnl}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </main>
+
+            {/* Modal */}
+            {isModalOpen && (
+              <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                <div className="bg-[#0F1118] border border-amber-500/30 p-6 rounded-2xl max-w-md w-full space-y-4">
+                  <h3 className="text-amber-200 font-bold text-base">Log New Trade</h3>
+                  <form onSubmit={handleSaveNote} className="space-y-3 text-xs">
+                    <div>
+                      <label className="text-slate-400 block mb-1">Symbol</label>
+                      <input type="text" required value={formData.symbol} onChange={e => setFormData({...formData, symbol: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white uppercase" />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1">Outcome</label>
+                      <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white">
+                        <option value="WIN">WIN</option>
+                        <option value="LOSS">LOSS</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1">Title</label>
+                      <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1">P&L ($)</label>
+                      <input type="number" step="any" required value={formData.pnl} onChange={e => setFormData({...formData, pnl: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white" />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1">Trade Notes</label>
+                      <textarea rows="3" required value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white"></textarea>
+                    </div>
+                    <div className="flex justify-end space-x-2 pt-2">
+                      <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
+                      <button type="submit" className="px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl">Save Entry</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         );
       }
