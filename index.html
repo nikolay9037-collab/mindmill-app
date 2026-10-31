@@ -23,6 +23,17 @@
       ];
 
       function App() {
+        // Authentication State
+        const [user, setUser] = useState(() => {
+          const savedUser = localStorage.getItem('mindmill_trader_user');
+          return savedUser ? JSON.parse(savedUser) : null;
+        });
+        const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+        const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+        const [authEmail, setAuthEmail] = useState('');
+        const [authPassword, setAuthPassword] = useState('');
+        const [authError, setAuthError] = useState('');
+
         const [accounts, setAccounts] = useState(() => {
           const saved = localStorage.getItem('mindmill_accounts_v3');
           return saved ? JSON.parse(saved) : DEFAULT_ACCOUNTS;
@@ -32,7 +43,7 @@
         const [isNewAccountModalOpen, setIsNewAccountModalOpen] = useState(false);
         const [newAccountTitle, setNewAccountTitle] = useState('');
 
-        const storageKey = `mindmill_trades_profile_${activeAccountId}`;
+        const storageKey = user ? `mindmill_trades_${user.email}_profile_${activeAccountId}` : `mindmill_trades_profile_${activeAccountId}`;
 
         const [notes, setNotes] = useState(() => {
           const stored = localStorage.getItem(storageKey);
@@ -66,9 +77,9 @@
           lessons: ''
         });
 
-        // Load notes when active account changes
+        // Load notes when active account or user changes
         useEffect(() => {
-          const stored = localStorage.getItem(`mindmill_trades_profile_${activeAccountId}`);
+          const stored = localStorage.getItem(storageKey);
           if (stored) {
             try {
               const parsed = JSON.parse(stored);
@@ -82,7 +93,35 @@
             setNotes([]);
             setSelectedNoteId(null);
           }
-        }, [activeAccountId]);
+        }, [activeAccountId, user]);
+
+        // Authentication Handlers
+        const handleAuthSubmit = (e) => {
+          e.preventDefault();
+          setAuthError('');
+
+          if (!authEmail || !authPassword) {
+            setAuthError('Please fill in all fields');
+            return;
+          }
+
+          if (authPassword.length < 6) {
+            setAuthError('Password must be at least 6 characters');
+            return;
+          }
+
+          const userData = { email: authEmail, id: btoa(authEmail) };
+          localStorage.setItem('mindmill_trader_user', JSON.stringify(userData));
+          setUser(userData);
+          setIsAuthModalOpen(false);
+          setAuthEmail('');
+          setAuthPassword('');
+        };
+
+        const handleLogout = () => {
+          localStorage.removeItem('mindmill_trader_user');
+          setUser(null);
+        };
 
         // Economic News State
         const [newsEvents, setNewsEvents] = useState([
@@ -108,7 +147,9 @@
         const fetchLiveEconomicNews = async () => {
           setIsNewsLoading(true);
           try {
-            const res = await fetch('https://nfp.forexfactory.com/ff_calendar_thisweek.json');
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const targetUrl = encodeURIComponent('https://nfp.forexfactory.com/ff_calendar_thisweek.json');
+            const res = await fetch(proxyUrl + targetUrl);
             if (!res.ok) throw new Error('Network error');
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
@@ -125,7 +166,7 @@
               setNewsEvents(formatted);
             }
           } catch (err) {
-            console.warn('Using robust fallback economic calendar feed');
+            console.warn('Using fallback economic calendar feed');
           } finally {
             setIsNewsLoading(false);
           }
@@ -284,7 +325,27 @@
                 </button>
               </div>
 
-              <div className="flex items-center">
+              {/* Login / User Status */}
+              <div className="flex items-center space-x-2">
+                {user ? (
+                  <div className="flex items-center space-x-2 bg-[#050608] border border-amber-500/30 px-3 py-1.5 rounded-xl">
+                    <span className="text-xs font-mono text-amber-200 truncate max-w-[120px]">{user.email}</span>
+                    <button 
+                      onClick={handleLogout}
+                      className="text-[10px] text-rose-400 hover:underline font-mono"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => { setAuthMode('login'); setAuthError(''); setIsAuthModalOpen(true); }}
+                    className="px-3.5 py-2 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl text-xs shadow-md uppercase"
+                  >
+                    Login / Sign In
+                  </button>
+                )}
+
                 <button 
                   onClick={() => { setEditingNoteId(null); setTradeForm({ symbol: 'NAS100', type: 'WIN', title: '', pnl: '', content: '', lessons: '' }); setIsTradeModalOpen(true); }}
                   className="px-3.5 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-md uppercase"
@@ -554,6 +615,71 @@
               )}
 
             </main>
+
+            {/* Modal: Trader Authentication (Login / Sign Up) */}
+            {isAuthModalOpen && (
+              <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                <div className="bg-[#0F1118] border border-amber-500/30 p-6 rounded-2xl max-w-sm w-full space-y-4 shadow-2xl">
+                  <div className="flex justify-between items-center border-b border-amber-500/10 pb-3">
+                    <h3 className="text-amber-200 font-bold text-base font-mono">
+                      {authMode === 'login' ? 'Trader Login' : 'Create Trader Account'}
+                    </h3>
+                    <button onClick={() => setIsAuthModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+                  </div>
+
+                  {authError && (
+                    <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs p-2.5 rounded-xl font-mono">
+                      {authError}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleAuthSubmit} className="space-y-3 text-xs">
+                    <div>
+                      <label className="text-slate-400 block mb-1">Email Address</label>
+                      <input 
+                        type="email" 
+                        required 
+                        placeholder="trader@mindmill.io" 
+                        value={authEmail} 
+                        onChange={e => setAuthEmail(e.target.value)} 
+                        className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white font-mono focus:outline-none focus:border-amber-500" 
+                      />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 block mb-1">Password</label>
+                      <input 
+                        type="password" 
+                        required 
+                        placeholder="••••••••" 
+                        value={authPassword} 
+                        onChange={e => setAuthPassword(e.target.value)} 
+                        className="w-full bg-[#050608] border border-slate-800 p-2.5 rounded-xl text-white font-mono focus:outline-none focus:border-amber-500" 
+                      />
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className="w-full py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-slate-950 rounded-xl shadow-lg uppercase text-xs"
+                    >
+                      {authMode === 'login' ? 'Sign In' : 'Register Account'}
+                    </button>
+                  </form>
+
+                  <div className="text-center pt-2 border-t border-slate-800 text-xs text-slate-400">
+                    {authMode === 'login' ? "Don't have an account? " : "Already have an account? "}
+                    <button 
+                      onClick={() => {
+                        setAuthMode(authMode === 'login' ? 'signup' : 'login');
+                        setAuthError('');
+                      }}
+                      className="text-amber-400 font-bold hover:underline ml-1"
+                    >
+                      {authMode === 'login' ? 'Sign Up' : 'Log In'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Modal: New Account Profile */}
             {isNewAccountModalOpen && (
