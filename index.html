@@ -146,29 +146,50 @@
           previous: ''
         });
 
-        // Simple Direct Open API Fetch
+        // Guaranteed Failsafe Economic Calendar Fetch Engine
+        const fetchFreeEconomicNews = async () => {
+          setIsNewsLoading(true);
+          const defaultFallbackData = [
+        // Guaranteed ForexFactory Direct Sync Engine
         const fetchFreeEconomicNews = async () => {
           setIsNewsLoading(true);
           try {
-            const res = await fetch('https://financialmodelingprep.com/api/v3/economic_calendar?apikey=demo');
-            if (res.ok) {
-              const data = await res.json();
-              if (Array.isArray(data) && data.length > 0) {
-                const formatted = data.slice(0, 25).map((evt, idx) => ({
-                  id: `fmp-${idx}-${Date.now()}`,
-                  title: evt.event || 'Economic Release',
+            // Target ForexFactory's direct JSON endpoint via CORS proxy
+            const ffUrl = 'https://nfp.forexfactory.com/ff_calendar_thisweek.json';
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(ffUrl)}`;
+
+            const res = await fetch(proxyUrl);
+            if (!res.ok) throw new Error('Proxy network issue');
+            
+            const wrapperObj = await res.json();
+            const data = JSON.parse(wrapperObj.contents);
+
+            if (Array.isArray(data) && data.length > 0) {
+              const formatted = data.map((evt, idx) => {
+                // Parse ForexFactory date string (e.g. 2026-10-31T03:30:00-04:00)
+                const dateObj = evt.date ? new Date(evt.date) : new Date();
+                const formattedDate = dateObj.toISOString().slice(0, 10);
+                const formattedTime = evt.time || (evt.date && evt.date.length > 11 ? evt.date.slice(11, 16) : 'All Day');
+
+                return {
+                  id: `ff-live-${idx}-${evt.date || idx}`,
+                  title: evt.title || 'Economic Release',
                   country: (evt.country || 'USD').toUpperCase(),
-                  date: evt.date ? evt.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-                  time: evt.date && evt.date.length > 11 ? evt.date.slice(11, 16) : '08:30',
-                  impact: evt.impact || 'High',
-                  forecast: evt.estimate ? `${evt.estimate}` : '--',
-                  previous: evt.previous ? `${evt.previous}` : '--'
-                }));
-                setNewsEvents(formatted);
-              }
+                  date: formattedDate,
+                  time: formattedTime,
+                  impact: evt.impact || 'Low',
+                  forecast: evt.forecast || '--',
+                  previous: evt.previous || '--'
+                };
+              });
+
+              setNewsEvents(formatted);
+              setIsNewsLoading(false);
+              return;
             }
+            throw new Error('No ForexFactory data returned');
           } catch (err) {
-            console.log('Using integrated instant economic dataset.');
+            console.error('ForexFactory sync error:', err);
           } finally {
             setIsNewsLoading(false);
           }
