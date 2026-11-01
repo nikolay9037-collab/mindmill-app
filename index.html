@@ -110,7 +110,7 @@
             <span>+ Add Single Event</span>
           </button>
           <button onclick="resetToDefaultNews()" class="px-4 py-2 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-mono hover:bg-rose-500/30 transition">
-            Reset All Data
+            Reset to Week Nov 2-6
           </button>
         </div>
       </div>
@@ -174,12 +174,12 @@
               <div>
                 <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 font-mono">Market Events</p>
                 <h3 id="stat-news-count" class="text-2xl lg:text-3xl font-black font-mono mt-2 text-rose-400">
-                  4 Active
+                  Nov 2-6 Active
                 </h3>
               </div>
               <div class="p-2.5 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold font-mono text-sm">LIVE</div>
             </div>
-            <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">Economic Calendar Active</div>
+            <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">Week Nov 2-6 Schedule Loaded</div>
           </div>
         </div>
 
@@ -234,7 +234,7 @@
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-amber-500/15 pb-5">
           <div>
             <h2 class="text-sm font-bold text-amber-100 font-mono tracking-wide flex items-center space-x-2">
-              <span class="text-rose-400 font-black">🔥 HIGH-IMPACT MARKET CALENDAR</span>
+              <span class="text-rose-400 font-black">🔥 HIGH-IMPACT MARKET CALENDAR (NOV 2 - NOV 6)</span>
             </h2>
             <p id="filter-status-text" class="text-xs text-slate-400 mt-0.5">Filter releases by single date or target currency.</p>
           </div>
@@ -246,9 +246,11 @@
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
               <option value="GBP">GBP (£)</option>
-              <option value="JPY">JPY (¥)</option>
               <option value="AUD">AUD ($)</option>
               <option value="CAD">CAD ($)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="NZD">NZD ($)</option>
+              <option value="CHF">CHF (Fr)</option>
             </select>
 
             <!-- Single-Day Date Picker -->
@@ -265,9 +267,12 @@
 
             <!-- Quick Presets -->
             <div class="flex items-center space-x-1 bg-[#040507] border border-amber-500/20 p-1 rounded-2xl">
-              <button id="btn-today" onclick="setDatePreset('today')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Today</button>
-              <button id="btn-tomorrow" onclick="setDatePreset('tomorrow')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Tomorrow</button>
-              <button id="btn-all" onclick="setDatePreset('all')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">All Upcoming</button>
+              <button id="btn-nov2" onclick="setDateExplicit('2026-11-02', 'nov2')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Mon Nov 2</button>
+              <button id="btn-nov3" onclick="setDateExplicit('2026-11-03', 'nov3')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Tue Nov 3</button>
+              <button id="btn-nov4" onclick="setDateExplicit('2026-11-04', 'nov4')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Wed Nov 4</button>
+              <button id="btn-nov5" onclick="setDateExplicit('2026-11-05', 'nov5')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Thu Nov 5</button>
+              <button id="btn-nov6" onclick="setDateExplicit('2026-11-06', 'nov6')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Fri Nov 6</button>
+              <button id="btn-all" onclick="setDateExplicit('', 'all')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">All Week</button>
             </div>
           </div>
         </div>
@@ -372,6 +377,8 @@
               <option value="JPY">JPY (¥)</option>
               <option value="AUD">AUD ($)</option>
               <option value="CAD">CAD ($)</option>
+              <option value="NZD">NZD ($)</option>
+              <option value="CHF">CHF (Fr)</option>
             </select>
           </div>
           <div>
@@ -380,6 +387,7 @@
               <option value="HIGH">HIGH IMPACT</option>
               <option value="CRITICAL">CRITICAL IMPACT</option>
               <option value="MEDIUM">MEDIUM IMPACT</option>
+              <option value="LOW">LOW IMPACT</option>
             </select>
           </div>
         </div>
@@ -421,10 +429,54 @@
 
   <script>
     const DEFAULT_EVENTS = [
-      { id: '1', date: '2026-10-31', time: '08:30 AM', currency: 'USD', title: 'Core CPI m/m (Inflation Rate)', impact: 'HIGH', risk: 'Extreme Spikes (Gold, NAS100)', forecast: '0.3%', previous: '0.2%' },
-      { id: '2', date: '2026-10-31', time: '02:00 PM', currency: 'USD', title: 'FOMC Statement & Rate Decision', impact: 'CRITICAL', risk: 'Maximum Liquidity Wipeout', forecast: '4.50%', previous: '4.75%' },
-      { id: '3', date: '2026-11-01', time: '08:30 AM', currency: 'USD', title: 'Non-Farm Employment Change (NFP)', impact: 'CRITICAL', risk: 'Massive Slippage & Reversals', forecast: '113K', previous: '254K' },
-      { id: '4', date: '2026-11-01', time: '10:00 AM', currency: 'USD', title: 'ISM Manufacturing PMI', impact: 'HIGH', risk: 'US Tech Rally/Drop', forecast: '47.6', previous: '47.2' }
+      // MON NOV 2
+      { id: 'n2-1', date: '2026-11-02', time: '02:00 AM', currency: 'AUD', title: 'MI Inflation Gauge m/m', impact: 'LOW', risk: 'Low Volatility', forecast: '--', previous: '0.1%' },
+      { id: 'n2-2', date: '2026-11-02', time: '02:30 AM', currency: 'AUD', title: 'Building Approvals m/m', impact: 'MEDIUM', risk: 'AUD Crosses Volatility', forecast: '2.1%', previous: '-4.4%' },
+      { id: 'n2-3', date: '2026-11-02', time: '02:30 AM', currency: 'JPY', title: 'Final Manufacturing PMI', impact: 'LOW', risk: 'Low Volatility', forecast: '49.0', previous: '49.0' },
+      { id: 'n2-4', date: '2026-11-02', time: '03:45 AM', currency: 'CNY', title: 'RatingDog Manufacturing PMI', impact: 'MEDIUM', risk: 'China / AUD Volatility', forecast: '50.5', previous: '50.3' },
+      { id: 'n2-5', date: '2026-11-02', time: '09:00 AM', currency: 'EUR', title: 'German Retail Sales m/m', impact: 'MEDIUM', risk: 'EUR/USD Momentum', forecast: '-0.3%', previous: '1.6%' },
+      { id: 'n2-6', date: '2026-11-02', time: '09:30 AM', currency: 'CHF', title: 'Retail Sales y/y', impact: 'LOW', risk: 'CHF Pairs Impact', forecast: '2.2%', previous: '3.2%' },
+      { id: 'n2-7', date: '2026-11-02', time: '10:55 AM', currency: 'EUR', title: 'German Final Manufacturing PMI', impact: 'MEDIUM', risk: 'DAX & EUR Volatility', forecast: '42.6', previous: '42.6' },
+      { id: 'n2-8', date: '2026-11-02', time: '11:30 AM', currency: 'GBP', title: 'Final Manufacturing PMI', impact: 'MEDIUM', risk: 'GBP/USD Movement', forecast: '50.3', previous: '50.3' },
+      { id: 'n2-9', date: '2026-11-02', time: '05:00 PM', currency: 'USD', title: 'ISM Manufacturing PMI', impact: 'HIGH', risk: 'High Volatility (US Tech & Gold)', forecast: '47.6', previous: '47.2' },
+      { id: 'n2-10', date: '2026-11-02', time: '05:00 PM', currency: 'USD', title: 'ISM Manufacturing Prices', impact: 'HIGH', risk: 'US Inflation Sentiment', forecast: '48.9', previous: '48.3' },
+
+      // TUE NOV 3
+      { id: 'n3-1', date: '2026-11-03', time: 'All Day', currency: 'JPY', title: 'Bank Holiday (Culture Day)', impact: 'LOW', risk: 'Thin JPY Liquidity', forecast: '--', previous: '--' },
+      { id: 'n3-2', date: '2026-11-03', time: '05:30 AM', currency: 'AUD', title: 'RBA Cash Rate Decision', impact: 'CRITICAL', risk: 'Extreme Spike (AUD/USD & AUD Crosses)', forecast: '4.35%', previous: '4.35%' },
+      { id: 'n3-3', date: '2026-11-03', time: '05:30 AM', currency: 'AUD', title: 'RBA Rate Statement & Monetary Policy', impact: 'CRITICAL', risk: 'Policy Shift Catalyst', forecast: '--', previous: '--' },
+      { id: 'n3-4', date: '2026-11-03', time: '06:30 AM', currency: 'AUD', title: 'RBA Press Conference', impact: 'HIGH', risk: 'High Volatility', forecast: '--', previous: '--' },
+      { id: 'n3-5', date: '2026-11-03', time: '09:30 AM', currency: 'CHF', title: 'CPI Inflation m/m', impact: 'HIGH', risk: 'CHF Volatility Spike', forecast: '0.1%', previous: '-0.3%' },
+      { id: 'n3-6', date: '2026-11-03', time: '05:00 PM', currency: 'USD', title: 'JOLTS Job Openings', impact: 'HIGH', risk: 'US Dollar & Equity Volatility', forecast: '7.98M', previous: '8.04M' },
+      { id: 'n3-7', date: '2026-11-03', time: 'All Day', currency: 'USD', title: 'US Congressional Elections', impact: 'CRITICAL', risk: 'Market-Wide Political Volatility', forecast: '--', previous: '--' },
+      { id: 'n3-8', date: '2026-11-03', time: '06:00 PM', currency: 'CAD', title: 'BOC Gov Macklem Speaks', impact: 'HIGH', risk: 'CAD Volatility', forecast: '--', previous: '--' },
+      { id: 'n3-9', date: '2026-11-03', time: '11:45 PM', currency: 'NZD', title: 'Employment Change q/q', impact: 'CRITICAL', risk: 'NZD Liquidity Spike', forecast: '-0.4%', previous: '0.4%' },
+      { id: 'n3-10', date: '2026-11-03', time: '11:45 PM', currency: 'NZD', title: 'Unemployment Rate', impact: 'CRITICAL', risk: 'NZD Massive Volatility', forecast: '5.0%', previous: '4.6%' },
+
+      // WED NOV 4
+      { id: 'n4-1', date: '2026-11-04', time: '11:00 AM', currency: 'EUR', title: 'Final Services PMI', impact: 'MEDIUM', risk: 'EUR/USD Movement', forecast: '51.2', previous: '51.2' },
+      { id: 'n4-2', date: '2026-11-04', time: '11:30 AM', currency: 'GBP', title: 'Final Services PMI', impact: 'MEDIUM', risk: 'GBP Movement', forecast: '51.8', previous: '51.8' },
+      { id: 'n4-3', date: '2026-11-04', time: '12:00 PM', currency: 'EUR', title: 'Core CPI Flash Estimate y/y', impact: 'HIGH', risk: 'Eurozone Inflation Volatility', forecast: '2.7%', previous: '2.7%' },
+      { id: 'n4-4', date: '2026-11-04', time: '03:15 PM', currency: 'USD', title: 'ADP Non-Farm Employment Change', impact: 'HIGH', risk: 'Pre-NFP Volatility Catalyst', forecast: '143K', previous: '143K' },
+      { id: 'n4-5', date: '2026-11-04', time: '05:00 PM', currency: 'USD', title: 'ISM Services PMI', impact: 'CRITICAL', risk: 'Massive Volatility (NAS100, S&P, Gold)', forecast: '53.8', previous: '54.9' },
+      { id: 'n4-6', date: '2026-11-04', time: '05:30 PM', currency: 'USD', title: 'Crude Oil Inventories', impact: 'MEDIUM', risk: 'WTI Oil Price Spike', forecast: '--', previous: '2.1M' },
+
+      // THU NOV 5
+      { id: 'n5-1', date: '2026-11-05', time: '11:30 AM', currency: 'GBP', title: 'Construction PMI', impact: 'MEDIUM', risk: 'GBP Volatility', forecast: '53.1', previous: '57.2' },
+      { id: 'n5-2', date: '2026-11-05', time: '12:00 PM', currency: 'EUR', title: 'PPI Producer Prices m/m', impact: 'MEDIUM', risk: 'EUR Volatility', forecast: '-0.1%', previous: '0.6%' },
+      { id: 'n5-3', date: '2026-11-05', time: '02:00 PM', currency: 'GBP', title: 'BOE Official Bank Rate Decision', impact: 'CRITICAL', risk: 'Maximum Spike (GBP Pairs)', forecast: '4.75%', previous: '5.00%' },
+      { id: 'n5-4', date: '2026-11-05', time: '02:00 PM', currency: 'GBP', title: 'BOE Monetary Policy Summary & Votes', impact: 'CRITICAL', risk: 'Policy Shift Catalyst', forecast: '--', previous: '--' },
+      { id: 'n5-5', date: '2026-11-05', time: '02:30 PM', currency: 'GBP', title: 'BOE Gov Bailey Speaks', impact: 'CRITICAL', risk: 'Extreme GBP Volatility', forecast: '--', previous: '--' },
+      { id: 'n5-6', date: '2026-11-05', time: '03:30 PM', currency: 'USD', title: 'Unemployment Claims', impact: 'HIGH', risk: 'US Market Volatility', forecast: '221K', previous: '216K' },
+      { id: 'n5-7', date: '2026-11-05', time: '08:00 PM', currency: 'EUR', title: 'ECB President Lagarde Speaks', impact: 'HIGH', risk: 'EUR/USD Volatility', forecast: '--', previous: '--' },
+
+      // FRI NOV 6
+      { id: 'n6-1', date: '2026-11-06', time: '03:30 PM', currency: 'USD', title: 'Non-Farm Employment Change (NFP)', impact: 'CRITICAL', risk: 'MAXIMUM VOLATILITY (Gold, NAS100, FX)', forecast: '113K', previous: '254K' },
+      { id: 'n6-2', date: '2026-11-06', time: '03:30 PM', currency: 'USD', title: 'Unemployment Rate', impact: 'CRITICAL', risk: 'US Economic Health Spike', forecast: '4.1%', previous: '4.1%' },
+      { id: 'n6-3', date: '2026-11-06', time: '03:30 PM', currency: 'USD', title: 'Average Hourly Earnings m/m', impact: 'HIGH', risk: 'Wage Inflation Volatility', forecast: '0.3%', previous: '0.4%' },
+      { id: 'n6-4', date: '2026-11-06', time: '03:30 PM', currency: 'CAD', title: 'Employment Change & Unemployment Rate', impact: 'CRITICAL', risk: 'USD/CAD Massive Spike', forecast: '14.3K / 6.6%', previous: '46.7K / 6.5%' },
+      { id: 'n6-5', date: '2026-11-06', time: '05:00 PM', currency: 'USD', title: 'Prelim UoM Consumer Sentiment', impact: 'HIGH', risk: 'US Market Close Sentiment', forecast: '70.8', previous: '70.5' },
+      { id: 'n6-6', date: '2026-11-06', time: '06:00 PM', currency: 'JPY', title: 'BOJ Gov Ueda Speaks', impact: 'HIGH', risk: 'USD/JPY Spikes', forecast: '--', previous: '--' }
     ];
 
     let isOwner = false;
@@ -509,8 +561,10 @@
         
         const isCritical = evt.impact === 'CRITICAL';
         const impactBadge = isCritical 
-          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' 
-          : 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
+          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold' 
+          : evt.impact === 'HIGH'
+          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold'
+          : 'bg-slate-800 text-slate-400';
 
         row.innerHTML = `
           <td class="py-4 px-4 text-slate-200 font-bold">${evt.date} &bull; ${evt.time}</td>
@@ -519,7 +573,7 @@
           </td>
           <td class="py-4 px-4 font-bold text-slate-100">${evt.title}</td>
           <td class="py-4 px-4">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase ${impactBadge}">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase ${impactBadge}">
               ${evt.risk}
             </span>
           </td>
@@ -547,9 +601,9 @@
 
       if (selectedDate) {
         events = events.filter(e => e.date === selectedDate);
-        if (statusText) statusText.textContent = `Strictly showing high-impact releases for date: ${selectedDate}`;
+        if (statusText) statusText.textContent = `Strictly showing releases for date: ${selectedDate}`;
       } else {
-        if (statusText) statusText.textContent = 'Showing all major releases across upcoming dates.';
+        if (statusText) statusText.textContent = 'Showing all releases for week Nov 2 - Nov 6.';
       }
 
       if (selectedCurrency !== 'ALL') {
@@ -557,6 +611,24 @@
       }
 
       renderEvents(events);
+    }
+
+    function setDateExplicit(dateStr, btnKey) {
+      const datePicker = document.getElementById('event-date-picker');
+      if (datePicker) datePicker.value = dateStr;
+      
+      ['nov2', 'nov3', 'nov4', 'nov5', 'nov6', 'all'].forEach(k => {
+        const btn = document.getElementById(`btn-${k}`);
+        if (btn) {
+          if (k === btnKey) {
+            btn.className = 'px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition';
+          }
+        }
+      });
+
+      applyFilters();
     }
 
     function openAddEventModal() {
@@ -598,7 +670,7 @@
     }
 
     function resetToDefaultNews() {
-      if (confirm('Reset economic calendar back to default schedule?')) {
+      if (confirm('Reset economic calendar back to Week Nov 2-6 schedule?')) {
         saveEventsToStorage(DEFAULT_EVENTS);
         applyFilters();
       }
@@ -607,41 +679,7 @@
     function clearDateFilter() {
       const datePicker = document.getElementById('event-date-picker');
       if (datePicker) datePicker.value = '';
-      updateActiveButtons('all');
-      applyFilters();
-    }
-
-    function setDatePreset(preset) {
-      const datePicker = document.getElementById('event-date-picker');
-      const today = new Date();
-      updateActiveButtons(preset);
-
-      if (preset === 'today') {
-        const str = today.toISOString().split('T')[0];
-        if (datePicker) datePicker.value = str;
-      } else if (preset === 'tomorrow') {
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const str = tomorrow.toISOString().split('T')[0];
-        if (datePicker) datePicker.value = str;
-      } else if (preset === 'all') {
-        if (datePicker) datePicker.value = '';
-      }
-
-      applyFilters();
-    }
-
-    function updateActiveButtons(activePreset) {
-      ['today', 'tomorrow', 'all'].forEach(p => {
-        const btn = document.getElementById(`btn-${p}`);
-        if (btn) {
-          if (p === activePreset) {
-            btn.className = 'px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
-          } else {
-            btn.className = 'px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition';
-          }
-        }
-      });
+      setDateExplicit('', 'all');
     }
 
     // Journal Code Core
@@ -832,7 +870,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       renderDashboard();
-      setDatePreset('all');
+      setDateExplicit('', 'all');
     });
   </script>
 </body>
