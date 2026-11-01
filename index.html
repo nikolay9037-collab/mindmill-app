@@ -210,7 +210,7 @@
                 <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#10B981] animate-pulse"></span>
                 <h2 class="text-xs sm:text-base font-bold text-amber-100 tracking-wide font-mono uppercase">EQUITY PRICE ACTION CANDLESTICK CHART</h2>
               </div>
-              <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Green candles = Win (Price moves UP). Red candles = Loss (Price moves DOWN). Connecting real price action.</p>
+              <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Green candles = Win (Price moves UP). Red candles = Loss (Price moves DOWN). Hover or tap any candle to inspect details.</p>
             </div>
             <div class="text-[9px] sm:text-xs font-mono text-slate-400 bg-[#050608] px-2.5 py-1 rounded-xl border border-slate-800">
               Tap candle to inspect trade details
@@ -218,8 +218,8 @@
           </div>
 
           <!-- Chart Area -->
-          <div class="bg-[#040507] chart-grid rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-amber-500/10 overflow-x-auto relative shadow-inner min-h-[320px] flex items-center">
-            <div id="chart-container" class="min-w-[600px] w-full flex items-center h-64 relative px-4 space-x-4">
+          <div class="bg-[#040507] chart-grid rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-amber-500/10 overflow-x-auto relative shadow-inner min-h-[300px] flex items-center">
+            <div id="chart-container" class="min-w-[600px] w-full flex items-center h-60 relative px-4 space-x-6">
               <!-- Rendered dynamically -->
             </div>
           </div>
@@ -806,20 +806,18 @@
       document.getElementById('stat-pf').textContent = profitFactor;
       document.getElementById('log-count-badge').textContent = trades.length + ' Logs';
 
-      // REAL PRICE ACTION CANDLESTICK CHART ENGINE
+      // REAL PRICE ACTION CANDLESTICK CHART ENGINE (NO VOLUME)
       const chart = document.getElementById('chart-container');
       chart.innerHTML = '';
 
       if (trades.length === 0) {
         chart.innerHTML = '<div class="w-full text-center text-xs text-slate-500 py-20 font-mono">No trade logs found in ' + store.currentProfile + '. Click "+ Log Trade" above to draw your first candle.</div>';
       } else {
-        // Calculate cumulative price points for open/close continuity
         let runningPnl = 0;
         const candlePoints = [];
         let minVal = 0;
         let maxVal = 0;
 
-        // Chronological order (Oldest -> Newest)
         const sortedTrades = trades.slice().reverse();
 
         sortedTrades.forEach(t => {
@@ -836,14 +834,12 @@
           runningPnl = close;
         });
 
-        const chartHeightPx = 200;
+        const chartHeightPx = 180;
         const range = (maxVal - minVal) || 1000;
 
         function valToY(val) {
           return chartHeightPx - (((val - minVal) / range) * chartHeightPx);
         }
-
-        const maxVol = Math.max(...candlePoints.map(c => c.absPnl), 100);
 
         candlePoints.forEach(c => {
           const openY = valToY(c.open);
@@ -852,39 +848,36 @@
           const lowY = valToY(c.low);
 
           const bodyTop = Math.min(openY, closeY);
-          const bodyHeight = Math.max(Math.abs(openY - closeY), 8); // Minimum body height
+          const bodyHeight = Math.max(Math.abs(openY - closeY), 8);
           const wickTop = highY;
           const wickHeight = Math.max(lowY - highY, bodyHeight);
 
-          const volumePx = Math.min(Math.max((c.absPnl / maxVol) * 35, 6), 40);
           const isSelected = store.selectedTradeId === c.trade.id;
 
           const col = document.createElement('div');
-          col.className = 'group relative flex flex-col items-center cursor-pointer flex-1 min-w-[36px] max-w-[48px] h-full justify-end transition-all duration-200';
+          col.className = 'group relative flex flex-col items-center cursor-pointer flex-1 min-w-[40px] max-w-[56px] h-full justify-center transition-all duration-200';
           col.onclick = () => selectTrade(c.trade.id);
 
+          const formattedPnl = (c.trade.pnl >= 0 ? '+$' : '-$') + Math.abs(c.trade.pnl).toLocaleString();
+
           col.innerHTML = `
-            <!-- Floating Trade Details Tooltip -->
-            <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none bg-[#0D0E14] text-slate-100 text-[10px] font-mono px-2.5 py-1 rounded-xl shadow-2xl border border-amber-500/30 whitespace-nowrap z-30">
-              ${c.trade.symbol}: <span class="${c.isWin ? 'text-emerald-400' : 'text-rose-400'} font-bold">${c.trade.pnl >= 0 ? '+' : ''}$${c.trade.pnl}</span>
+            <!-- Floating Hover / Tap Tooltip: e.g. NAS100: +$1,500 -->
+            <div class="absolute -top-11 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none bg-[#0D0E14] text-slate-100 text-[11px] font-mono font-bold px-3 py-1.5 rounded-xl shadow-2xl border border-amber-500/40 whitespace-nowrap z-30 flex items-center space-x-1.5">
+              <span>${c.trade.symbol}:</span>
+              <span class="${c.isWin ? 'text-emerald-400' : 'text-rose-400'}">${formattedPnl}</span>
             </div>
 
             <!-- Candlestick Container -->
-            <div class="relative w-full flex items-center justify-center flex-1">
+            <div class="relative w-full flex items-center justify-center h-44">
               <!-- Wick -->
               <div class="absolute w-[2px] ${c.isWin ? 'bg-emerald-400' : 'bg-rose-500'}" style="top: ${wickTop}px; height: ${wickHeight}px;"></div>
               
               <!-- Candle Body -->
-              <div class="absolute w-full rounded-[2px] ${c.isWin ? 'bg-emerald-500 border border-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.4)]' : 'bg-rose-500 border border-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]'} ${isSelected ? 'ring-2 ring-amber-300 ring-offset-2 ring-offset-[#040507] z-20' : 'z-10'}" style="top: ${bodyTop}px; height: ${bodyHeight}px;"></div>
-            </div>
-
-            <!-- Volume Histogram -->
-            <div class="w-full flex flex-col items-center justify-end border-t border-slate-800/80 pt-1.5 mt-2">
-              <div class="w-3/5 rounded-t-sm ${c.isWin ? 'bg-emerald-500/40' : 'bg-rose-500/40'} group-hover:brightness-125 transition" style="height: ${volumePx}px;" title="Volume Scale: $${c.absPnl}"></div>
+              <div class="absolute w-3/4 rounded-[3px] ${c.isWin ? 'bg-emerald-500 border border-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.4)]' : 'bg-rose-500 border border-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]'} ${isSelected ? 'ring-2 ring-amber-300 ring-offset-2 ring-offset-[#040507] z-20' : 'z-10'}" style="top: ${bodyTop}px; height: ${bodyHeight}px;"></div>
             </div>
 
             <!-- Ticker Label -->
-            <span class="text-[9px] text-slate-400 font-mono mt-1 truncate w-full text-center font-bold">${c.trade.symbol}</span>
+            <span class="text-[10px] text-slate-400 font-mono mt-2 truncate w-full text-center font-bold">${c.trade.symbol}</span>
           `;
           chart.appendChild(col);
         });
