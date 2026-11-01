@@ -72,20 +72,21 @@
         </button>
       </div>
 
-      <!-- Right Controls: Owner Portal & Actions -->
+      <!-- Right Controls: Profile Selector & Owner Portal -->
       <div class="flex items-center space-x-3">
+        <!-- Multi-Profile Selector Dropdown -->
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow">
+          <span class="text-xs text-slate-400 font-mono">Profile:</span>
+          <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+
         <!-- Owner Portal Lock Toggle -->
         <button id="owner-toggle-btn" onclick="promptOwnerAuth()" class="px-3.5 py-2 bg-[#040507] border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 hover:bg-amber-500/10 transition flex items-center space-x-1.5">
           <span id="owner-lock-icon">🔒</span>
           <span id="owner-btn-label">Owner Portal</span>
         </button>
-
-        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/20 rounded-xl px-3 py-1.5 shadow">
-          <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">Profile:</span>
-          <select id="account-selector" onchange="changeAccount(this.value)" class="bg-transparent text-xs text-amber-300 font-mono font-bold focus:outline-none cursor-pointer">
-            <option value="acc-1">Main Account</option>
-          </select>
-        </div>
 
         <button onclick="openTradeModal()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-600 hover:from-emerald-300 hover:to-teal-500 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wide shadow-lg shadow-emerald-500/20 transition active:scale-95 flex items-center space-x-1.5">
           <span class="text-base font-black line-none">+</span>
@@ -484,19 +485,84 @@
 
     const store = {
       activeTab: 'dashboard',
-      activeAccount: 'acc-1',
-      accounts: JSON.parse(localStorage.getItem('mm_accounts') || '[{"id":"acc-1","name":"Main Account"}]'),
       selectedTradeId: null,
-      editingTradeId: null
+      editingTradeId: null,
+      currentProfile: 'Main Account'
     };
 
+    // --- Clean Profile Engine (Main Account Default) ---
+    function getProfilesList() {
+      const data = localStorage.getItem('mm_profiles_v3');
+      if (!data) {
+        const singleDefault = ['Main Account'];
+        localStorage.setItem('mm_profiles_v3', JSON.stringify(singleDefault));
+        return singleDefault;
+      }
+      return JSON.parse(data);
+    }
+
+    function saveProfilesList(list) {
+      localStorage.setItem('mm_profiles_v3', JSON.stringify(list));
+    }
+
+    function loadProfileDropdown() {
+      const dropdown = document.getElementById('profile-select-dropdown');
+      if (!dropdown) return;
+      dropdown.innerHTML = '';
+
+      const profiles = getProfilesList();
+      const activeProf = localStorage.getItem('mm_active_profile_v3') || profiles[0] || 'Main Account';
+      store.currentProfile = activeProf;
+
+      profiles.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = (p === activeProf ? '✓ ' : '') + p;
+        if (p === activeProf) opt.selected = true;
+        dropdown.appendChild(opt);
+      });
+
+      // Add New Profile Trigger
+      const addOpt = document.createElement('option');
+      addOpt.value = '__ADD_NEW__';
+      addOpt.textContent = '➕ Add New Profile...';
+      dropdown.appendChild(addOpt);
+    }
+
+    function handleProfileChange(e) {
+      const val = e.target.value;
+      if (val === '__ADD_NEW__') {
+        const name = prompt("Enter a name for your new trading profile (e.g. 50k Prop Firm):");
+        if (name && name.trim() !== '') {
+          const cleanName = name.trim();
+          const profiles = getProfilesList();
+          if (!profiles.includes(cleanName)) {
+            profiles.push(cleanName);
+            saveProfilesList(profiles);
+          }
+          localStorage.setItem('mm_active_profile_v3', cleanName);
+          store.currentProfile = cleanName;
+        }
+        loadProfileDropdown();
+      } else {
+        localStorage.setItem('mm_active_profile_v3', val);
+        store.currentProfile = val;
+        loadProfileDropdown();
+      }
+      renderDashboard();
+    }
+
     function loadStoredEvents() {
-      const data = localStorage.getItem('mm_owner_news');
-      return data ? JSON.parse(data) : DEFAULT_EVENTS;
+      const data = localStorage.getItem('mm_owner_news_v2');
+      if (!data) {
+        localStorage.setItem('mm_owner_news_v2', JSON.stringify(DEFAULT_EVENTS));
+        return DEFAULT_EVENTS;
+      }
+      return JSON.parse(data);
     }
 
     function saveEventsToStorage(events) {
-      localStorage.setItem('mm_owner_news', JSON.stringify(events));
+      localStorage.setItem('mm_owner_news_v2', JSON.stringify(events));
     }
 
     function promptOwnerAuth() {
@@ -682,8 +748,8 @@
       setDateExplicit('', 'all');
     }
 
-    // Journal Code Core
-    function getTradesKey() { return 'mm_trades_' + store.activeAccount; }
+    // Journal Code Core with Multi-Profile Support
+    function getTradesKey() { return 'mm_trades_prof_' + store.currentProfile; }
     function getTrades() {
       let data = localStorage.getItem(getTradesKey());
       if (!data) {
@@ -725,7 +791,7 @@
       const chart = document.getElementById('chart-container');
       chart.innerHTML = '';
       if (trades.length === 0) {
-        chart.innerHTML = '<div class="w-full text-center text-xs text-slate-500 py-16 font-mono">No trade logs found. Click "+ Log Trade" above to draw your first candle.</div>';
+        chart.innerHTML = '<div class="w-full text-center text-xs text-slate-500 py-16 font-mono">No trade logs found in ' + store.currentProfile + '. Click "+ Log Trade" above to draw your first candle.</div>';
       } else {
         trades.slice().reverse().forEach(t => {
           const isWin = t.type === 'WIN';
@@ -869,6 +935,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      loadProfileDropdown();
       renderDashboard();
       setDateExplicit('', 'all');
     });
