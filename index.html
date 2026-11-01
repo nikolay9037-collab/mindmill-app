@@ -3,54 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MINDMILL Trading Journal & Economic Calendar</title>
+  <title>MINDMILL Trading Journal & Volatility Terminal</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #060709;
+      color: #f8fafc;
     }
-    .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-serif-luxury { font-family: 'Cinzel', serif; }
+
     /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #060709; }
+    ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+    input[type="date"], input[type="time"] {
+      color-scheme: dark !important;
+      background-color: #040507 !important;
+      color: #f59e0b !important;
     }
-    ::-webkit-scrollbar-track {
-      background: #050608;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #d97706;
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.8) sepia(100%) saturate(500%) hue-rotate(350deg);
+      cursor: pointer;
     }
   </style>
 </head>
-<body class="bg-[#08090C] text-slate-100 min-h-screen selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
+<body class="min-h-screen bg-[#060709] text-slate-100 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
 
   <!-- Ambient Luxury Background Lights -->
   <div class="fixed top-0 left-1/4 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none"></div>
-  <div class="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none"></div>
+  <div class="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-rose-500/5 rounded-full blur-[160px] pointer-events-none"></div>
 
   <!-- Main Application Wrapper -->
   <div id="app" class="min-h-screen flex flex-col relative z-10">
     
-    <!-- Top Header -->
-    <header class="border-b border-amber-500/10 bg-[#0C0E14]/90 backdrop-blur-md px-6 lg:px-12 py-4 flex flex-wrap items-center justify-between sticky top-0 z-30 gap-4 shadow-2xl">
+    <!-- Top Header Navigation -->
+    <header class="border-b border-amber-500/15 bg-[#0C0E14]/90 backdrop-blur-md px-6 lg:px-12 py-4 flex flex-wrap items-center justify-between sticky top-0 z-30 gap-4 shadow-2xl">
       <div class="flex items-center space-x-3.5">
-        <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-amber-500/20 border border-amber-300/30">
+        <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 flex items-center justify-center font-black font-serif-luxury text-slate-950 text-xl shadow-lg shadow-amber-500/20 border border-amber-300/30">
           MM
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <h1 class="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 uppercase font-mono">
+            <h1 class="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 uppercase font-serif-luxury">
               MINDMILL
             </h1>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 tracking-wider uppercase font-mono">
@@ -62,7 +62,7 @@
       </div>
 
       <!-- Center Navigation Tabs -->
-      <div class="flex items-center bg-[#050608] p-1.5 rounded-2xl border border-amber-500/15 shadow-inner">
+      <div class="flex items-center bg-[#040507] p-1.5 rounded-2xl border border-amber-500/15 shadow-inner">
         <button id="nav-dashboard" onclick="switchTab('dashboard')" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20">
           Candlestick Chart & Journal
         </button>
@@ -72,22 +72,20 @@
         </button>
       </div>
 
-      <!-- Right Controls: Profile Switcher & Actions -->
+      <!-- Right Controls: Owner Portal & Actions -->
       <div class="flex items-center space-x-3">
-        <div class="flex items-center space-x-2 bg-[#050608] border border-amber-500/20 rounded-xl px-3 py-1.5 shadow">
+        <!-- Owner Portal Lock Toggle -->
+        <button id="owner-toggle-btn" onclick="promptOwnerAuth()" class="px-3.5 py-2 bg-[#040507] border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 hover:bg-amber-500/10 transition flex items-center space-x-1.5">
+          <span id="owner-lock-icon">🔒</span>
+          <span id="owner-btn-label">Owner Portal</span>
+        </button>
+
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/20 rounded-xl px-3 py-1.5 shadow">
           <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">Profile:</span>
           <select id="account-selector" onchange="changeAccount(this.value)" class="bg-transparent text-xs text-amber-300 font-mono font-bold focus:outline-none cursor-pointer">
             <option value="acc-1">Main Account</option>
           </select>
         </div>
-
-        <button onclick="createAccount()" class="px-3 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 rounded-xl text-xs border border-amber-500/20 transition flex items-center space-x-1" title="Add Trading Profile">
-          <span class="font-bold">+</span> <span class="hidden md:inline">Profile</span>
-        </button>
-
-        <button onclick="openAuthModal()" id="auth-btn" class="px-3 py-2 bg-[#12151D] hover:bg-[#1A1E29] text-amber-200 rounded-xl text-xs border border-amber-500/20 transition flex items-center space-x-1">
-          <span>Login / Sign Up</span>
-        </button>
 
         <button onclick="openTradeModal()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-600 hover:from-emerald-300 hover:to-teal-500 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wide shadow-lg shadow-emerald-500/20 transition active:scale-95 flex items-center space-x-1.5">
           <span class="text-base font-black line-none">+</span>
@@ -95,6 +93,28 @@
         </button>
       </div>
     </header>
+
+    <!-- Owner Management Bar (Hidden by Default) -->
+    <div id="owner-control-bar" class="hidden max-w-7xl mx-auto w-full px-6 pt-6">
+      <div class="bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/40 rounded-3xl p-5 shadow-2xl flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center space-x-3">
+          <span class="text-xl">🔑</span>
+          <div>
+            <h3 class="text-sm font-bold text-amber-200 font-mono">OWNER NEWS CONTROL CENTER</h3>
+            <p class="text-xs text-slate-300">Logged in as Owner. Manually manage and update weekly news catalysts.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="openAddEventModal()" class="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-bold rounded-2xl text-xs shadow-lg hover:brightness-110 transition flex items-center space-x-1">
+            <span>+ Add Single Event</span>
+          </button>
+          <button onclick="resetToDefaultNews()" class="px-4 py-2 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-mono hover:bg-rose-500/30 transition">
+            Reset All Data
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Main Workspace -->
     <main class="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full space-y-8">
@@ -104,7 +124,6 @@
         
         <!-- Key Performance Metric Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          
           <div class="bg-gradient-to-b from-[#12151E] to-[#0B0D13] border border-amber-500/15 rounded-3xl p-5 relative overflow-hidden group hover:border-amber-500/40 transition-all duration-300 shadow-2xl">
             <div class="flex justify-between items-start">
               <div>
@@ -113,12 +132,10 @@
                   +$0.00
                 </h3>
               </div>
-              <div class="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold font-mono text-sm">
-                $
-              </div>
+              <div class="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold font-mono text-sm">$</div>
             </div>
             <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">
-              <span className="text-amber-400 font-bold mr-1">Peak Win:</span> <span id="stat-peak">$0.00</span>
+              <span class="text-amber-400 font-bold mr-1">Peak Win:</span> <span id="stat-peak">$0.00</span>
             </div>
           </div>
 
@@ -130,9 +147,7 @@
                   0.0%
                 </h3>
               </div>
-              <div class="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold font-mono text-sm">
-                %
-              </div>
+              <div class="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold font-mono text-sm">%</div>
             </div>
             <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">
               <span id="stat-win-count" class="text-emerald-400 font-bold mr-1">0 Wins</span> / <span id="stat-total-count">0 Trades</span>
@@ -142,17 +157,15 @@
           <div class="bg-gradient-to-b from-[#12151E] to-[#0B0D13] border border-amber-500/15 rounded-3xl p-5 relative overflow-hidden group hover:border-amber-500/40 transition-all duration-300 shadow-2xl">
             <div class="flex justify-between items-start">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 font-mono">Profit Factor</p>
-                <h3 id="stat-pf" class="text-2xl lg:text-3xl font-black font-mono mt-2 text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
-                  1.00
+                <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 font-mono">Avg Risk : Reward</p>
+                <h3 id="stat-rr" class="text-2xl lg:text-3xl font-black font-mono mt-2 text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                  1 : 0.00
                 </h3>
               </div>
-              <div class="p-2.5 rounded-2xl bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold font-mono text-sm">
-                PF
-              </div>
+              <div class="p-2.5 rounded-2xl bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold font-mono text-sm">R:R</div>
             </div>
             <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">
-              Risk-to-Reward Ratio
+              <span class="text-slate-400">Profit Factor: <strong id="stat-pf" class="text-amber-300 font-mono">1.00</strong></span>
             </div>
           </div>
 
@@ -161,21 +174,16 @@
               <div>
                 <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 font-mono">Market Events</p>
                 <h3 id="stat-news-count" class="text-2xl lg:text-3xl font-black font-mono mt-2 text-rose-400">
-                  4 Today
+                  4 Active
                 </h3>
               </div>
-              <div class="p-2.5 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold font-mono text-sm">
-                LIVE
-              </div>
+              <div class="p-2.5 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold font-mono text-sm">LIVE</div>
             </div>
-            <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">
-              Economic Calendar Active
-            </div>
+            <div class="mt-3 flex items-center text-[11px] text-slate-400 font-mono">Economic Calendar Active</div>
           </div>
-
         </div>
 
-        <!-- Session Candlestick Visualizer Panel -->
+        <!-- Candlestick Visualizer Panel -->
         <div class="bg-gradient-to-b from-[#0F1118] to-[#08090D] border border-amber-500/20 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-amber-500/10 pb-4">
             <div>
@@ -190,7 +198,6 @@
             </div>
           </div>
 
-          <!-- Candlestick Graphic Container -->
           <div class="bg-[#050608] rounded-2xl p-6 border border-amber-500/10 overflow-x-auto relative shadow-inner">
             <div id="chart-container" class="min-w-[650px] flex items-end h-64 pt-8 pb-4 px-4 relative border-b border-slate-800/80 space-x-3">
               <!-- Candlesticks generated dynamically -->
@@ -200,8 +207,6 @@
 
         <!-- Trade Breakdown & History Feed Split -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          <!-- Selected Trade Details Panel -->
           <div class="lg:col-span-2 bg-gradient-to-b from-[#0F1118] to-[#08090D] border border-amber-500/15 rounded-3xl p-7 shadow-2xl">
             <h3 class="font-bold text-sm text-amber-200 tracking-wide mb-4 font-mono uppercase border-b border-amber-500/10 pb-3">
               SELECTED TRADE BREAKDOWN
@@ -211,50 +216,78 @@
             </div>
           </div>
 
-          <!-- Trade Log Sidebar -->
           <div class="bg-gradient-to-b from-[#0F1118] to-[#08090D] border border-amber-500/15 rounded-3xl p-5 h-[480px] flex flex-col shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-amber-500/10 pb-3">
               <h3 class="font-bold text-sm text-amber-200 tracking-wide font-mono uppercase">TRADE LOG HISTORY</h3>
               <span id="log-count-badge" class="text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/20">0 Logs</span>
             </div>
-            <div id="trade-list" class="flex-1 overflow-y-auto space-y-3 pr-1">
-              <!-- Trade items inserted dynamically -->
-            </div>
+            <div id="trade-list" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
           </div>
-
         </div>
 
       </div>
 
-      <!-- View 2: Economic Calendar View -->
-      <div id="view-news" class="hidden bg-gradient-to-b from-[#0F1118] to-[#08090D] border border-amber-500/20 rounded-3xl p-7 space-y-6 shadow-2xl">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-amber-500/10 pb-5">
+      <!-- View 2: Economic Volatility Terminal View -->
+      <div id="view-news" class="hidden bg-gradient-to-b from-[#0F1118] via-[#0A0C14] to-[#06070B] border border-amber-500/25 rounded-3xl p-6 shadow-2xl space-y-5">
+        
+        <!-- Controls Bar -->
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-amber-500/15 pb-5">
           <div>
-            <h2 class="text-lg font-bold text-amber-100 font-mono tracking-wide">GLOBAL MARKET INTELLIGENCE CALENDAR</h2>
-            <p class="text-xs text-slate-400 mt-1">High-impact economic catalysts synced live for Forex, Stock Indices, and Commodities.</p>
+            <h2 class="text-sm font-bold text-amber-100 font-mono tracking-wide flex items-center space-x-2">
+              <span class="text-rose-400 font-black">🔥 HIGH-IMPACT MARKET CALENDAR</span>
+            </h2>
+            <p id="filter-status-text" class="text-xs text-slate-400 mt-0.5">Filter releases by single date or target currency.</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-3">
-            <button onclick="fetchLiveEconomicNews()" class="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold rounded-2xl text-xs transition shadow-lg shadow-amber-500/20 flex items-center space-x-2">
-              <span>🔄 Sync Feed</span>
-            </button>
+            <!-- Currency Filter -->
+            <select id="currency-select" onchange="applyFilters()" class="bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 text-xs text-amber-400 font-mono font-bold focus:outline-none cursor-pointer">
+              <option value="ALL">All Currencies</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="CAD">CAD ($)</option>
+            </select>
+
+            <!-- Single-Day Date Picker -->
+            <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow-inner">
+              <span class="text-xs text-amber-400 font-mono font-bold">Isolate Day:</span>
+              <input 
+                type="date"
+                id="event-date-picker"
+                onchange="applyFilters()"
+                class="bg-[#040507] text-xs text-amber-400 font-mono font-bold focus:outline-none cursor-pointer border border-amber-500/20 px-2 py-1 rounded-xl"
+              />
+              <button onclick="clearDateFilter()" class="text-slate-500 hover:text-amber-400 text-xs font-bold pl-1 transition" title="Clear Date Filter">✕</button>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="flex items-center space-x-1 bg-[#040507] border border-amber-500/20 p-1 rounded-2xl">
+              <button id="btn-today" onclick="setDatePreset('today')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Today</button>
+              <button id="btn-tomorrow" onclick="setDatePreset('tomorrow')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Tomorrow</button>
+              <button id="btn-all" onclick="setDatePreset('all')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">All Upcoming</button>
+            </div>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
+        <!-- Events Table -->
+        <div class="overflow-x-auto rounded-2xl border border-amber-500/15 bg-[#040507] shadow-inner">
+          <table class="w-full text-left text-xs font-mono">
             <thead>
-              <tr class="border-b border-amber-500/10 text-amber-200/70 font-mono">
-                <th class="py-3.5 px-4">Date & Time</th>
-                <th class="py-3.5 px-4">Currency</th>
-                <th class="py-3.5 px-4">Impact</th>
-                <th class="py-3.5 px-4">Catalyst Title</th>
-                <th class="py-3.5 px-4">Forecast</th>
-                <th class="py-3.5 px-4">Previous</th>
+              <tr class="bg-[#0B0D15] text-amber-300/80 uppercase border-b border-amber-500/20">
+                <th class="py-4 px-4">Date & Time</th>
+                <th class="py-4 px-4">Currency</th>
+                <th class="py-4 px-4">Event Title</th>
+                <th class="py-4 px-4">Market Volatility Risk</th>
+                <th class="py-4 px-4 text-emerald-400">Forecast</th>
+                <th class="py-4 px-4 text-slate-400">Previous</th>
+                <th id="owner-col-header" class="hidden py-4 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="news-table-body" class="divide-y divide-slate-800/50 font-mono">
-              <!-- News events dynamically populated -->
+            <tbody id="events-list" class="divide-y divide-slate-800/60">
+              <!-- Rendered dynamically -->
             </tbody>
           </table>
         </div>
@@ -263,7 +296,7 @@
     </main>
   </div>
 
-  <!-- Modal 1: Trade Logging Modal -->
+  <!-- Modal 1: Trade Entry Modal -->
   <div id="trade-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-[#0F1118] border border-amber-500/30 rounded-3xl max-w-lg w-full p-7 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-amber-500/10 pb-3">
@@ -291,9 +324,15 @@
           <input id="form-title" type="text" required placeholder="Morning Breakout Continuation" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:outline-none focus:border-amber-500" />
         </div>
 
-        <div>
-          <label class="text-slate-400 block mb-1 font-mono">P&L Amount ($)</label>
-          <input id="form-pnl" type="number" step="any" required placeholder="1250" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 font-mono focus:outline-none focus:border-amber-500" />
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-slate-400 block mb-1 font-mono">Actual P&L ($)</label>
+            <input id="form-pnl" type="number" step="any" required placeholder="1250" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 font-mono focus:outline-none focus:border-amber-500" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1 font-mono">Planned Risk Amount ($)</label>
+            <input id="form-risk" type="number" step="any" placeholder="250" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 font-mono focus:outline-none focus:border-amber-500" />
+          </div>
         </div>
 
         <div>
@@ -309,71 +348,127 @@
     </div>
   </div>
 
-  <!-- Modal 2: Authentication Modal -->
-  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-[#0F1118] border border-amber-500/30 rounded-3xl max-w-md w-full p-7 shadow-2xl space-y-5">
+  <!-- Modal 2: Owner Add Event Modal -->
+  <div id="event-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0F1118] border border-amber-500/30 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-amber-500/10 pb-3">
-        <h3 id="auth-title" class="text-base font-bold text-amber-200 font-mono">Trader Access</h3>
-        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white p-1">✕</button>
+        <h3 class="text-base font-bold text-amber-200 font-mono">Add / Edit Economic Release</h3>
+        <button onclick="closeAddEventModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
 
-      <form onsubmit="handleAuth(event)" class="space-y-4 text-xs">
+      <form onsubmit="saveCustomEvent(event)" class="space-y-3 text-xs">
         <div>
-          <label class="text-slate-400 block mb-1 font-mono">Email Address</label>
-          <input id="auth-email" type="email" required placeholder="trader@mindmill.io" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:outline-none focus:border-amber-500 font-mono" />
+          <label class="text-slate-400 block mb-1">Event Title</label>
+          <input id="modal-title" type="text" required placeholder="e.g. Non-Farm Payrolls (NFP)" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
         </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 block mb-1">Currency</label>
+            <select id="modal-currency" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-amber-300 font-bold focus:border-amber-500 focus:outline-none font-mono">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="CAD">CAD ($)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Impact Level</label>
+            <select id="modal-impact" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono">
+              <option value="HIGH">HIGH IMPACT</option>
+              <option value="CRITICAL">CRITICAL IMPACT</option>
+              <option value="MEDIUM">MEDIUM IMPACT</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 block mb-1">Release Date</label>
+            <input id="modal-date" type="date" required class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-amber-400 focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Release Time</label>
+            <input id="modal-time" type="text" required placeholder="08:30 AM" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+        </div>
+
         <div>
-          <label class="text-slate-400 block mb-1 font-mono">Password</label>
-          <input id="auth-password" type="password" required placeholder="••••••••" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:outline-none focus:border-amber-500 font-mono" />
+          <label class="text-slate-400 block mb-1">Volatility Risk Description</label>
+          <input id="modal-risk" type="text" required placeholder="e.g. Extreme Spikes (Gold, NAS100)" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
         </div>
-        <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-600 font-black text-slate-950 rounded-2xl shadow-lg shadow-amber-500/20 uppercase tracking-wide">
-          Continue Session
-        </button>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 block mb-1">Forecast</label>
+            <input id="modal-forecast" type="text" placeholder="e.g. 0.3%" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-emerald-400 font-bold focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Previous</label>
+            <input id="modal-previous" type="text" placeholder="e.g. 0.2%" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-400 focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeAddEventModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-xs text-slate-950 shadow-lg shadow-amber-500/20">Save Release</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <!-- Core JavaScript State Engine -->
   <script>
-    // Master State Storage
+    const DEFAULT_EVENTS = [
+      { id: '1', date: '2026-10-31', time: '08:30 AM', currency: 'USD', title: 'Core CPI m/m (Inflation Rate)', impact: 'HIGH', risk: 'Extreme Spikes (Gold, NAS100)', forecast: '0.3%', previous: '0.2%' },
+      { id: '2', date: '2026-10-31', time: '02:00 PM', currency: 'USD', title: 'FOMC Statement & Rate Decision', impact: 'CRITICAL', risk: 'Maximum Liquidity Wipeout', forecast: '4.50%', previous: '4.75%' },
+      { id: '3', date: '2026-11-01', time: '08:30 AM', currency: 'USD', title: 'Non-Farm Employment Change (NFP)', impact: 'CRITICAL', risk: 'Massive Slippage & Reversals', forecast: '113K', previous: '254K' },
+      { id: '4', date: '2026-11-01', time: '10:00 AM', currency: 'USD', title: 'ISM Manufacturing PMI', impact: 'HIGH', risk: 'US Tech Rally/Drop', forecast: '47.6', previous: '47.2' }
+    ];
+
+    let isOwner = false;
+    const OWNER_PASSCODE = "1234";
+
     const store = {
       activeTab: 'dashboard',
       activeAccount: 'acc-1',
       accounts: JSON.parse(localStorage.getItem('mm_accounts') || '[{"id":"acc-1","name":"Main Account"}]'),
       selectedTradeId: null,
-      editingTradeId: null,
-      user: JSON.parse(localStorage.getItem('mm_user') || 'null'),
-      newsEvents: [
-        { date: '2026-10-31', time: '03:30', country: 'CNY', impact: 'Medium', title: 'Manufacturing PMI', forecast: '50.1', previous: '49.8' },
-        { date: '2026-10-31', time: '03:30', country: 'CNY', impact: 'Medium', title: 'Non-Manufacturing PMI', forecast: '50.4', previous: '50.0' },
-        { date: '2026-10-31', time: '08:30', country: 'USD', impact: 'High', title: 'Core CPI m/m (Inflation Rate)', forecast: '0.3%', previous: '0.2%' },
-        { date: '2026-10-31', time: '14:00', country: 'USD', impact: 'High', title: 'FOMC Federal Funds Rate Decision', forecast: '4.50%', previous: '4.75%' }
-      ]
+      editingTradeId: null
     };
 
-    function getTradesKey() {
-      return 'mm_trades_' + store.activeAccount;
+    function loadStoredEvents() {
+      const data = localStorage.getItem('mm_owner_news');
+      return data ? JSON.parse(data) : DEFAULT_EVENTS;
     }
 
-    function getTrades() {
-      let data = localStorage.getItem(getTradesKey());
-      if (!data) {
-        const defaultTrades = [
-          { id: '1', date: '2026-10-31', symbol: 'NAS100', type: 'WIN', title: 'Morning Tech Rally', pnl: 1250, content: 'Clean breakout above resistance with strong institutional volume.' },
-          { id: '2', date: '2026-10-30', symbol: 'SP500', type: 'LOSS', title: 'Faded Dip Reversal', pnl: -350, content: 'Entered short too early before trend confirmation.' }
-        ];
-        localStorage.setItem(getTradesKey(), JSON.stringify(defaultTrades));
-        return defaultTrades;
+    function saveEventsToStorage(events) {
+      localStorage.setItem('mm_owner_news', JSON.stringify(events));
+    }
+
+    function promptOwnerAuth() {
+      if (isOwner) {
+        isOwner = false;
+        document.getElementById('owner-control-bar').classList.add('hidden');
+        document.getElementById('owner-col-header').classList.add('hidden');
+        document.getElementById('owner-lock-icon').textContent = '🔒';
+        document.getElementById('owner-btn-label').textContent = 'Owner Portal';
+        applyFilters();
+        return;
       }
-      return JSON.parse(data);
-    }
 
-    function saveTrades(trades) {
-      localStorage.setItem(getTradesKey(), JSON.stringify(trades));
-    }
-
-    function saveAccounts() {
-      localStorage.setItem('mm_accounts', JSON.stringify(store.accounts));
+      const pass = prompt("Enter Owner Security Passcode:");
+      if (pass === OWNER_PASSCODE) {
+        isOwner = true;
+        document.getElementById('owner-control-bar').classList.remove('hidden');
+        document.getElementById('owner-col-header').classList.remove('hidden');
+        document.getElementById('owner-lock-icon').textContent = '🔓';
+        document.getElementById('owner-btn-label').textContent = 'Owner Mode (Active)';
+        applyFilters();
+      } else if (pass !== null) {
+        alert("Incorrect Security Passcode.");
+      }
     }
 
     function switchTab(tab) {
@@ -389,49 +484,194 @@
         ? 'px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20 flex items-center space-x-2'
         : 'px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-amber-200 flex items-center space-x-2';
 
-      if (tab === 'news') renderNews();
+      if (tab === 'news') applyFilters();
     }
 
-    function renderAccounts() {
-      const select = document.getElementById('account-selector');
-      select.innerHTML = '';
-      store.accounts.forEach(acc => {
-        const opt = document.createElement('option');
-        opt.value = acc.id;
-        opt.textContent = acc.name;
-        if (acc.id === store.activeAccount) opt.selected = true;
-        select.appendChild(opt);
+    function renderEvents(events) {
+      const listContainer = document.getElementById('events-list');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+
+      if (events.length === 0) {
+        listContainer.innerHTML = `
+          <tr>
+            <td colSpan="7" class="py-12 text-center text-slate-500">
+              No economic releases scheduled for the selected date filter.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      events.forEach(evt => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-amber-500/5 transition duration-150';
+        
+        const isCritical = evt.impact === 'CRITICAL';
+        const impactBadge = isCritical 
+          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' 
+          : 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
+
+        row.innerHTML = `
+          <td class="py-4 px-4 text-slate-200 font-bold">${evt.date} &bull; ${evt.time}</td>
+          <td class="py-4 px-4 font-black text-amber-300">
+            <span class="px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30">${evt.currency}</span>
+          </td>
+          <td class="py-4 px-4 font-bold text-slate-100">${evt.title}</td>
+          <td class="py-4 px-4">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase ${impactBadge}">
+              ${evt.risk}
+            </span>
+          </td>
+          <td class="py-4 px-4 font-black text-emerald-400">${evt.forecast || '--'}</td>
+          <td class="py-4 px-4 text-slate-400">${evt.previous || '--'}</td>
+          ${isOwner ? `
+            <td class="py-4 px-4 text-right">
+              <button onclick="deleteEvent('${evt.id}')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded-lg border border-rose-500/30 text-[10px]">Delete</button>
+            </td>
+          ` : '<td class="hidden"></td>'}
+        `;
+        listContainer.appendChild(row);
       });
     }
 
-    function changeAccount(accId) {
-      store.activeAccount = accId;
-      store.selectedTradeId = null;
-      renderDashboard();
+    function applyFilters() {
+      const datePicker = document.getElementById('event-date-picker');
+      const currencySelect = document.getElementById('currency-select');
+      const statusText = document.getElementById('filter-status-text');
+
+      const selectedDate = datePicker ? datePicker.value : '';
+      const selectedCurrency = currencySelect ? currencySelect.value : 'ALL';
+
+      let events = loadStoredEvents();
+
+      if (selectedDate) {
+        events = events.filter(e => e.date === selectedDate);
+        if (statusText) statusText.textContent = `Strictly showing high-impact releases for date: ${selectedDate}`;
+      } else {
+        if (statusText) statusText.textContent = 'Showing all major releases across upcoming dates.';
+      }
+
+      if (selectedCurrency !== 'ALL') {
+        events = events.filter(e => e.currency === selectedCurrency);
+      }
+
+      renderEvents(events);
     }
 
-    function createAccount() {
-      const name = prompt('Enter new profile name (e.g. Apex Prop Firm):');
-      if (name && name.trim()) {
-        const id = 'acc-' + Date.now();
-        store.accounts.push({ id, name: name.trim() });
-        saveAccounts();
-        renderAccounts();
-        changeAccount(id);
+    function openAddEventModal() {
+      document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('event-modal').classList.remove('hidden');
+    }
+
+    function closeAddEventModal() {
+      document.getElementById('event-modal').classList.add('hidden');
+    }
+
+    function saveCustomEvent(e) {
+      e.preventDefault();
+      const newEvt = {
+        id: Date.now().toString(),
+        title: document.getElementById('modal-title').value,
+        currency: document.getElementById('modal-currency').value,
+        impact: document.getElementById('modal-impact').value,
+        date: document.getElementById('modal-date').value,
+        time: document.getElementById('modal-time').value,
+        risk: document.getElementById('modal-risk').value,
+        forecast: document.getElementById('modal-forecast').value,
+        previous: document.getElementById('modal-previous').value
+      };
+
+      const events = loadStoredEvents();
+      events.unshift(newEvt);
+      saveEventsToStorage(events);
+      closeAddEventModal();
+      applyFilters();
+    }
+
+    function deleteEvent(id) {
+      if (confirm('Delete this economic release?')) {
+        let events = loadStoredEvents().filter(e => e.id !== id);
+        saveEventsToStorage(events);
+        applyFilters();
       }
     }
 
+    function resetToDefaultNews() {
+      if (confirm('Reset economic calendar back to default schedule?')) {
+        saveEventsToStorage(DEFAULT_EVENTS);
+        applyFilters();
+      }
+    }
+
+    function clearDateFilter() {
+      const datePicker = document.getElementById('event-date-picker');
+      if (datePicker) datePicker.value = '';
+      updateActiveButtons('all');
+      applyFilters();
+    }
+
+    function setDatePreset(preset) {
+      const datePicker = document.getElementById('event-date-picker');
+      const today = new Date();
+      updateActiveButtons(preset);
+
+      if (preset === 'today') {
+        const str = today.toISOString().split('T')[0];
+        if (datePicker) datePicker.value = str;
+      } else if (preset === 'tomorrow') {
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const str = tomorrow.toISOString().split('T')[0];
+        if (datePicker) datePicker.value = str;
+      } else if (preset === 'all') {
+        if (datePicker) datePicker.value = '';
+      }
+
+      applyFilters();
+    }
+
+    function updateActiveButtons(activePreset) {
+      ['today', 'tomorrow', 'all'].forEach(p => {
+        const btn = document.getElementById(`btn-${p}`);
+        if (btn) {
+          if (p === activePreset) {
+            btn.className = 'px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition';
+          }
+        }
+      });
+    }
+
+    // Journal Code Core
+    function getTradesKey() { return 'mm_trades_' + store.activeAccount; }
+    function getTrades() {
+      let data = localStorage.getItem(getTradesKey());
+      if (!data) {
+        const defaultTrades = [
+          { id: '1', date: '2026-10-31', symbol: 'NAS100', type: 'WIN', title: 'Morning Tech Rally', pnl: 1250, risk: 250, content: 'Clean breakout above resistance with strong institutional volume.' },
+          { id: '2', date: '2026-10-30', symbol: 'SP500', type: 'LOSS', title: 'Faded Dip Reversal', pnl: -350, risk: 350, content: 'Entered short too early before trend confirmation.' }
+        ];
+        localStorage.setItem(getTradesKey(), JSON.stringify(defaultTrades));
+        return defaultTrades;
+      }
+      return JSON.parse(data);
+    }
+    function saveTrades(trades) { localStorage.setItem(getTradesKey(), JSON.stringify(trades)); }
+
     function renderDashboard() {
       const trades = getTrades();
-      
       const totalPnl = trades.reduce((sum, t) => sum + (parseFloat(t.pnl) || 0), 0);
       const wins = trades.filter(t => t.type === 'WIN');
       const losses = trades.filter(t => t.type === 'LOSS');
       const winRate = trades.length > 0 ? ((wins.length / trades.length) * 100).toFixed(1) : '0.0';
-
       const grossWin = wins.reduce((sum, t) => sum + (parseFloat(t.pnl) || 0), 0);
       const grossLoss = Math.abs(losses.reduce((sum, t) => sum + (parseFloat(t.pnl) || 0), 0));
       const profitFactor = grossLoss === 0 ? (grossWin > 0 ? '99.0' : '1.00') : (grossWin / grossLoss).toFixed(2);
+      const avgWin = wins.length > 0 ? grossWin / wins.length : 0;
+      const avgLoss = losses.length > 0 ? grossLoss / losses.length : 0;
+      const avgRR = avgLoss > 0 ? (avgWin / avgLoss).toFixed(2) : (avgWin > 0 ? '5.00' : '0.00');
       const peakWin = Math.max(...trades.map(t => parseFloat(t.pnl) || 0), 0);
 
       document.getElementById('stat-pnl').textContent = (totalPnl >= 0 ? '+$' : '-$') + Math.abs(totalPnl).toLocaleString(undefined, {minimumFractionDigits: 2});
@@ -440,10 +680,10 @@
       document.getElementById('stat-winrate').textContent = winRate + '%';
       document.getElementById('stat-win-count').textContent = wins.length + ' Wins';
       document.getElementById('stat-total-count').textContent = trades.length + ' Trades';
+      document.getElementById('stat-rr').textContent = '1 : ' + avgRR;
       document.getElementById('stat-pf').textContent = profitFactor;
       document.getElementById('log-count-badge').textContent = trades.length + ' Logs';
 
-      // Render Candlestick Chart
       const chart = document.getElementById('chart-container');
       chart.innerHTML = '';
       if (trades.length === 0) {
@@ -471,7 +711,6 @@
         });
       }
 
-      // Render Trade Sidebar
       const list = document.getElementById('trade-list');
       list.innerHTML = '';
       trades.forEach(t => {
@@ -493,31 +732,31 @@
       renderTradeDetail();
     }
 
-    function selectTrade(id) {
-      store.selectedTradeId = id;
-      renderDashboard();
-    }
+    function selectTrade(id) { store.selectedTradeId = id; renderDashboard(); }
 
     function renderTradeDetail() {
       const trades = getTrades();
-      if (!store.selectedTradeId && trades.length > 0) {
-        store.selectedTradeId = trades[0].id;
-      }
+      if (!store.selectedTradeId && trades.length > 0) store.selectedTradeId = trades[0].id;
       const trade = trades.find(t => t.id === store.selectedTradeId) || trades[0];
       const detail = document.getElementById('trade-detail');
 
-      if (!trade) {
-        detail.innerHTML = '<p class="text-slate-500">No trade selected.</p>';
-        return;
-      }
+      if (!trade) { detail.innerHTML = '<p class="text-slate-500">No trade selected.</p>'; return; }
+
+      const riskAmt = parseFloat(trade.risk) || (trade.type === 'WIN' ? trade.pnl / 3 : Math.abs(trade.pnl));
+      const tradeRR = riskAmt > 0 ? (trade.pnl / riskAmt).toFixed(2) : '1.00';
 
       detail.innerHTML = `
         <div class="space-y-4">
           <div class="flex justify-between items-start border-b border-slate-800 pb-3">
             <div>
-              <span class="px-3 py-1 rounded-full text-[10px] font-bold font-mono ${trade.type === 'WIN' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'}">
-                ${trade.symbol} &bull; ${trade.type}
-              </span>
+              <div class="flex items-center space-x-2">
+                <span class="px-3 py-1 rounded-full text-[10px] font-bold font-mono ${trade.type === 'WIN' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'}">
+                  ${trade.symbol} &bull; ${trade.type}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                  R:R = 1 : ${tradeRR}
+                </span>
+              </div>
               <h2 class="text-lg font-bold text-slate-100 mt-2">${trade.title}</h2>
               <p class="text-[11px] text-slate-400 font-mono mt-0.5">${trade.date}</p>
             </div>
@@ -543,9 +782,7 @@
       document.getElementById('trade-modal').classList.remove('hidden');
     }
 
-    function closeTradeModal() {
-      document.getElementById('trade-modal').classList.add('hidden');
-    }
+    function closeTradeModal() { document.getElementById('trade-modal').classList.add('hidden'); }
 
     function editTrade(id) {
       const trade = getTrades().find(t => t.id === id);
@@ -556,6 +793,7 @@
       document.getElementById('form-type').value = trade.type;
       document.getElementById('form-title').value = trade.title;
       document.getElementById('form-pnl').value = trade.pnl;
+      document.getElementById('form-risk').value = trade.risk || '';
       document.getElementById('form-content').value = trade.content;
       document.getElementById('trade-modal').classList.remove('hidden');
     }
@@ -566,17 +804,14 @@
       const type = document.getElementById('form-type').value;
       const title = document.getElementById('form-title').value;
       const pnl = parseFloat(document.getElementById('form-pnl').value) || 0;
+      const risk = parseFloat(document.getElementById('form-risk').value) || (type === 'WIN' ? pnl / 3 : Math.abs(pnl));
       const content = document.getElementById('form-content').value;
 
       let trades = getTrades();
       if (store.editingTradeId) {
-        trades = trades.map(t => t.id === store.editingTradeId ? { ...t, symbol, type, title, pnl, content } : t);
+        trades = trades.map(t => t.id === store.editingTradeId ? { ...t, symbol, type, title, pnl, risk, content } : t);
       } else {
-        const newTrade = {
-          id: Date.now().toString(),
-          date: new Date().toISOString().slice(0, 10),
-          symbol, type, title, pnl, content
-        };
+        const newTrade = { id: Date.now().toString(), date: new Date().toISOString().slice(0, 10), symbol, type, title, pnl, risk, content };
         trades.unshift(newTrade);
         store.selectedTradeId = newTrade.id;
       }
@@ -595,81 +830,10 @@
       }
     }
 
-    function openAuthModal() {
-      document.getElementById('auth-modal').classList.remove('hidden');
-    }
-
-    function closeAuthModal() {
-      document.getElementById('auth-modal').classList.add('hidden');
-    }
-
-    function handleAuth(e) {
-      e.preventDefault();
-      const email = document.getElementById('auth-email').value;
-      store.user = { email };
-      localStorage.setItem('mm_user', JSON.stringify(store.user));
-      document.getElementById('auth-btn').textContent = email.split('@')[0].toUpperCase();
-      closeAuthModal();
-    }
-
-    function renderNews() {
-      const body = document.getElementById('news-table-body');
-      body.innerHTML = '';
-      store.newsEvents.forEach(evt => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-amber-500/5 transition';
-        row.innerHTML = `
-          <td class="py-3.5 px-4 text-slate-300">${evt.date} &bull; ${evt.time}</td>
-          <td class="py-3.5 px-4 font-bold text-amber-300">${evt.country}</td>
-          <td class="py-3.5 px-4">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${evt.impact === 'High' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
-              ${evt.impact}
-            </span>
-          </td>
-          <td class="py-3.5 px-4 font-semibold text-slate-100">${evt.title}</td>
-          <td class="py-3.5 px-4 text-emerald-400 font-bold">${evt.forecast}</td>
-          <td class="py-3.5 px-4 text-slate-400">${evt.previous}</td>
-        `;
-        body.appendChild(row);
-      });
-    }
-
-    async function fetchLiveEconomicNews() {
-      try {
-        const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://nfp.forexfactory.com/ff_calendar_thisweek.json'));
-        if (res.ok) {
-          const data = await res.json();
-          const parsed = JSON.parse(data.contents);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            store.newsEvents = parsed.map((item) => ({
-              date: item.date ? item.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-              time: item.time || 'All Day',
-              country: (item.country || 'USD').toUpperCase(),
-              impact: item.impact || 'Low',
-              title: item.title || 'Economic Event',
-              forecast: item.forecast || '--',
-              previous: item.previous || '--'
-            }));
-            renderNews();
-          }
-        }
-      } catch(e) {
-        console.warn('Fallback to standard economic schedule.');
-      }
-    }
-
-    // Initialize Application
-    renderAccounts();
-    renderDashboard();
-    if (store.user) {
-      document.getElementById('auth-btn').textContent = store.user.email.split('@')[0].toUpperCase();
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDashboard();
+      setDatePreset('all');
+    });
   </script>
 </body>
 </html>
-```
-
-### Steps to Apply:
-1. Copy this full file content.
-2. Go to **GitHub**, edit `index.html`, select all, and paste it in.
-3. Click **Commit changes** to let Vercel update automatically.
