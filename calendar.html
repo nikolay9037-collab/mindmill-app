@@ -3,187 +3,464 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MINDMILL - Live ForexFactory Economic Calendar</title>
+  <title>MINDMILL - Volatility & Economic Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: #060709; 
+      color: #f8fafc; 
+    }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #050608; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    .font-serif-luxury { font-family: 'Cinzel', serif; }
+    
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #060709; }
+    ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+    input[type="date"], input[type="time"] {
+      color-scheme: dark !important;
+      background-color: #040507 !important;
+      color: #f59e0b !important;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.8) sepia(100%) saturate(500%) hue-rotate(350deg);
+      cursor: pointer;
+    }
   </style>
 </head>
-<body class="bg-[#08090C] text-slate-100 min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
 
-  <div class="max-w-6xl mx-auto space-y-6">
+  <!-- Ambient Luxury Glows -->
+  <div class="fixed top-0 left-1/3 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[180px] pointer-events-none"></div>
+  <div class="fixed bottom-0 right-1/4 w-[700px] h-[700px] bg-rose-500/5 rounded-full blur-[200px] pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto w-full space-y-6 relative z-10">
     
-    <!-- Calendar Header -->
-    <div class="bg-gradient-to-b from-[#0F1118] to-[#08090D] border border-amber-500/20 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <div class="flex items-center space-x-3">
-          <span id="status-dot" class="h-3 w-3 rounded-full bg-amber-400 animate-pulse"></span>
-          <h1 class="text-xl font-black font-mono tracking-wider text-amber-200">FOREXFACTORY LIVE CALENDAR</h1>
+    <!-- Top Header Navigation -->
+    <header class="bg-gradient-to-r from-[#0D0F17] via-[#131724] to-[#0D0F17] border border-amber-500/30 rounded-3xl p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 backdrop-blur-xl relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent"></div>
+
+      <div class="flex items-center space-x-4">
+        <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center font-serif-luxury font-black text-slate-950 text-xl shadow-xl shadow-amber-500/20 border border-amber-200/40">
+          MM
         </div>
-        <p id="status-text" class="text-xs text-slate-400 mt-1 font-mono">Connecting to ForexFactory proxy network...</p>
+        <div>
+          <div class="flex items-center space-x-2.5">
+            <h1 class="text-xl md:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500 font-serif-luxury uppercase">
+              MINDMILL
+            </h1>
+            <span class="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30 tracking-widest uppercase font-mono flex items-center space-x-1">
+              <span class="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse"></span>
+              <span>VOLATILITY RADAR</span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 tracking-wider font-light mt-0.5">High-Impact Market Catalysts & Risk Analyzer</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex items-center bg-[#040507] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
+        <a href="./index.html" class="px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-amber-200 transition-all duration-300">
+          📈 Dashboard & Journal
+        </a>
+        <div class="h-4 w-[1px] bg-amber-500/20"></div>
+        <a href="./calendar.html" class="px-5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 flex items-center space-x-2">
+          <span class="h-2 w-2 rounded-full bg-slate-950 animate-pulse"></span>
+          <span>Vol Terminal</span>
+        </a>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <!-- Owner Lock/Unlock Button -->
+        <button id="owner-toggle-btn" onclick="promptOwnerAuth()" class="px-3.5 py-2 bg-[#040507] border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 hover:bg-amber-500/10 transition flex items-center space-x-1.5">
+          <span id="owner-lock-icon">🔒</span>
+          <span id="owner-btn-label">Owner Portal</span>
+        </button>
+
+        <div class="hidden sm:flex items-center space-x-2.5 bg-[#040507] border border-amber-500/20 px-4 py-2 rounded-2xl text-xs font-mono">
+          <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#10B981] animate-pulse"></span>
+          <span id="header-clock" class="text-amber-200/90 font-bold">00:00:00 UTC</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Owner Management Bar (Hidden by Default) -->
+    <div id="owner-control-bar" class="hidden bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/40 rounded-3xl p-5 shadow-2xl flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <span class="text-xl">🔑</span>
+        <div>
+          <h3 class="text-sm font-bold text-amber-200 font-mono">OWNER NEWS CONTROL CENTER</h3>
+          <p class="text-xs text-slate-300">You are logged in as Owner. Manually manage future weekly economic releases.</p>
+        </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
-        <!-- Currency Quick Filter -->
-        <select id="currency-filter" onchange="filterEvents()" class="bg-[#050608] border border-amber-500/20 rounded-xl px-3 py-2 text-xs text-amber-300 font-mono focus:outline-none">
-          <option value="ALL">All Currencies</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-          <option value="JPY">JPY</option>
-          <option value="CNY">CNY</option>
-          <option value="AUD">AUD</option>
-          <option value="CAD">CAD</option>
-        </select>
-
-        <!-- Sync Button -->
-        <button onclick="loadLiveNews()" class="px-5 py-2 bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-xs font-mono shadow-lg shadow-amber-500/20 flex items-center space-x-2">
-          <span>🔄 Force Sync</span>
+        <button onclick="openAddEventModal()" class="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-bold rounded-2xl text-xs shadow-lg hover:brightness-110 transition flex items-center space-x-1">
+          <span>+ Add Single Event</span>
+        </button>
+        <button onclick="resetToDefaultNews()" class="px-4 py-2 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-mono hover:bg-rose-500/30 transition">
+          Reset All Data
         </button>
       </div>
     </div>
 
-    <!-- Calendar Table Container -->
-    <div class="bg-gradient-to-b from-[#0F1118] to-[#08090D] border border-amber-500/15 rounded-3xl p-6 shadow-2xl overflow-x-auto">
-      <table class="w-full text-left text-xs">
-        <thead>
-          <tr class="border-b border-amber-500/10 text-amber-200/70 font-mono uppercase">
-            <th class="py-3.5 px-4">Date / Time</th>
-            <th class="py-3.5 px-4">Currency</th>
-            <th class="py-3.5 px-4">Impact</th>
-            <th class="py-3.5 px-4">Event Title</th>
-            <th class="py-3.5 px-4">Forecast</th>
-            <th class="py-3.5 px-4">Previous</th>
-          </tr>
-        </thead>
-        <tbody id="calendar-body" class="divide-y divide-slate-800/50 font-mono">
-          <tr>
-            <td colSpan="6" class="text-center py-12 text-slate-400 font-mono animate-pulse">
-              Fetching live ForexFactory data... Please wait...
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- Main Volatility Feed Panel -->
+    <div class="bg-gradient-to-b from-[#0F111B] via-[#0A0C14] to-[#06070B] border border-amber-500/25 rounded-3xl p-6 shadow-2xl space-y-5">
+      
+      <!-- Date & Filter Controls -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-amber-500/15 pb-5">
+        <div>
+          <h2 class="text-sm font-bold text-amber-100 font-mono tracking-wide flex items-center space-x-2">
+            <span class="text-rose-400 font-black">🔥 HIGH-IMPACT MARKET CALENDAR</span>
+          </h2>
+          <p id="filter-status-text" class="text-xs text-slate-400 mt-0.5">Filter releases by single date or target currency.</p>
+        </div>
 
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Currency Filter -->
+          <select id="currency-select" onchange="applyFilters()" class="bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 text-xs text-amber-400 font-mono font-bold focus:outline-none cursor-pointer">
+            <option value="ALL">All Currencies</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="JPY">JPY (¥)</option>
+            <option value="AUD">AUD ($)</option>
+            <option value="CAD">CAD ($)</option>
+          </select>
+
+          <!-- Single-Day Date Picker -->
+          <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow-inner">
+            <span class="text-xs text-amber-400 font-mono font-bold">Isolate Day:</span>
+            <input 
+              type="date"
+              id="event-date-picker"
+              onchange="applyFilters()"
+              class="bg-[#040507] text-xs text-amber-400 font-mono font-bold focus:outline-none cursor-pointer border border-amber-500/20 px-2 py-1 rounded-xl"
+            />
+            <button onclick="clearDateFilter()" class="text-slate-500 hover:text-amber-400 text-xs font-bold pl-1 transition" title="Clear Date Filter">✕</button>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="flex items-center space-x-1 bg-[#040507] border border-amber-500/20 p-1 rounded-2xl">
+            <button id="btn-today" onclick="setDatePreset('today')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Today</button>
+            <button id="btn-tomorrow" onclick="setDatePreset('tomorrow')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Tomorrow</button>
+            <button id="btn-all" onclick="setDatePreset('all')" class="px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">All Upcoming</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed Table -->
+      <div class="overflow-x-auto rounded-2xl border border-amber-500/15 bg-[#040507] shadow-inner">
+        <table class="w-full text-left text-xs font-mono">
+          <thead>
+            <tr class="bg-[#0B0D15] text-amber-300/80 uppercase border-b border-amber-500/20">
+              <th class="py-4 px-4">Date & Time</th>
+              <th class="py-4 px-4">Currency</th>
+              <th class="py-4 px-4">Event Title</th>
+              <th class="py-4 px-4">Market Volatility Risk</th>
+              <th class="py-4 px-4 text-emerald-400">Forecast</th>
+              <th class="py-4 px-4 text-slate-400">Previous</th>
+              <th id="owner-col-header" class="hidden py-4 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="events-list" class="divide-y divide-slate-800/60">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Owner Add/Edit Custom Event -->
+  <div id="event-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0F1118] border border-amber-500/30 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-amber-500/10 pb-3">
+        <h3 class="text-base font-bold text-amber-200 font-mono">Add / Edit Economic Release</h3>
+        <button onclick="closeAddEventModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form onsubmit="saveCustomEvent(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-slate-400 block mb-1">Event Title</label>
+          <input id="modal-title" type="text" required placeholder="e.g. Non-Farm Payrolls (NFP)" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 block mb-1">Currency</label>
+            <select id="modal-currency" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-amber-300 font-bold focus:border-amber-500 focus:outline-none font-mono">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="CAD">CAD ($)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Impact Level</label>
+            <select id="modal-impact" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono">
+              <option value="HIGH">HIGH IMPACT</option>
+              <option value="CRITICAL">CRITICAL IMPACT</option>
+              <option value="MEDIUM">MEDIUM IMPACT</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 block mb-1">Release Date</label>
+            <input id="modal-date" type="date" required class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-amber-400 focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Release Time</label>
+            <input id="modal-time" type="text" required placeholder="08:30 AM" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-slate-400 block mb-1">Volatility Risk Description</label>
+          <input id="modal-risk" type="text" required placeholder="e.g. Extreme Spikes (Gold, NAS100)" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-slate-400 block mb-1">Forecast</label>
+            <input id="modal-forecast" type="text" placeholder="e.g. 0.3%" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-emerald-400 font-bold focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Previous</label>
+            <input id="modal-previous" type="text" placeholder="e.g. 0.2%" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-400 focus:border-amber-500 focus:outline-none font-mono" />
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeAddEventModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-xs text-slate-950 shadow-lg shadow-amber-500/20">Save Release</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script>
-    let allNewsEvents = [];
-
-    // Array of fallback CORS proxy endpoints targeting ForexFactory's live JSON feed
-    const TARGET_URL = 'https://nfp.forexfactory.com/ff_calendar_thisweek.json';
-    const PROXIES = [
-      url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    const DEFAULT_EVENTS = [
+      { id: '1', date: '2026-10-31', time: '08:30 AM', currency: 'USD', title: 'Core CPI m/m (Inflation Rate)', impact: 'HIGH', risk: 'Extreme Spikes (Gold, NAS100)', forecast: '0.3%', previous: '0.2%' },
+      { id: '2', date: '2026-10-31', time: '02:00 PM', currency: 'USD', title: 'FOMC Statement & Rate Decision', impact: 'CRITICAL', risk: 'Maximum Liquidity Wipeout', forecast: '4.50%', previous: '4.75%' },
+      { id: '3', date: '2026-11-01', time: '08:30 AM', currency: 'USD', title: 'Non-Farm Employment Change (NFP)', impact: 'CRITICAL', risk: 'Massive Slippage & Reversals', forecast: '113K', previous: '254K' },
+      { id: '4', date: '2026-11-01', time: '10:00 AM', currency: 'USD', title: 'ISM Manufacturing PMI', impact: 'HIGH', risk: 'US Tech Rally/Drop', forecast: '47.6', previous: '47.2' }
     ];
 
-    async function loadLiveNews() {
-      const statusDot = document.getElementById('status-dot');
-      const statusText = document.getElementById('status-text');
-      const tbody = document.getElementById('calendar-body');
+    let isOwner = false;
+    const OWNER_PASSCODE = "1234"; // Set your preferred passcode here
 
-      statusDot.className = "h-3 w-3 rounded-full bg-amber-400 animate-pulse";
-      statusText.textContent = "Querying live proxies...";
-
-      let fetchedData = null;
-
-      for (let i = 0; i < PROXIES.length; i++) {
-        try {
-          const proxyUrl = PROXIES[i](TARGET_URL);
-          const response = await fetch(proxyUrl);
-          
-          if (!response.ok) continue;
-
-          let rawText = await response.text();
-          let parsed;
-
-          try {
-            const jsonObj = JSON.parse(rawText);
-            parsed = jsonObj.contents ? JSON.parse(jsonObj.contents) : jsonObj;
-          } catch(e) {
-            parsed = null;
-          }
-
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            fetchedData = parsed;
-            statusText.textContent = `Connected to ForexFactory (via Mirror #${i + 1}) - ${fetchedData.length} events loaded`;
-            statusDot.className = "h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_10px_#10B981]";
-            break;
-          }
-        } catch (err) {
-          console.warn(`Proxy #${i+1} failed:`, err);
-        }
-      }
-
-      if (fetchedData) {
-        allNewsEvents = fetchedData.map(item => ({
-          date: item.date ? item.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-          time: item.time || 'All Day',
-          country: (item.country || 'USD').toUpperCase(),
-          impact: item.impact || 'Low',
-          title: item.title || 'Economic Release',
-          forecast: item.forecast || '--',
-          previous: item.previous || '--'
-        }));
-        filterEvents();
-      } else {
-        statusText.textContent = "Live proxy connection delayed. Displaying verified ForexFactory schedule.";
-        statusDot.className = "h-3 w-3 rounded-full bg-rose-500";
-        
-        // Accurate current ForexFactory fallback entries
-        allNewsEvents = [
-          { date: '2026-10-31', time: '03:30am', country: 'CNY', impact: 'Medium', title: 'Manufacturing PMI', forecast: '50.1', previous: '49.8' },
-          { date: '2026-10-31', time: '03:30am', country: 'CNY', impact: 'Medium', title: 'Non-Manufacturing PMI', forecast: '50.4', previous: '50.0' },
-          { date: '2026-11-02', time: '10:00am', country: 'USD', impact: 'High', title: 'ISM Manufacturing PMI', forecast: '48.5', previous: '47.2' },
-          { date: '2026-11-04', time: '02:00pm', country: 'USD', impact: 'High', title: 'FOMC Rate Decision', forecast: '4.50%', previous: '4.75%' }
-        ];
-        filterEvents();
-      }
+    function loadStoredEvents() {
+      const data = localStorage.getItem('mm_owner_news');
+      return data ? JSON.parse(data) : DEFAULT_EVENTS;
     }
 
-    function filterEvents() {
-      const selectedCurrency = document.getElementById('currency-filter').value;
-      const tbody = document.getElementById('calendar-body');
-      tbody.innerHTML = '';
+    function saveEventsToStorage(events) {
+      localStorage.setItem('mm_owner_news', JSON.stringify(events));
+    }
 
-      const filtered = allNewsEvents.filter(evt => selectedCurrency === 'ALL' || evt.country === selectedCurrency);
+    function updateClock() {
+      const now = new Date();
+      const str = now.toISOString().slice(11, 19) + ' UTC';
+      const el = document.getElementById('header-clock');
+      if (el) el.textContent = str;
+    }
 
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colSpan="6" class="text-center py-8 text-slate-500 font-mono">No market events found for currency filter: ${selectedCurrency}</td></tr>`;
+    function promptOwnerAuth() {
+      if (isOwner) {
+        isOwner = false;
+        document.getElementById('owner-control-bar').classList.add('hidden');
+        document.getElementById('owner-col-header').classList.add('hidden');
+        document.getElementById('owner-lock-icon').textContent = '🔒';
+        document.getElementById('owner-btn-label').textContent = 'Owner Portal';
+        applyFilters();
         return;
       }
 
-      filtered.forEach(evt => {
+      const pass = prompt("Enter Owner Security Passcode:");
+      if (pass === OWNER_PASSCODE) {
+        isOwner = true;
+        document.getElementById('owner-control-bar').classList.remove('hidden');
+        document.getElementById('owner-col-header').classList.remove('hidden');
+        document.getElementById('owner-lock-icon').textContent = '🔓';
+        document.getElementById('owner-btn-label').textContent = 'Owner Mode (Active)';
+        applyFilters();
+      } else if (pass !== null) {
+        alert("Incorrect Security Passcode.");
+      }
+    }
+
+    function renderEvents(events) {
+      const listContainer = document.getElementById('events-list');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+
+      if (events.length === 0) {
+        listContainer.innerHTML = `
+          <tr>
+            <td colSpan="7" class="py-12 text-center text-slate-500">
+              No economic releases scheduled for the selected date filter.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      events.forEach(evt => {
         const row = document.createElement('tr');
         row.className = 'hover:bg-amber-500/5 transition duration-150';
-
-        const impactClass = evt.impact === 'High' 
-          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' 
-          : evt.impact === 'Medium' 
-          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
-          : 'bg-slate-800 text-slate-400';
+        
+        const isCritical = evt.impact === 'CRITICAL';
+        const impactBadge = isCritical 
+          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' 
+          : 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
 
         row.innerHTML = `
-          <td class="py-3.5 px-4 text-slate-300">${evt.date} &bull; ${evt.time}</td>
-          <td class="py-3.5 px-4 font-bold text-amber-300">${evt.country}</td>
-          <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${impactClass}">${evt.impact}</span></td>
-          <td class="py-3.5 px-4 font-semibold text-slate-100">${evt.title}</td>
-          <td class="py-3.5 px-4 text-emerald-400 font-bold">${evt.forecast}</td>
-          <td class="py-3.5 px-4 text-slate-400">${evt.previous}</td>
+          <td class="py-4 px-4 text-slate-200 font-bold">${evt.date} &bull; ${evt.time}</td>
+          <td class="py-4 px-4 font-black text-amber-300">
+            <span class="px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30">${evt.currency}</span>
+          </td>
+          <td class="py-4 px-4 font-bold text-slate-100">${evt.title}</td>
+          <td class="py-4 px-4">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase ${impactBadge}">
+              ${evt.risk}
+            </span>
+          </td>
+          <td class="py-4 px-4 font-black text-emerald-400">${evt.forecast || '--'}</td>
+          <td class="py-4 px-4 text-slate-400">${evt.previous || '--'}</td>
+          ${isOwner ? `
+            <td class="py-4 px-4 text-right">
+              <button onclick="deleteEvent('${evt.id}')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded-lg border border-rose-500/30 text-[10px]">Delete</button>
+            </td>
+          ` : '<td class="hidden"></td>'}
         `;
-        tbody.appendChild(row);
+        listContainer.appendChild(row);
       });
     }
 
-    // Auto-run on page load
-    loadLiveNews();
+    function applyFilters() {
+      const datePicker = document.getElementById('event-date-picker');
+      const currencySelect = document.getElementById('currency-select');
+      const statusText = document.getElementById('filter-status-text');
+
+      const selectedDate = datePicker ? datePicker.value : '';
+      const selectedCurrency = currencySelect ? currencySelect.value : 'ALL';
+
+      let events = loadStoredEvents();
+
+      if (selectedDate) {
+        events = events.filter(e => e.date === selectedDate);
+        if (statusText) statusText.textContent = `Strictly showing high-impact releases for date: ${selectedDate}`;
+      } else {
+        if (statusText) statusText.textContent = 'Showing all major releases across upcoming dates.';
+      }
+
+      if (selectedCurrency !== 'ALL') {
+        events = events.filter(e => e.currency === selectedCurrency);
+      }
+
+      renderEvents(events);
+    }
+
+    function openAddEventModal() {
+      document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('event-modal').classList.remove('hidden');
+    }
+
+    function closeAddEventModal() {
+      document.getElementById('event-modal').classList.add('hidden');
+    }
+
+    function saveCustomEvent(e) {
+      e.preventDefault();
+      const newEvt = {
+        id: Date.now().toString(),
+        title: document.getElementById('modal-title').value,
+        currency: document.getElementById('modal-currency').value,
+        impact: document.getElementById('modal-impact').value,
+        date: document.getElementById('modal-date').value,
+        time: document.getElementById('modal-time').value,
+        risk: document.getElementById('modal-risk').value,
+        forecast: document.getElementById('modal-forecast').value,
+        previous: document.getElementById('modal-previous').value
+      };
+
+      const events = loadStoredEvents();
+      events.unshift(newEvt);
+      saveEventsToStorage(events);
+      closeAddEventModal();
+      applyFilters();
+    }
+
+    function deleteEvent(id) {
+      if (confirm('Delete this economic release?')) {
+        let events = loadStoredEvents().filter(e => e.id !== id);
+        saveEventsToStorage(events);
+        applyFilters();
+      }
+    }
+
+    function resetToDefaultNews() {
+      if (confirm('Reset economic calendar back to default schedule?')) {
+        saveEventsToStorage(DEFAULT_EVENTS);
+        applyFilters();
+      }
+    }
+
+    function clearDateFilter() {
+      const datePicker = document.getElementById('event-date-picker');
+      if (datePicker) datePicker.value = '';
+      updateActiveButtons('all');
+      applyFilters();
+    }
+
+    function setDatePreset(preset) {
+      const datePicker = document.getElementById('event-date-picker');
+      const today = new Date();
+      updateActiveButtons(preset);
+
+      if (preset === 'today') {
+        const str = today.toISOString().split('T')[0];
+        if (datePicker) datePicker.value = str;
+      } else if (preset === 'tomorrow') {
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const str = tomorrow.toISOString().split('T')[0];
+        if (datePicker) datePicker.value = str;
+      } else if (preset === 'all') {
+        if (datePicker) datePicker.value = '';
+      }
+
+      applyFilters();
+    }
+
+    function updateActiveButtons(activePreset) {
+      ['today', 'tomorrow', 'all'].forEach(p => {
+        const btn = document.getElementById(`btn-${p}`);
+        if (btn) {
+          if (p === activePreset) {
+            btn.className = 'px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition';
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateClock();
+      setInterval(updateClock, 1000);
+      setDatePreset('all');
+    });
   </script>
 </body>
 </html>
