@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MINDMILL - Trader Profile & Performance Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: #050608; 
+      color: #f8fafc; 
+    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-serif-luxury { font-family: 'Cinzel', serif; }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #050608; }
+    ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+    .glow-gold {
+      box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25);
+    }
+    .glass-card {
+      background: linear-gradient(135deg, rgba(15, 17, 24, 0.85) 0%, rgba(10, 12, 18, 0.95) 100%);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="min-h-screen p-3 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
+
+  <!-- Ambient Background Illumination -->
+  <div class="fixed top-0 left-1/4 w-[350px] sm:w-[650px] h-[350px] sm:h-[650px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+  <div class="fixed bottom-0 right-1/4 w-[400px] sm:w-[750px] h-[400px] sm:h-[750px] bg-amber-600/5 rounded-full blur-[160px] pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto w-full space-y-6 relative z-10 flex-1 flex flex-col">
+    
+    <!-- Navigation Header -->
+    <header class="glass-card border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent"></div>
+
+      <!-- Brand Emblem -->
+      <div class="flex items-center space-x-3.5 w-full md:w-auto justify-between md:justify-start">
+        <div class="flex items-center space-x-3.5">
+          <div class="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center font-serif-luxury font-black text-slate-950 text-xl sm:text-2xl shadow-xl shadow-amber-500/25 border border-amber-200/50 shrink-0">
+            MM
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-xl sm:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500 font-serif-luxury uppercase">
+                MINDMILL
+              </h1>
+              <span class="text-[9px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 tracking-widest uppercase font-mono">
+                PROFILE TERMINAL
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 tracking-wider font-semibold mt-0.5">Trader Identity & Rank Performance Suite</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="flex items-center justify-center w-full md:w-auto bg-[#040507] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
+        <a href="./index.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition">
+          📈 Chart &amp; Journal
+        </a>
+        <div class="h-4 w-[1px] bg-amber-500/20"></div>
+        <a href="./calendar.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition">
+          🔥 Volatility Calendar
+        </a>
+        <div class="h-4 w-[1px] bg-amber-500/20"></div>
+        <a href="./profile.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 transition">
+          👤 Profile
+        </a>
+      </div>
+
+      <!-- Profile Selector Dropdown -->
+      <div class="flex items-center justify-end w-full md:w-auto">
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow min-w-[160px]">
+          <span class="text-xs text-slate-400 font-mono font-bold">Account:</span>
+          <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="space-y-6">
+
+      <!-- Trader Identity & Rank Card -->
+      <div class="glass-card border border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden glow-gold">
+        <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 border-b border-amber-500/20 pb-6">
+          
+          <!-- Avatar & Alias -->
+          <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+            <div id="avatar-emoji-display" class="h-20 w-20 sm:h-24 sm:w-24 rounded-3xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 flex items-center justify-center text-4xl sm:text-5xl shadow-2xl shadow-amber-500/30 border-2 border-amber-200/50 font-mono cursor-pointer transition hover:scale-105" onclick="openProfileEditModal()" title="Customize Avatar">
+              🦁
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                <span id="trader-rank-badge" class="px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono font-black border border-amber-500/40 uppercase tracking-widest">
+                  NOVICE TRADER
+                </span>
+                <span id="trader-xp-text" class="text-xs font-mono font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800">
+                  0 XP
+                </span>
+              </div>
+              <h2 id="trader-nickname-display" class="text-2xl sm:text-4xl font-black text-slate-100 font-serif-luxury tracking-wide">
+                Apex Trader
+              </h2>
+              <p id="profile-account-name-text" class="text-xs text-amber-400 font-mono font-bold">
+                Account: Main Account
+              </p>
+            </div>
+          </div>
+
+          <button onclick="openProfileEditModal()" class="px-5 py-2.5 bg-[#040507] border border-amber-500/30 hover:border-amber-400 text-amber-300 font-mono font-bold text-xs rounded-2xl transition flex items-center space-x-2 shadow-lg hover:shadow-amber-500/10">
+            <span>✏️ Customize Identity</span>
+          </button>
+        </div>
+
+        <!-- Rank XP Bar -->
+        <div class="space-y-2.5">
+          <div class="flex justify-between items-center text-xs font-mono font-bold">
+            <span class="text-slate-300">Rank Progress to <span id="next-rank-title" class="text-amber-300">DISCIPLINED EXECUTIONER</span></span>
+            <span id="rank-progress-percent" class="text-amber-400">0%</span>
+          </div>
+          <div class="w-full bg-[#040507] rounded-full h-4 overflow-hidden border border-amber-500/25 p-0.5 shadow-inner">
+            <div id="rank-progress-fill" class="bg-gradient-to-r from-amber-400 via-amber-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prop Firm Account Rules & Targets Guardrail -->
+      <div class="glass-card border border-amber-500/30 rounded-3xl p-6 shadow-xl space-y-5">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-amber-500/15 pb-4">
+          <div>
+            <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider flex items-center space-x-2">
+              <span>🎯 Custom Account Rules &amp; Drawdown Guardrail</span>
+            </h3>
+            <p id="account-spec-summary-text" class="text-xs text-slate-400 mt-0.5">Base Balance: $10,000.00 | Target: $800.00 (8.0%) | Max DD: $500.00 (5.0%)</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span id="account-status-badge" class="px-3.5 py-1 rounded-xl text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              🟢 SAFE ZONE
+            </span>
+            <button onclick="openRuleConfigModal()" class="px-3.5 py-1.5 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-300 font-mono font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
+              <span>⚙️ Edit Target &amp; Rules</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Target Progress -->
+          <div class="bg-[#040507] border border-amber-500/20 rounded-2xl p-4 space-y-2.5">
+            <div class="flex justify-between items-center text-xs font-mono">
+              <span id="target-title-label" class="text-slate-300 font-bold">Profit Target Goal</span>
+              <span id="target-progress-val" class="font-black text-emerald-400">+$0.00 (0.0%)</span>
+            </div>
+            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-emerald-500/20 p-0.5">
+              <div id="target-progress-fill" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+            <p id="target-remaining-text" class="text-[11px] text-slate-400 font-mono">Need $800.00 more to reach profit target goal.</p>
+          </div>
+
+          <!-- Drawdown Buffer -->
+          <div class="bg-[#040507] border border-amber-500/20 rounded-2xl p-4 space-y-2.5">
+            <div class="flex justify-between items-center text-xs font-mono">
+              <span id="drawdown-title-label" class="text-slate-300 font-bold">Max Allowed Loss Limit</span>
+              <span id="drawdown-progress-val" class="font-black text-amber-300">100% Buffer Intact</span>
+            </div>
+            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-amber-500/20 p-0.5">
+              <div id="drawdown-progress-fill" class="bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 h-full rounded-full transition-all duration-500" style="width: 100%;"></div>
+            </div>
+            <p id="drawdown-remaining-text" class="text-[11px] text-slate-400 font-mono">Safety Distance: $500.00 away from maximum loss threshold.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trophies Grid -->
+      <div class="glass-card border border-amber-500/30 rounded-3xl p-6 shadow-xl space-y-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
+          <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider">
+            🏆 Active Performance Trophies &amp; XP Badges
+          </h3>
+          <span class="text-xs font-mono text-amber-400/90">⚠️ Badges &amp; XP re-lock if a winning streak is broken!</span>
+        </div>
+        <div id="trophy-badges-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="pt-6 pb-2 text-center text-slate-500 text-xs font-mono flex flex-col sm:flex-row items-center justify-between border-t border-amber-500/10 gap-2">
+      <p>&copy; 2026 MINDMILL Pro. All rights reserved.</p>
+      <a href="./index.html" class="hover:text-amber-400 transition underline">Back to Main Terminal</a>
+    </footer>
+  </div>
+
+  <!-- Profile Identity Customizer Modal -->
+  <div id="profile-edit-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0F1118] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5">
+      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
+        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">Customize Trader Profile</h3>
+        <button onclick="closeProfileEditModal()" class="text-slate-400 hover:text-white text-base">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Trader Nickname / Alias</label>
+          <input type="text" id="edit-nickname-input" placeholder="e.g., ApexTrader" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-2 font-bold">Select Emoji Avatar</label>
+          <div id="emoji-picker-grid" class="grid grid-cols-6 gap-2 text-2xl p-3 bg-[#040507] border border-amber-500/20 rounded-2xl text-center"></div>
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-2.5">
+          <button type="button" onclick="closeProfileEditModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancel</button>
+          <button type="button" onclick="saveProfileIdentity()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl">Save Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prop Firm Rules Customizer Modal -->
+  <div id="rule-config-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0F1118] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5">
+      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
+        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">Configure Prop Firm Rules</h3>
+        <button onclick="closeRuleConfigModal()" class="text-slate-400 hover:text-white text-base">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Starting Account Balance ($)</label>
+          <input type="number" id="input-base-balance" placeholder="10000 or 100000" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Profit Target ($)</label>
+          <input type="number" id="input-profit-target" placeholder="800 or 8000" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-emerald-400 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Max Allowed Loss / Drawdown ($)</label>
+          <input type="number" id="input-max-drawdown" placeholder="500 or 5000" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-rose-400 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-300">
+          💡 These target settings apply specifically to your active selected profile!
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2.5">
+          <button type="button" onclick="closeRuleConfigModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancel</button>
+          <button type="button" onclick="saveRuleConfig()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg">Save Rules</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const EMOJI_OPTIONS = ['🦁', '🐺', '👑', '⚡', '🎯', '📈', '🦅', '🦈', '🔥', '💎', '🛡️', '🧠'];
+    let selectedEmoji = '🦁';
+
+    function getProfiles() {
+      try {
+        const d = localStorage.getItem('mm_profiles_v8');
+        return d ? JSON.parse(d) : ['Main Account'];
+      } catch (e) {
+        return ['Main Account'];
+      }
+    }
+
+    function getActiveProfile() {
+      return localStorage.getItem('mm_active_prof_v8') || getProfiles()[0] || 'Main Account';
+    }
+
+    function getAccountConfig(profName) {
+      const key = `mm_account_config_${profName}`;
+      const data = localStorage.getItem(key);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return { baseBalance: 10000, profitTarget: 800, maxDrawdown: 500 };
+    }
+
+    function saveAccountConfig(profName, config) {
+      const key = `mm_account_config_${profName}`;
+      localStorage.setItem(key, JSON.stringify(config));
+    }
+
+    function loadDropdown() {
+      const dropdown = document.getElementById('profile-select-dropdown');
+      if (!dropdown) return;
+      dropdown.innerHTML = '';
+      const profiles = getProfiles();
+      const active = getActiveProfile();
+
+      profiles.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = (p === active ? '✓ ' : '') + p;
+        if (p === active) opt.selected = true;
+        dropdown.appendChild(opt);
+      });
+    }
+
+    function handleProfileChange(e) {
+      localStorage.setItem('mm_active_prof_v8', e.target.value);
+      loadDropdown();
+      renderProfileData();
+    }
+
+    function getTrades() {
+      try {
+        const prof = getActiveProfile();
+        const key = `mm_trades_v8_${prof}`;
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function openProfileEditModal() {
+      const nick = localStorage.getItem('mm_trader_nickname') || 'Apex Trader';
+      selectedEmoji = localStorage.getItem('mm_trader_emoji') || '🦁';
+      document.getElementById('edit-nickname-input').value = nick;
+      renderEmojiPicker();
+      document.getElementById('profile-edit-modal').classList.remove('hidden');
+    }
+
+    function closeProfileEditModal() {
+      document.getElementById('profile-edit-modal').classList.add('hidden');
+    }
+
+    function openRuleConfigModal() {
+      const activeProf = getActiveProfile();
+      const cfg = getAccountConfig(activeProf);
+      document.getElementById('input-base-balance').value = cfg.baseBalance;
+      document.getElementById('input-profit-target').value = cfg.profitTarget;
+      document.getElementById('input-max-drawdown').value = cfg.maxDrawdown;
+      document.getElementById('rule-config-modal').classList.remove('hidden');
+    }
+
+    function closeRuleConfigModal() {
+      document.getElementById('rule-config-modal').classList.add('hidden');
+    }
+
+    function saveRuleConfig() {
+      const activeProf = getActiveProfile();
+      const baseBalance = parseFloat(document.getElementById('input-base-balance').value) || 10000;
+      const profitTarget = parseFloat(document.getElementById('input-profit-target').value) || 800;
+      const maxDrawdown = parseFloat(document.getElementById('input-max-drawdown').value) || 500;
+
+      saveAccountConfig(activeProf, { baseBalance, profitTarget, maxDrawdown });
+      closeRuleConfigModal();
+      renderProfileData();
+    }
+
+    function renderEmojiPicker() {
+      const grid = document.getElementById('emoji-picker-grid');
+      grid.innerHTML = '';
+      EMOJI_OPTIONS.forEach(em => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `p-2 rounded-xl hover:bg-amber-500/20 transition ${em === selectedEmoji ? 'bg-amber-500/30 ring-2 ring-amber-400' : ''}`;
+        btn.textContent = em;
+        btn.onclick = () => {
+          selectedEmoji = em;
+          renderEmojiPicker();
+        };
+        grid.appendChild(btn);
+      });
+    }
+
+    function saveProfileIdentity() {
+      const nick = document.getElementById('edit-nickname-input').value.trim() || 'Apex Trader';
+      localStorage.setItem('mm_trader_nickname', nick);
+      localStorage.setItem('mm_trader_emoji', selectedEmoji);
+      closeProfileEditModal();
+      renderProfileData();
+    }
+
+    function renderProfileData() {
+      const activeProf = getActiveProfile();
+      const cfg = getAccountConfig(activeProf);
+      const nick = localStorage.getItem('mm_trader_nickname') || 'Apex Trader';
+      const emoji = localStorage.getItem('mm_trader_emoji') || '🦁';
+
+      document.getElementById('trader-nickname-display').textContent = nick;
+      document.getElementById('avatar-emoji-display').textContent = emoji;
+      document.getElementById('profile-account-name-text').textContent = `Account: ${activeProf}`;
+
+      const targetPctStr = ((cfg.profitTarget / cfg.baseBalance) * 100).toFixed(1);
+      const ddPctStr = ((cfg.maxDrawdown / cfg.baseBalance) * 100).toFixed(1);
+      document.getElementById('account-spec-summary-text').textContent = `Base: $${cfg.baseBalance.toLocaleString()} | Target: $${cfg.profitTarget.toLocaleString()} (${targetPctStr}%) | Max DD: $${cfg.maxDrawdown.toLocaleString()} (${ddPctStr}%)`;
+
+      const trades = getTrades();
+      let totalYield = 0;
+      trades.forEach(t => {
+        totalYield += parseFloat(t.pnl) || 0;
+      });
+
+      // Streaks
+      let currentWinningStreak = 0;
+      for (let i = trades.length - 1; i >= 0; i--) {
+        if ((parseFloat(trades[i].pnl) || 0) > 0) currentWinningStreak++;
+        else break;
+      }
+
+      let highRRCount = 0;
+      trades.forEach(t => {
+        if (t.rr && parseFloat(t.rr) >= 2.0 && parseFloat(t.pnl) > 0) highRRCount++;
+      });
+
+      let currentRiskStreak = 0;
+      for (let i = trades.length - 1; i >= 0; i--) {
+        if (trades[i].sl && trades[i].sl !== '--' && trades[i].sl !== '') currentRiskStreak++;
+        else break;
+      }
+
+      const hasWinningStreakBadge = currentWinningStreak >= 3;
+      const hasSniperBadge = highRRCount >= 2;
+      const hasRiskMasterBadge = currentRiskStreak >= 3 && trades.length >= 3;
+      const hasConsistencyKingBadge = totalYield > 0 && trades.length >= 3;
+
+      let xp = (trades.length * 100);
+      if (totalYield > 0) xp += Math.floor(totalYield * 0.5);
+      if (hasWinningStreakBadge) xp += 500;
+      if (hasSniperBadge) xp += 400;
+      if (hasRiskMasterBadge) xp += 450;
+      if (hasConsistencyKingBadge) xp += 600;
+      xp = Math.max(0, xp);
+
+      let rank = "NOVICE TRADER";
+      let nextRank = "DISCIPLINED EXECUTIONER";
+      let progressPct = 0;
+
+      if (xp >= 3500) {
+        rank = "MARKET MASTER 👑";
+        nextRank = "MAX LEVEL";
+        progressPct = 100;
+      } else if (xp >= 2000) {
+        rank = "FUNDED ELITE ⚡";
+        nextRank = "MARKET MASTER 👑";
+        progressPct = Math.min(100, Math.floor(((xp - 2000) / 1500) * 100));
+      } else if (xp >= 800) {
+        rank = "DISCIPLINED EXECUTIONER 🎯";
+        nextRank = "FUNDED ELITE ⚡";
+        progressPct = Math.min(100, Math.floor(((xp - 800) / 1200) * 100));
+      } else {
+        progressPct = Math.min(100, Math.floor((xp / 800) * 100));
+      }
+
+      document.getElementById('trader-rank-badge').textContent = rank;
+      document.getElementById('trader-xp-text').textContent = `${xp.toLocaleString()} XP`;
+      document.getElementById('next-rank-title').textContent = nextRank;
+      document.getElementById('rank-progress-percent').textContent = `${progressPct}%`;
+      document.getElementById('rank-progress-fill').style.width = `${progressPct}%`;
+
+      // Target progress
+      const targetPct = Math.min(100, Math.max(0, (totalYield / cfg.profitTarget) * 100)).toFixed(1);
+      document.getElementById('target-title-label').textContent = `Profit Target Goal ($${cfg.profitTarget.toLocaleString()})`;
+      document.getElementById('target-progress-val').textContent = `${totalYield >= 0 ? '+' : ''}$${totalYield.toFixed(2)} (${targetPct}%)`;
+      document.getElementById('target-progress-fill').style.width = `${targetPct}%`;
+      const targetDiff = cfg.profitTarget - totalYield;
+      document.getElementById('target-remaining-text').textContent = targetDiff > 0 
+        ? `Need $${targetDiff.toFixed(2)} more to reach target goal.`
+        : `🎉 Profit target achieved!`;
+
+      // Drawdown buffer
+      const currentDrawdown = totalYield < 0 ? Math.abs(totalYield) : 0;
+      const drawdownBufferPct = Math.max(0, 100 - ((currentDrawdown / cfg.maxDrawdown) * 100)).toFixed(0);
+      document.getElementById('drawdown-title-label').textContent = `Max Allowed Loss Limit (-$${cfg.maxDrawdown.toLocaleString()})`;
+      document.getElementById('drawdown-progress-val').textContent = `${drawdownBufferPct}% Buffer Intact`;
+      document.getElementById('drawdown-progress-fill').style.width = `${drawdownBufferPct}%`;
+      const bufferRemaining = cfg.maxDrawdown - currentDrawdown;
+      document.getElementById('drawdown-remaining-text').textContent = bufferRemaining > 0 
+        ? `Safety Distance: $${bufferRemaining.toFixed(2)} away from max loss.`
+        : `🔴 MAX DRAWDOWN BREACHED!`;
+
+      // Render Trophies
+      const trophiesGrid = document.getElementById('trophy-badges-grid');
+      trophiesGrid.innerHTML = '';
+
+      const allTrophies = [
+        { icon: '🔥', title: 'Winning Streak (3+)', unlocked: hasWinningStreakBadge, xpBonus: '+500 XP', desc: `Requires 3 active green trades in a row. (${currentWinningStreak}/3)` },
+        { icon: '🏆', title: 'Sniper Execution', unlocked: hasSniperBadge, xpBonus: '+400 XP', desc: `Requires 2+ profitable trades with 1:2.0+ R:R ratio. (${highRRCount}/2)` },
+        { icon: '🛡️', title: 'Risk Master', unlocked: hasRiskMasterBadge, xpBonus: '+450 XP', desc: `Requires Stop-Loss set on last 3 trades. (${currentRiskStreak}/3)` },
+        { icon: '📊', title: 'Consistency King', unlocked: hasConsistencyKingBadge, xpBonus: '+600 XP', desc: `Requires positive net yield across 3+ trades.` }
+      ];
+
+      allTrophies.forEach(tr => {
+        const div = document.createElement('div');
+        div.className = `p-4.5 rounded-2xl border flex flex-col justify-between space-y-3 transition-all duration-300 ${tr.unlocked ? 'bg-gradient-to-br from-amber-500/15 to-amber-600/5 border-amber-500/50 text-amber-200 shadow-lg shadow-amber-500/10 scale-[1.02]' : 'bg-[#040507] border-slate-800 opacity-60 text-slate-500'}`;
+        div.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-3">
+              <span class="text-3xl">${tr.icon}</span>
+              <div>
+                <h4 class="font-bold text-xs font-mono text-slate-100">${tr.title}</h4>
+                <span class="text-[10px] font-mono font-bold ${tr.unlocked ? 'text-amber-400' : 'text-slate-500'}">${tr.xpBonus}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-[10px] font-mono leading-relaxed ${tr.unlocked ? 'text-slate-300' : 'text-slate-500'}">${tr.desc}</p>
+          <div class="pt-2 border-t border-amber-500/10 flex items-center justify-between">
+            <span class="text-[9px] font-mono font-bold uppercase tracking-wider ${tr.unlocked ? 'text-emerald-400' : 'text-rose-400/90'}">
+              ${tr.unlocked ? '✓ UNLOCKED &amp; ACTIVE' : '🔒 LOCKED / STREAK LOST'}
+            </span>
+            ${tr.unlocked ? '<span class="text-xs">✨</span>' : ''}
+          </div>
+        `;
+        trophiesGrid.appendChild(div);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDropdown();
+      renderProfileData();
+    });
+  </script>
+</body>
+</html>
