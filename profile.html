@@ -120,6 +120,9 @@
                 <span id="trader-xp-text" class="text-xs font-mono font-bold text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800">
                   0 XP
                 </span>
+                <span id="account-type-badge" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-black border border-emerald-500/40 uppercase tracking-wider">
+                  PROP EVALUATION
+                </span>
               </div>
               <h2 id="trader-nickname-display" class="text-2xl sm:text-4xl font-black text-slate-100 font-serif-luxury tracking-wide">
                 Apex Trader
@@ -274,18 +277,29 @@
   <div id="rule-config-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-[#0F1118] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5">
       <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
-        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">Configure Prop Firm Rules</h3>
+        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">Configure Rules & Account Type</h3>
         <button onclick="closeRuleConfigModal()" class="text-slate-400 hover:text-white text-base">✕</button>
       </div>
 
       <div class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Account Type Category</label>
+          <select id="input-account-type" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-emerald-400 font-bold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="Prop Evaluation (Phase 1)">Prop Firm Evaluation (Phase 1)</option>
+            <option value="Prop Evaluation (Phase 2)">Prop Firm Evaluation (Phase 2)</option>
+            <option value="Funded Account">Funded Account (Live Capital)</option>
+            <option value="Personal Live">Personal Live Account</option>
+            <option value="Demo Account">Demo / Practice Account</option>
+          </select>
+        </div>
+
         <div>
           <label class="block text-slate-300 mb-1.5 font-bold">Starting Account Balance ($)</label>
           <input type="number" id="input-base-balance" placeholder="10000 or 100000" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
         </div>
 
         <div>
-          <label class="block text-slate-300 mb-1.5 font-bold">Profit Target ($)</label>
+          <label class="block text-slate-300 mb-1.5 font-bold">Profit Target Goal ($)</label>
           <input type="number" id="input-profit-target" placeholder="800 or 8000" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-emerald-400 font-bold focus:outline-none focus:border-amber-400" />
         </div>
 
@@ -294,13 +308,16 @@
           <input type="number" id="input-max-drawdown" placeholder="500 or 5000" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-rose-400 font-bold focus:outline-none focus:border-amber-400" />
         </div>
 
-        <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-300">
-          💡 These target settings apply specifically to your active selected profile!
+        <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-300 space-y-1">
+          <div class="font-bold">⚠️ Danger Zone Option:</div>
+          <button type="button" onclick="resetGoalsAndProgress()" class="w-full py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-bold rounded-lg border border-rose-500/40 transition">
+            🔄 Reset Goals &amp; Rank Progress
+          </button>
         </div>
 
         <div class="pt-2 flex justify-end space-x-2.5">
           <button type="button" onclick="closeRuleConfigModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold">Cancel</button>
-          <button type="button" onclick="saveRuleConfig()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg">Save Rules</button>
+          <button type="button" onclick="saveRuleConfig()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg">Save Changes</button>
         </div>
       </div>
     </div>
@@ -369,7 +386,7 @@
 
     function getProfiles() {
       try {
-        const d = localStorage.getItem('mm_profiles_v8');
+        const d = localStorage.getItem('mm_profiles_v9');
         return d ? JSON.parse(d) : ['Main Account'];
       } catch (e) {
         return ['Main Account'];
@@ -377,7 +394,7 @@
     }
 
     function getActiveProfile() {
-      return localStorage.getItem('mm_active_prof_v8') || getProfiles()[0] || 'Main Account';
+      return localStorage.getItem('mm_active_prof_v9') || getProfiles()[0] || 'Main Account';
     }
 
     function getAccountConfig(profName) {
@@ -386,7 +403,7 @@
       if (data) {
         return JSON.parse(data);
       }
-      return { baseBalance: 10000, profitTarget: 800, maxDrawdown: 500 };
+      return { baseBalance: 10000, profitTarget: 800, maxDrawdown: 500, accountType: 'Prop Evaluation (Phase 1)' };
     }
 
     function saveAccountConfig(profName, config) {
@@ -415,7 +432,7 @@
         loadDropdown();
         return;
       }
-      localStorage.setItem('mm_active_prof_v8', e.target.value);
+      localStorage.setItem('mm_active_prof_v9', e.target.value);
       loadDropdown();
       renderProfileData();
     }
@@ -423,9 +440,16 @@
     function getTrades() {
       try {
         const prof = getActiveProfile();
-        const key = `mm_trades_v8_${prof}`;
+        const key = `mm_trades_v9_${prof}`;
         const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : [];
+        if (data) {
+          return JSON.parse(data);
+        }
+        // Fallback default sample trade logs matching index.html
+        return [
+          { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
+          { id: '2', date: '2026-11-05', pair: 'NAS100', direction: 'SELL', pnl: -250, rr: '1.5', sl: '20450', notes: 'Stopped out during high-impact news release.', screenshot: '' }
+        ];
       } catch (e) {
         return [];
       }
@@ -448,6 +472,7 @@
       if (!requireAuth()) return;
       const activeProf = getActiveProfile();
       const cfg = getAccountConfig(activeProf);
+      document.getElementById('input-account-type').value = cfg.accountType || 'Prop Evaluation (Phase 1)';
       document.getElementById('input-base-balance').value = cfg.baseBalance;
       document.getElementById('input-profit-target').value = cfg.profitTarget;
       document.getElementById('input-max-drawdown').value = cfg.maxDrawdown;
@@ -461,13 +486,24 @@
     function saveRuleConfig() {
       if (!requireAuth()) return;
       const activeProf = getActiveProfile();
+      const accountType = document.getElementById('input-account-type').value;
       const baseBalance = parseFloat(document.getElementById('input-base-balance').value) || 10000;
       const profitTarget = parseFloat(document.getElementById('input-profit-target').value) || 800;
       const maxDrawdown = parseFloat(document.getElementById('input-max-drawdown').value) || 500;
 
-      saveAccountConfig(activeProf, { baseBalance, profitTarget, maxDrawdown });
+      saveAccountConfig(activeProf, { accountType, baseBalance, profitTarget, maxDrawdown });
       closeRuleConfigModal();
       renderProfileData();
+    }
+
+    function resetGoalsAndProgress() {
+      if (!requireAuth()) return;
+      if (confirm("Are you sure you want to reset goals and clear trades for this account? This will set rank progress back to 0.")) {
+        const activeProf = getActiveProfile();
+        localStorage.removeItem(`mm_trades_v9_${activeProf}`);
+        closeRuleConfigModal();
+        renderProfileData();
+      }
     }
 
     function renderEmojiPicker() {
@@ -504,6 +540,9 @@
       document.getElementById('trader-nickname-display').textContent = nick;
       document.getElementById('avatar-emoji-display').textContent = emoji;
       document.getElementById('profile-account-name-text').textContent = `Account: ${activeProf}`;
+      
+      const badgeType = document.getElementById('account-type-badge');
+      if (badgeType) badgeType.textContent = cfg.accountType || 'Prop Evaluation';
 
       const targetPctStr = ((cfg.profitTarget / cfg.baseBalance) * 100).toFixed(1);
       const ddPctStr = ((cfg.maxDrawdown / cfg.baseBalance) * 100).toFixed(1);
