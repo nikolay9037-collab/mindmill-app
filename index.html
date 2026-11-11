@@ -220,7 +220,7 @@
     <div class="glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
         <h2 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider">📋 RECENT TRADE LOG HISTORY</h2>
-        <span id="log-count-text" class="text-xs font-mono text-slate-400">2 Logs Recorded</span>
+        <span id="log-count-text" class="text-xs font-mono text-slate-400">0 Logs Recorded</span>
       </div>
 
       <div class="overflow-x-auto rounded-xl border border-amber-500/15 bg-[#040507]">
@@ -237,34 +237,34 @@
             </tr>
           </thead>
           <tbody id="trade-table-body" class="divide-y divide-slate-800/60">
-            <!-- Initial static fallback content -->
-            <tr class="hover:bg-amber-500/5 transition bg-amber-500/10">
-              <td class="py-3 px-4 font-bold text-slate-300">2026-11-04</td>
-              <td class="py-3 px-4 font-black text-amber-300">EURUSD</td>
-              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300">BUY</span></td>
-              <td class="py-3 px-4 font-black text-emerald-400">+$500.00</td>
-              <td class="py-3 px-4 font-bold text-slate-300">2.5</td>
-              <td class="py-3 px-4"><span class="text-slate-600">--</span></td>
-              <td class="py-3 px-4 text-right">
-                <button onclick="deleteTrade('1')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 rounded-lg text-[10px] font-bold border border-rose-500/30">Delete</button>
-              </td>
-            </tr>
-            <tr class="hover:bg-amber-500/5 transition">
-              <td class="py-3 px-4 font-bold text-slate-300">2026-11-05</td>
-              <td class="py-3 px-4 font-black text-amber-300">NAS100</td>
-              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300">SELL</span></td>
-              <td class="py-3 px-4 font-black text-rose-400">-$250.00</td>
-              <td class="py-3 px-4 font-bold text-slate-300">1.5</td>
-              <td class="py-3 px-4"><span class="text-slate-600">--</span></td>
-              <td class="py-3 px-4 text-right">
-                <button onclick="deleteTrade('2')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 rounded-lg text-[10px] font-bold border border-rose-500/30">Delete</button>
-              </td>
-            </tr>
+            <!-- Rendered dynamically -->
           </tbody>
         </table>
       </div>
     </div>
 
+  </div>
+
+  <!-- CREATE NEW PROFILE MODAL (THEMED) -->
+  <div id="new-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 relative">
+      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
+        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">➕ Create New Profile</h3>
+        <button onclick="closeNewProfileModal()" class="text-slate-400 hover:text-amber-300 text-base font-bold">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Trading Profile Name</label>
+          <input type="text" id="new-profile-name-input" placeholder="e.g. FTMO $100K, Demo Account..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2.5">
+          <button type="button" onclick="closeNewProfileModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold hover:bg-slate-700 transition">Cancel</button>
+          <button type="button" onclick="saveNewProfile()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition">Create Profile</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- AUTH MODAL -->
@@ -426,16 +426,29 @@
 
     function createNewProfilePrompt() {
       if (!requireAuth()) return;
-      const name = prompt("Enter new trading profile name:");
-      if (name && name.trim() !== '') {
-        const cleanName = name.trim();
+      document.getElementById('new-profile-name-input').value = '';
+      document.getElementById('new-profile-modal').classList.remove('hidden');
+    }
+
+    function closeNewProfileModal() {
+      document.getElementById('new-profile-modal').classList.add('hidden');
+    }
+
+    function saveNewProfile() {
+      const input = document.getElementById('new-profile-name-input');
+      const name = input ? input.value.trim() : '';
+      if (name) {
         const profiles = getProfiles();
-        if (!profiles.includes(cleanName)) {
-          profiles.push(cleanName);
+        if (!profiles.includes(name)) {
+          profiles.push(name);
           safeSetItem('mm_profiles_v9', profiles);
         }
-        try { localStorage.setItem('mm_active_prof_v9', cleanName); } catch(e){}
+        // Initialize new profile with EMPTY trade log list
+        safeSetItem(`mm_trades_v9_${name}`, []);
+        
+        try { localStorage.setItem('mm_active_prof_v9', name); } catch(e){}
         selectedCandleIndex = 0;
+        closeNewProfileModal();
         loadProfileDropdown();
         renderDashboard();
       }
@@ -443,11 +456,16 @@
 
     function getTrades() {
       const prof = getActiveProfile();
-      const defaultSamples = [
-        { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
-        { id: '2', date: '2026-11-05', pair: 'NAS100', direction: 'SELL', pnl: -250, rr: '1.5', sl: '20450', notes: 'Stopped out during high-impact news release.', screenshot: '' }
-      ];
-      return safeGetItem(`mm_trades_v9_${prof}`, defaultSamples);
+      // Default sample logs ONLY for default "Main Account"
+      if (prof === 'Main Account') {
+        const defaultSamples = [
+          { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
+          { id: '2', date: '2026-11-05', pair: 'NAS100', direction: 'SELL', pnl: -250, rr: '1.5', sl: '20450', notes: 'Stopped out during high-impact news release.', screenshot: '' }
+        ];
+        return safeGetItem(`mm_trades_v9_${prof}`, defaultSamples);
+      }
+      // For any custom/new profile, default to EMPTY array
+      return safeGetItem(`mm_trades_v9_${prof}`, []);
     }
 
     function saveTrades(trades) {
@@ -686,7 +704,9 @@
           selectedCandleIndex = Math.max(0, trades.length - 1);
         }
 
+        const selPanel = document.getElementById('selected-trade-panel');
         if (trades.length > 0 && trades[selectedCandleIndex]) {
+          if (selPanel) selPanel.classList.remove('hidden');
           const sel = trades[selectedCandleIndex];
           const pairEl = document.getElementById('sel-pair');
           if (pairEl) pairEl.textContent = sel.pair;
@@ -716,6 +736,9 @@
               imgContainer.classList.add('hidden');
             }
           }
+        } else {
+          // Hide selected panel if no trades exist
+          if (selPanel) selPanel.classList.add('hidden');
         }
 
         // Render Trade Log Table
@@ -723,7 +746,7 @@
         if (tbody) {
           tbody.innerHTML = '';
           if (trades.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-500">No trade logs available for this profile.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500 font-mono">No trade logs available for this profile. Use the form above to log your first trade entry.</td></tr>`;
           } else {
             trades.forEach((t, idx) => {
               const tr = document.createElement('tr');
@@ -774,7 +797,6 @@
       renderDashboard();
     });
 
-    // Fallback trigger for immediate execution
     setTimeout(() => {
       renderDashboard();
     }, 50);
