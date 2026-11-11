@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MINDMILL - Professional Trading Terminal & Journal</title>
+  <title>MINDMILL - Pro Trading Journal & Terminal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -16,346 +16,382 @@
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .font-serif-luxury { font-family: 'Cinzel', serif; }
     
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #060709; }
     ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+    .glow-gold {
+      box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.2);
+    }
+    .glass-card {
+      background: linear-gradient(135deg, rgba(15, 17, 24, 0.95) 0%, rgba(10, 12, 18, 0.98) 100%);
+      backdrop-filter: blur(16px);
+    }
   </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
 
-  <!-- Ambient Luxury Background Glows -->
-  <div class="fixed top-0 left-1/4 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-  <div class="fixed bottom-0 right-1/4 w-[350px] sm:w-[700px] h-[350px] sm:h-[700px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none"></div>
+  <!-- Ambient Glow -->
+  <div class="fixed top-0 left-1/3 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none"></div>
 
-  <div class="max-w-7xl mx-auto w-full space-y-4 sm:space-y-6 relative z-10">
+  <div class="max-w-7xl mx-auto w-full space-y-4 sm:space-y-6 relative z-10 flex-1 flex flex-col">
     
-    <!-- Navigation Header -->
-    <header class="bg-gradient-to-r from-[#0D0F17] via-[#131724] to-[#0D0F17] border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-3.5 sm:gap-5 backdrop-blur-xl relative overflow-hidden">
-      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent"></div>
+    <!-- Header -->
+    <header class="glass-card border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent"></div>
 
-      <div class="flex items-center space-x-3 sm:space-x-4 w-full md:w-auto">
-        <div class="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center font-serif-luxury font-black text-slate-950 text-lg sm:text-xl shadow-xl shadow-amber-500/20 border border-amber-200/40 shrink-0">
-          MM
-        </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="text-lg sm:text-xl md:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500 font-serif-luxury uppercase">
-              MINDMILL
-            </h1>
-            <span class="text-[8px] sm:text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 tracking-widest uppercase font-mono">
-              PRO TERMINAL
-            </span>
+      <div class="flex items-center space-x-3.5 w-full md:w-auto justify-between md:justify-start">
+        <div class="flex items-center space-x-3.5">
+          <div class="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center font-serif-luxury font-black text-slate-950 text-xl sm:text-2xl shadow-xl shadow-amber-500/25 border border-amber-200/50 shrink-0">
+            MM
           </div>
-          <p class="text-[10px] sm:text-xs text-slate-400 tracking-wider font-light mt-0.5">Master the Mindset Behind the Chart</p>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-xl sm:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500 font-serif-luxury uppercase">
+                MINDMILL
+              </h1>
+              <span class="text-[9px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 tracking-widest uppercase font-mono">
+                PRO TERMINAL
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 tracking-wider font-semibold mt-0.5">Master the Mindset Behind the Chart</p>
+          </div>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
+      <!-- Nav Links -->
       <div class="flex items-center justify-center w-full md:w-auto bg-[#040507] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
         <a href="./index.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 transition">
           Chart &amp; Journal
         </a>
         <div class="h-4 w-[1px] bg-amber-500/20"></div>
-        <a href="./calendar.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition flex items-center justify-center space-x-1.5">
-          <span>Volatility Calendar</span>
+        <a href="./calendar.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition">
+          Volatility Calendar
         </a>
         <div class="h-4 w-[1px] bg-amber-500/20"></div>
-        <a href="./profile.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition flex items-center justify-center space-x-1.5">
+        <a href="./profile.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition flex items-center justify-center space-x-1">
           <span>👤 Profile</span>
         </a>
       </div>
 
-      <!-- Profile Selector -->
-      <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-2.5">
-        <div class="flex-1 md:flex-initial flex items-center space-x-1.5 bg-[#040507] border border-amber-500/30 rounded-2xl px-2.5 py-1.5 shadow min-w-[140px]">
-          <span class="text-[10px] sm:text-xs text-slate-400 font-mono">Profile:</span>
-          <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-[11px] sm:text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
-            <!-- Loaded dynamically -->
+      <!-- Account Switcher & Auth Gate -->
+      <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-2">
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow min-w-[130px]">
+          <span class="text-xs text-slate-400 font-mono">Profile:</span>
+          <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
+            <option value="Main Account">✓ Main Account</option>
           </select>
         </div>
-        <button onclick="openCreateProfileModal()" class="px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-300 rounded-2xl text-xs font-mono font-bold transition">
+
+        <button onclick="createNewProfilePrompt()" class="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 transition whitespace-nowrap">
           ➕ New
+        </button>
+
+        <button id="auth-header-btn" onclick="openAuthModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-mono text-xs font-black rounded-2xl transition shadow-md whitespace-nowrap">
+          🔑 Sign In
         </button>
       </div>
     </header>
 
-    <!-- Stat Metrics Cards -->
+    <!-- Metrics Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-      <div class="bg-gradient-to-br from-[#0D0F17] to-[#08090E] border border-amber-500/20 p-3.5 sm:p-5 rounded-2xl shadow-xl">
-        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-wider block mb-1">TOTAL NET YIELD</span>
-        <div id="stat-total-pnl" class="text-base sm:text-2xl font-black font-mono text-emerald-400">+$0.00</div>
-        <span id="stat-trade-count" class="text-[10px] text-slate-500 font-mono">0 Trades Logged</span>
+      <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
+        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">TOTAL NET YIELD</span>
+        <div id="stat-net-pnl" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">+$250.00</div>
+        <div id="stat-trades-count" class="text-[11px] text-slate-400 font-mono">2 Trades Logged</div>
       </div>
 
-      <div class="bg-gradient-to-br from-[#0D0F17] to-[#08090E] border border-amber-500/20 p-3.5 sm:p-5 rounded-2xl shadow-xl">
-        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-wider block mb-1">WIN RATE</span>
-        <div id="stat-win-rate" class="text-base sm:text-2xl font-black font-mono text-amber-300">0.0%</div>
-        <span id="stat-win-loss-count" class="text-[10px] text-slate-500 font-mono">0W - 0L</span>
+      <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
+        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">WIN RATE</span>
+        <div id="stat-win-rate" class="text-xl sm:text-2xl font-black font-mono text-amber-300">50.0%</div>
+        <div id="stat-wl-count" class="text-[11px] text-slate-400 font-mono">1W - 1L</div>
       </div>
 
-      <div class="bg-gradient-to-br from-[#0D0F17] to-[#08090E] border border-amber-500/20 p-3.5 sm:p-5 rounded-2xl shadow-xl">
-        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-wider block mb-1">AVG RISK:REWARD</span>
-        <div id="stat-avg-rr" class="text-base sm:text-2xl font-black font-mono text-amber-300">1:0.00</div>
-        <span class="text-[10px] text-slate-500 font-mono">Target Ratio</span>
+      <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
+        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">AVG RISK:REWARD</span>
+        <div id="stat-avg-rr" class="text-xl sm:text-2xl font-black font-mono text-amber-300">1 : 2.00</div>
+        <div class="text-[11px] text-slate-400 font-mono">Target Ratio</div>
       </div>
 
-      <div class="bg-gradient-to-br from-[#0D0F17] to-[#08090E] border border-amber-500/20 p-3.5 sm:p-5 rounded-2xl shadow-xl">
-        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-wider block mb-1">PROFIT FACTOR</span>
-        <div id="stat-profit-factor" class="text-base sm:text-2xl font-black font-mono text-emerald-400">0.00</div>
-        <span class="text-[10px] text-slate-500 font-mono">Gross W / Gross L</span>
-      </div>
-    </div>
-
-    <!-- Interactive Equity & Candlestick Chart Engine -->
-    <div class="bg-gradient-to-b from-[#0F111B] via-[#0A0C14] to-[#06070B] border border-amber-500/25 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 relative">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-amber-500/15 pb-4">
-        <div>
-          <h2 class="text-xs sm:text-sm font-bold text-amber-100 font-mono tracking-wide flex items-center space-x-2">
-            <span>📈 EQUITY CANDLESTICK PRICE ACTION</span>
-          </h2>
-          <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Hover or tap any candle to inspect trade details.</p>
-        </div>
-        <div class="flex items-center space-x-2 text-[10px] sm:text-xs font-mono">
-          <span class="flex items-center space-x-1"><span class="h-2 w-2 rounded-full bg-emerald-400"></span><span class="text-emerald-400">Green = Profit</span></span>
-          <span class="flex items-center space-x-1"><span class="h-2 w-2 rounded-full bg-rose-500"></span><span class="text-rose-400">Red = Loss</span></span>
-        </div>
-      </div>
-
-      <!-- Canvas Chart Container -->
-      <div class="w-full h-64 sm:h-80 relative bg-[#040507] rounded-xl sm:rounded-2xl border border-amber-500/15 p-2 overflow-hidden shadow-inner">
-        <canvas id="equity-chart-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+      <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
+        <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">PROFIT FACTOR</span>
+        <div id="stat-profit-factor" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">2.00</div>
+        <div class="text-[11px] text-slate-400 font-mono">Gross W / Gross L</div>
       </div>
     </div>
 
-    <!-- Main Workspace Grid: Trade Logger & History Table -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       
-      <!-- Trade Entry Form -->
-      <div class="bg-gradient-to-b from-[#0F111B] to-[#0A0C14] border border-amber-500/25 rounded-2xl sm:rounded-3xl p-5 shadow-2xl space-y-4">
-        <h3 class="text-sm font-bold text-amber-200 font-mono tracking-wide border-b border-amber-500/15 pb-3 flex items-center justify-between">
-          <span>✍️ LOG NEW TRADE</span>
-          <span id="form-mode-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono">CREATE</span>
-        </h3>
+      <!-- Price Action Candlestick Chart -->
+      <div class="lg:col-span-2 glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+          <div>
+            <h2 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider flex items-center space-x-2">
+              <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>EQUITY CANDLESTICK PRICE ACTION</span>
+            </h2>
+            <p class="text-xs text-slate-400 font-mono mt-0.5">Hover or tap any candle to inspect trade details.</p>
+          </div>
+          <div class="text-xs font-mono text-slate-400 flex items-center space-x-3">
+            <span><strong class="text-emerald-400">●</strong> Green = Win</span>
+            <span><strong class="text-rose-400">●</strong> Red = Loss</span>
+          </div>
+        </div>
 
-        <form id="trade-form" onsubmit="handleTradeSubmit(event)" class="space-y-3.5 text-xs font-mono">
-          <input type="hidden" id="edit-trade-id" value="" />
+        <div id="canvas-wrapper" class="relative w-full h-[280px] sm:h-[340px] bg-[#040507] rounded-2xl border border-amber-500/20 overflow-hidden">
+          <canvas id="candlestick-canvas" class="w-full h-full cursor-pointer block"></canvas>
+        </div>
 
+        <!-- Selected Trade Breakdown Panel -->
+        <div id="selected-trade-panel" class="bg-[#040507] border border-amber-500/20 rounded-2xl p-4 space-y-3">
+          <div class="flex justify-between items-center border-b border-amber-500/10 pb-2">
+            <div class="flex items-center space-x-2">
+              <span id="sel-pair" class="font-mono font-black text-amber-300 text-sm">EURUSD</span>
+              <span id="sel-direction" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300">BUY</span>
+            </div>
+            <div id="sel-pnl" class="font-mono font-black text-emerald-400 text-base">+$500.00</div>
+          </div>
+          <p id="sel-notes" class="text-xs text-slate-300 font-mono italic">Bullish order block retest during London session.</p>
+          <div id="sel-screenshot-container" class="hidden pt-1">
+            <span class="text-[10px] font-mono text-slate-400 block mb-1">Attached Screenshot:</span>
+            <img id="sel-screenshot-img" src="" alt="Chart Screenshot" class="max-h-32 rounded-lg border border-amber-500/30 cursor-pointer object-cover" onclick="openLightbox(this.src)" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade Logger Form -->
+      <div class="glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+          <h2 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider">✍️ LOG NEW TRADE</h2>
+          <span class="text-xs font-mono text-amber-400 font-bold" id="form-account-label">Main Account</span>
+        </div>
+
+        <form onsubmit="handleTradeSubmit(event)" class="space-y-3.5 text-xs font-mono">
           <div>
             <label class="block text-slate-400 mb-1">Asset Pair / Ticker</label>
-            <input type="text" id="input-pair" placeholder="e.g. EURUSD, NAS100, XAUUSD" required class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400 uppercase" />
+            <input type="text" id="input-pair" required placeholder="e.g. EURUSD, NAS100, XAUUSD" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-slate-400 mb-1">Direction</label>
-              <select id="input-direction" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400">
-                <option value="BUY">🟢 BUY (Long)</option>
-                <option value="SELL">🔴 SELL (Short)</option>
+              <select id="input-direction" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none">
+                <option value="BUY">BUY / LONG</option>
+                <option value="SELL">SELL / SHORT</option>
               </select>
             </div>
             <div>
-              <label class="block text-slate-400 mb-1">P&L Amount ($)</label>
-              <input type="number" step="0.01" id="input-pnl" placeholder="e.g. +350 or -150" required class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-emerald-400 font-bold focus:outline-none focus:border-amber-400" />
+              <label class="block text-slate-400 mb-1">Net P&amp;L Amount ($)</label>
+              <input type="number" step="0.01" id="input-pnl" required placeholder="+500 or -250" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-slate-400 mb-1">Risk : Reward Ratio</label>
-              <input type="text" id="input-rr" placeholder="e.g. 1:2.5" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+              <label class="block text-slate-400 mb-1">Risk:Reward Ratio</label>
+              <input type="text" id="input-rr" placeholder="e.g. 2.5" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
             </div>
             <div>
-              <label class="block text-slate-400 mb-1">Lot Size</label>
-              <input type="text" id="input-lot" placeholder="e.g. 1.50" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
-            </div>
-          </div>
-
-          <!-- OPTIONAL SCREENSHOT ATTACHMENT -->
-          <div class="border border-amber-500/20 bg-[#040507] p-3 rounded-xl space-y-2">
-            <label class="block text-amber-300 font-bold text-[11px] flex items-center space-x-1">
-              <span>🖼️ Attach Chart Screenshot (Optional)</span>
-            </label>
-            <div class="flex flex-col gap-2">
-              <input type="file" id="input-chart-file" accept="image/*" onchange="handleImageFileSelect(event)" class="text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30 cursor-pointer" />
-              <div class="text-[9px] text-slate-500 text-center uppercase tracking-wider">- Or Paste Image URL -</div>
-              <input type="url" id="input-chart-url" placeholder="https://tradingview.com/x/..." class="w-full bg-[#060709] border border-amber-500/20 rounded-lg p-2 text-slate-300 text-[11px] focus:outline-none focus:border-amber-400" />
-            </div>
-            <div id="image-preview-container" class="hidden relative rounded-lg overflow-hidden border border-amber-500/30 max-h-32 mt-2">
-              <img id="image-preview-element" src="" class="w-full h-full object-cover" alt="Preview" />
-              <button type="button" onclick="clearSelectedImage()" class="absolute top-1 right-1 bg-slate-950/80 text-rose-400 rounded-full w-5 h-5 text-[10px] flex items-center justify-center border border-rose-500/30">✕</button>
+              <label class="block text-slate-400 mb-1">Stop Loss Price</label>
+              <input type="text" id="input-sl" placeholder="e.g. 1.0850" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
             </div>
           </div>
 
           <div>
-            <label class="block text-slate-400 mb-1">Execution Notes / Strategy</label>
-            <textarea id="input-notes" rows="2" placeholder="e.g. Confluence at 4H FVG + NY Session Open..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-amber-400"></textarea>
+            <label class="block text-slate-400 mb-1">Trade Notes &amp; Confluences</label>
+            <textarea id="input-notes" rows="2" placeholder="Key setup reasons..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-amber-400"></textarea>
           </div>
 
-          <div class="flex space-x-2 pt-2">
-            <button type="submit" id="submit-btn" class="flex-1 py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase">
-              Save Trade Log
-            </button>
-            <button type="button" id="cancel-edit-btn" onclick="resetForm()" class="hidden px-4 py-3 bg-slate-800 text-slate-300 font-bold rounded-xl hover:bg-slate-700 transition">
-              Cancel
-            </button>
+          <div>
+            <label class="block text-slate-400 mb-1">Chart Screenshot URL (Optional)</label>
+            <input type="url" id="input-screenshot" placeholder="https://..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 focus:outline-none focus:border-amber-400" />
           </div>
+
+          <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase tracking-wider">
+            Log Trade Entry
+          </button>
         </form>
       </div>
+    </div>
 
-      <!-- Trade History Table & Selected Breakdown -->
-      <div class="lg:col-span-2 space-y-6">
+    <!-- History Log Table -->
+    <div class="glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+        <h2 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider">📋 RECENT TRADE LOG HISTORY</h2>
+        <span id="log-count-text" class="text-xs font-mono text-slate-400">2 Logs Recorded</span>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-amber-500/15 bg-[#040507]">
+        <table class="w-full text-left text-xs font-mono min-w-[600px]">
+          <thead>
+            <tr class="bg-[#0B0D15] text-amber-300/80 uppercase border-b border-amber-500/20">
+              <th class="py-3 px-4">Date</th>
+              <th class="py-3 px-4">Pair</th>
+              <th class="py-3 px-4">Dir</th>
+              <th class="py-3 px-4">P&amp;L ($)</th>
+              <th class="py-3 px-4">R:R</th>
+              <th class="py-3 px-4">Chart</th>
+              <th class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="trade-table-body" class="divide-y divide-slate-800/60">
+            <!-- Initial static fallback content -->
+            <tr class="hover:bg-amber-500/5 transition bg-amber-500/10">
+              <td class="py-3 px-4 font-bold text-slate-300">2026-11-04</td>
+              <td class="py-3 px-4 font-black text-amber-300">EURUSD</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300">BUY</span></td>
+              <td class="py-3 px-4 font-black text-emerald-400">+$500.00</td>
+              <td class="py-3 px-4 font-bold text-slate-300">2.5</td>
+              <td class="py-3 px-4"><span class="text-slate-600">--</span></td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="deleteTrade('1')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 rounded-lg text-[10px] font-bold border border-rose-500/30">Delete</button>
+              </td>
+            </tr>
+            <tr class="hover:bg-amber-500/5 transition">
+              <td class="py-3 px-4 font-bold text-slate-300">2026-11-05</td>
+              <td class="py-3 px-4 font-black text-amber-300">NAS100</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300">SELL</span></td>
+              <td class="py-3 px-4 font-black text-rose-400">-$250.00</td>
+              <td class="py-3 px-4 font-bold text-slate-300">1.5</td>
+              <td class="py-3 px-4"><span class="text-slate-600">--</span></td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="deleteTrade('2')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 rounded-lg text-[10px] font-bold border border-rose-500/30">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div id="auth-modal-overlay" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 relative">
+      <div class="text-center space-y-2 border-b border-amber-500/20 pb-4">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-200 to-amber-600 flex items-center justify-center text-slate-950 font-black font-serif-luxury text-xl mx-auto shadow-lg">
+          MM
+        </div>
+        <h3 class="text-xl font-black text-amber-200 font-serif-luxury tracking-wide">MINDMILL Access Gate</h3>
+        <p class="text-xs text-slate-400 font-mono">Sign in to log trades, switch profiles, and save data.</p>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1">Trader Email</label>
+          <input type="email" id="auth-email-input" required placeholder="trader@mindmill.com" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Passcode / Password</label>
+          <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
         
-        <!-- Table -->
-        <div class="bg-gradient-to-b from-[#0F111B] to-[#0A0C14] border border-amber-500/25 rounded-2xl sm:rounded-3xl p-5 shadow-2xl space-y-4">
-          <div class="flex justify-between items-center border-b border-amber-500/15 pb-3">
-            <h3 class="text-sm font-bold text-amber-200 font-mono tracking-wide">
-              📋 RECENT LOG HISTORY
-            </h3>
-            <span id="history-count-badge" class="text-xs font-mono text-slate-400">0 logs</span>
-          </div>
-
-          <div class="overflow-x-auto rounded-xl border border-amber-500/15 bg-[#040507]">
-            <table class="w-full text-left text-xs font-mono min-w-[500px]">
-              <thead>
-                <tr class="bg-[#0B0D15] text-amber-300/80 uppercase border-b border-amber-500/20">
-                  <th class="py-3 px-3">Date</th>
-                  <th class="py-3 px-3">Pair</th>
-                  <th class="py-3 px-3">Dir</th>
-                  <th class="py-3 px-3">P&L ($)</th>
-                  <th class="py-3 px-3">R:R</th>
-                  <th class="py-3 px-3">Chart</th>
-                  <th class="py-3 px-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="trade-history-body" class="divide-y divide-slate-800/60">
-                <!-- Loaded dynamically -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Selected Trade Breakdown Panel -->
-        <div id="breakdown-panel" class="bg-gradient-to-b from-[#0F111B] to-[#0A0C14] border border-amber-500/25 rounded-2xl sm:rounded-3xl p-5 shadow-2xl space-y-3">
-          <h3 class="text-xs font-bold text-amber-300 font-mono uppercase tracking-wide border-b border-amber-500/15 pb-2">
-            🔍 SELECTED TRADE BREAKDOWN
-          </h3>
-          <div id="breakdown-content" class="text-xs font-mono text-slate-400 space-y-2">
-            <p>Select any trade row from the history table above to inspect full screenshots and notes.</p>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Footer with Legal Links -->
-    <footer class="pt-6 pb-2 text-center text-slate-500 text-xs font-mono flex flex-col sm:flex-row items-center justify-between border-t border-amber-500/10 gap-2">
-      <p>&copy; 2026 MINDMILL Pro. All rights reserved.</p>
-      <button onclick="openLegalModal()" class="hover:text-amber-400 transition underline">Terms &amp; Legal Policies (Strict No-Refund)</button>
-    </footer>
-
-  </div>
-
-  <!-- MANDATORY FIRST-TIME LEGAL GATE MODAL POP-UP -->
-  <div id="legal-modal-overlay" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 relative max-h-[90vh] flex flex-col">
-      <div class="flex items-center space-x-3 border-b border-amber-500/20 pb-4">
-        <div class="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 text-xl font-black">
-          ⚖️
-        </div>
-        <div>
-          <h3 class="text-lg font-black text-amber-200 font-serif-luxury tracking-wide">MINDMILL Pro — Legal &amp; Compliance Terms</h3>
-          <p class="text-xs text-slate-400 font-mono">Please review and accept our platform terms before proceeding.</p>
-        </div>
-      </div>
-
-      <div class="flex-1 overflow-y-auto space-y-4 text-xs font-mono text-slate-300 pr-2 border border-amber-500/15 bg-[#040507] p-4 rounded-2xl">
-        
-        <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 space-y-1">
-          <strong class="font-bold block text-sm">⚠️ STRICT NO-REFUND POLICY:</strong>
-          <p class="text-[11px] leading-relaxed">
-            Due to immediate full digital access, proprietary trading indicators, and real-time market features, 
-            <strong>ALL SALES ARE FINAL AND STRICTLY NON-REFUNDABLE ($24.99/mo &amp; $240/yr)</strong>. Canceling your subscription prevents future billing, but no partial or full refunds will be issued for active periods.
-          </p>
-        </div>
-
-        <div>
-          <strong class="text-amber-300 font-bold block mb-1">1. Financial &amp; Investment Disclaimer</strong>
-          <p class="text-slate-400 leading-relaxed">
-            MINDMILL Pro is a trade journaling and analytical software tool. We do not provide financial, investment, or trading advice. Financial trading involves high risk and may result in the loss of your capital.
-          </p>
-        </div>
-
-        <div>
-          <strong class="text-amber-300 font-bold block mb-1">2. User Responsibility &amp; Chargebacks</strong>
-          <p class="text-slate-400 leading-relaxed">
-            Filing fraudulent chargebacks or payment disputes will result in immediate permanent account termination and IP blacklisting.
-          </p>
-        </div>
-
-      </div>
-
-      <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-amber-500/20">
-        <button type="button" onclick="handleDeclineTerms()" class="w-full sm:w-auto px-5 py-2.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:bg-rose-500/20 rounded-xl font-mono text-xs font-bold transition">
-          ✕ Disagree &amp; Exit
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase">
+          Sign In &amp; Access Terminal
         </button>
-        <button type="button" onclick="handleAcceptTerms()" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl font-mono text-xs shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase">
-          ✓ I Agree &amp; Accept Terms
-        </button>
+      </form>
+
+      <div class="pt-2 text-center border-t border-amber-500/20">
+        <button onclick="closeAuthModal()" class="text-xs font-mono text-slate-400 hover:text-amber-300 underline">Continue as Guest (Read Only)</button>
       </div>
     </div>
   </div>
 
-  <!-- Profile Creation Modal -->
-  <div id="create-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
-        <h3 class="text-sm font-bold text-amber-200 font-mono uppercase">Create Isolated Trading Profile</h3>
-        <button onclick="closeCreateProfileModal()" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <div class="space-y-3 text-xs font-mono">
-        <label class="block text-slate-300">Profile Name</label>
-        <input type="text" id="new-profile-name-input" placeholder="e.g. 10K FTMO Challenge, Personal Live" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
-        <div class="pt-2 flex justify-end space-x-2">
-          <button onclick="closeCreateProfileModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
-          <button onclick="confirmCreateProfile()" class="px-5 py-2 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-bold rounded-xl">Create Profile</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lightbox Image Zoom Modal -->
-  <div id="lightbox-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
-    <div class="max-w-5xl w-full max-h-[90vh] relative flex flex-col items-center justify-center">
-      <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] rounded-2xl border border-amber-500/40 shadow-2xl object-contain" />
-      <p class="text-xs font-mono text-slate-400 mt-2">Click anywhere to close zoom</p>
-    </div>
+  <!-- Screenshot Lightbox -->
+  <div id="lightbox-overlay" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Zoomed Screenshot" class="max-w-full max-h-[90vh] rounded-2xl border-2 border-amber-500/40 shadow-2xl object-contain" />
   </div>
 
   <script>
-    let currentSelectedImage = '';
+    let selectedCandleIndex = 0;
 
-    // PROFILES SYSTEM
-    function getProfiles() {
+    function safeGetItem(key, fallback) {
       try {
-        const d = localStorage.getItem('mm_profiles_v8');
-        return d ? JSON.parse(d) : ['Main Account'];
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
       } catch (e) {
-        return ['Main Account'];
+        return fallback;
       }
     }
 
-    function saveProfiles(list) {
-      localStorage.setItem('mm_profiles_v8', JSON.stringify(list));
+    function safeSetItem(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch (e) {}
+    }
+
+    function isLoggedIn() {
+      try {
+        return localStorage.getItem('mm_user_logged_in') === 'true';
+      } catch (e) { return false; }
+    }
+
+    function requireAuth(actionCallback) {
+      if (!isLoggedIn()) {
+        openAuthModal();
+        return false;
+      }
+      if (typeof actionCallback === 'function') actionCallback();
+      return true;
+    }
+
+    function openAuthModal() {
+      const modal = document.getElementById('auth-modal-overlay');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('auth-modal-overlay');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('auth-email-input');
+      const email = emailInput ? emailInput.value.trim() : '';
+      if (email) {
+        try {
+          localStorage.setItem('mm_user_logged_in', 'true');
+          localStorage.setItem('mm_user_email', email);
+        } catch (err) {}
+        closeAuthModal();
+        updateAuthBtnUI();
+        renderDashboard();
+      }
+    }
+
+    function updateAuthBtnUI() {
+      const btn = document.getElementById('auth-header-btn');
+      if (!btn) return;
+      if (isLoggedIn()) {
+        let email = 'Trader';
+        try { email = localStorage.getItem('mm_user_email') || 'Trader'; } catch(e){}
+        btn.innerHTML = `👤 ${email.split('@')[0]}`;
+        btn.className = "px-3.5 py-1.5 bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
+        btn.onclick = () => {
+          if (confirm('Sign out of MINDMILL?')) {
+            try { localStorage.removeItem('mm_user_logged_in'); } catch(e){}
+            updateAuthBtnUI();
+            renderDashboard();
+          }
+        };
+      } else {
+        btn.innerHTML = `🔑 Sign In`;
+        btn.className = "px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-mono text-xs font-black rounded-2xl transition shadow-md cursor-pointer";
+        btn.onclick = openAuthModal;
+      }
+    }
+
+    function getProfiles() {
+      return safeGetItem('mm_profiles_v9', ['Main Account']);
     }
 
     function getActiveProfile() {
-      return localStorage.getItem('mm_active_prof_v8') || getProfiles()[0] || 'Main Account';
-    }
-
-    function setActiveProfile(name) {
-      localStorage.setItem('mm_active_prof_v8', name);
+      try {
+        return localStorage.getItem('mm_active_prof_v9') || getProfiles()[0] || 'Main Account';
+      } catch(e) { return 'Main Account'; }
     }
 
     function loadProfileDropdown() {
@@ -363,367 +399,385 @@
       if (!dropdown) return;
       dropdown.innerHTML = '';
       const profiles = getProfiles();
-      const active = getActiveProfile();
+      const activeProf = getActiveProfile();
 
       profiles.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p;
-        opt.textContent = (p === active ? '✓ ' : '') + p;
-        if (p === active) opt.selected = true;
+        opt.textContent = (p === activeProf ? '✓ ' : '') + p;
+        if (p === activeProf) opt.selected = true;
         dropdown.appendChild(opt);
       });
+
+      const label = document.getElementById('form-account-label');
+      if (label) label.textContent = activeProf;
     }
 
     function handleProfileChange(e) {
-      setActiveProfile(e.target.value);
-      loadProfileDropdown();
-      renderApp();
-    }
-
-    function openCreateProfileModal() {
-      document.getElementById('new-profile-name-input').value = '';
-      document.getElementById('create-profile-modal').classList.remove('hidden');
-    }
-
-    function closeCreateProfileModal() {
-      document.getElementById('create-profile-modal').classList.add('hidden');
-    }
-
-    function confirmCreateProfile() {
-      const name = document.getElementById('new-profile-name-input').value.trim();
-      if (name) {
-        const profiles = getProfiles();
-        if (!profiles.includes(name)) {
-          profiles.push(name);
-          saveProfiles(profiles);
-        }
-        setActiveProfile(name);
-        closeCreateProfileModal();
+      if (!requireAuth()) {
         loadProfileDropdown();
-        renderApp();
+        return;
+      }
+      try { localStorage.setItem('mm_active_prof_v9', e.target.value); } catch(err){}
+      selectedCandleIndex = 0;
+      loadProfileDropdown();
+      renderDashboard();
+    }
+
+    function createNewProfilePrompt() {
+      if (!requireAuth()) return;
+      const name = prompt("Enter new trading profile name:");
+      if (name && name.trim() !== '') {
+        const cleanName = name.trim();
+        const profiles = getProfiles();
+        if (!profiles.includes(cleanName)) {
+          profiles.push(cleanName);
+          safeSetItem('mm_profiles_v9', profiles);
+        }
+        try { localStorage.setItem('mm_active_prof_v9', cleanName); } catch(e){}
+        selectedCandleIndex = 0;
+        loadProfileDropdown();
+        renderDashboard();
       }
     }
 
-    // TRADES SYSTEM PER PROFILE
     function getTrades() {
-      try {
-        const prof = getActiveProfile();
-        const key = `mm_trades_v8_${prof}`;
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : [];
-      } catch (e) {
-        return [];
-      }
+      const prof = getActiveProfile();
+      const defaultSamples = [
+        { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
+        { id: '2', date: '2026-11-05', pair: 'NAS100', direction: 'SELL', pnl: -250, rr: '1.5', sl: '20450', notes: 'Stopped out during high-impact news release.', screenshot: '' }
+      ];
+      return safeGetItem(`mm_trades_v9_${prof}`, defaultSamples);
     }
 
     function saveTrades(trades) {
       const prof = getActiveProfile();
-      const key = `mm_trades_v8_${prof}`;
-      localStorage.setItem(key, JSON.stringify(trades));
+      safeSetItem(`mm_trades_v9_${prof}`, trades);
     }
 
-    // IMAGE UPLOAD HANDLERS
-    function handleImageFileSelect(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          currentSelectedImage = evt.target.result;
-          showImagePreview(currentSelectedImage);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function showImagePreview(src) {
-      document.getElementById('image-preview-element').src = src;
-      document.getElementById('image-preview-container').classList.remove('hidden');
-    }
-
-    function clearSelectedImage() {
-      currentSelectedImage = '';
-      document.getElementById('input-chart-file').value = '';
-      document.getElementById('input-chart-url').value = '';
-      document.getElementById('image-preview-container').classList.add('hidden');
-    }
-
-    function openLightbox(src) {
-      document.getElementById('lightbox-img').src = src;
-      document.getElementById('lightbox-modal').classList.remove('hidden');
-    }
-
-    function closeLightbox() {
-      document.getElementById('lightbox-modal').classList.add('hidden');
-    }
-
-    // FORM SUBMISSION & LOGIC
     function handleTradeSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('edit-trade-id').value;
-      const pair = document.getElementById('input-pair').value.toUpperCase();
+      if (!requireAuth()) return;
+
+      const pair = document.getElementById('input-pair').value.trim().toUpperCase();
       const direction = document.getElementById('input-direction').value;
       const pnl = parseFloat(document.getElementById('input-pnl').value) || 0;
-      const rr = document.getElementById('input-rr').value.trim() || '--';
-      const lot = document.getElementById('input-lot').value.trim() || '--';
+      const rr = document.getElementById('input-rr').value.trim() || '1.0';
+      const sl = document.getElementById('input-sl').value.trim() || '--';
       const notes = document.getElementById('input-notes').value.trim();
-      
-      const urlImg = document.getElementById('input-chart-url').value.trim();
-      const finalImg = urlImg || currentSelectedImage || '';
+      const screenshot = document.getElementById('input-screenshot').value.trim();
+
+      const newTrade = {
+        id: Date.now().toString(),
+        date: new Date().toISOString().slice(0, 10),
+        pair,
+        direction,
+        pnl,
+        rr,
+        sl,
+        notes,
+        screenshot
+      };
 
       const trades = getTrades();
-
-      if (id) {
-        const idx = trades.findIndex(t => t.id === id);
-        if (idx !== -1) {
-          trades[idx] = { ...trades[idx], pair, direction, pnl, rr, lot, notes, image: finalImg || trades[idx].image };
-        }
-      } else {
-        const newTrade = {
-          id: 'tr_' + Date.now(),
-          date: new Date().toISOString().slice(0, 10),
-          pair,
-          direction,
-          pnl,
-          rr,
-          lot,
-          notes,
-          image: finalImg
-        };
-        trades.push(newTrade);
-      }
-
+      trades.push(newTrade);
       saveTrades(trades);
-      resetForm();
-      renderApp();
-    }
 
-    function resetForm() {
-      document.getElementById('trade-form').reset();
-      document.getElementById('edit-trade-id').value = '';
-      document.getElementById('form-mode-badge').textContent = 'CREATE';
-      document.getElementById('submit-btn').textContent = 'Save Trade Log';
-      document.getElementById('cancel-edit-btn').classList.add('hidden');
-      clearSelectedImage();
-    }
-
-    function editTrade(id) {
-      const trades = getTrades();
-      const t = trades.find(tr => tr.id === id);
-      if (!t) return;
-
-      document.getElementById('edit-trade-id').value = t.id;
-      document.getElementById('input-pair').value = t.pair;
-      document.getElementById('input-direction').value = t.direction;
-      document.getElementById('input-pnl').value = t.pnl;
-      document.getElementById('input-rr').value = t.rr;
-      document.getElementById('input-lot').value = t.lot;
-      document.getElementById('input-notes').value = t.notes || '';
-      
-      if (t.image) {
-        currentSelectedImage = t.image;
-        showImagePreview(t.image);
-      }
-
-      document.getElementById('form-mode-badge').textContent = 'EDITING';
-      document.getElementById('submit-btn').textContent = 'Update Log';
-      document.getElementById('cancel-edit-btn').classList.remove('hidden');
+      e.target.reset();
+      selectedCandleIndex = trades.length - 1;
+      renderDashboard();
     }
 
     function deleteTrade(id) {
-      if (confirm('Delete this trade log permanently?')) {
-        let trades = getTrades();
-        trades = trades.filter(t => t.id !== id);
-        saveTrades(trades);
-        renderApp();
-      }
+      if (!requireAuth()) return;
+      let trades = getTrades();
+      trades = trades.filter(t => t.id !== id);
+      saveTrades(trades);
+      selectedCandleIndex = 0;
+      renderDashboard();
     }
 
-    function selectTradeBreakdown(id) {
-      const trades = getTrades();
-      const t = trades.find(tr => tr.id === id);
-      const container = document.getElementById('breakdown-content');
-      if (!t) return;
+    function drawCandlesticks(trades) {
+      window.requestAnimationFrame(() => {
+        try {
+          const canvas = document.getElementById('candlestick-canvas');
+          if (!canvas) return;
 
-      container.innerHTML = `
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-amber-300 text-sm">${t.pair} (${t.direction})</span>
-            <span class="${t.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-black text-sm">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</span>
-          </div>
-          <p class="text-slate-300"><strong>Notes:</strong> ${t.notes || 'No notes provided.'}</p>
-          ${t.image ? `
-            <div class="mt-2">
-              <span class="text-slate-400 block mb-1">Chart Screenshot (Click to zoom):</span>
-              <img src="${t.image}" onclick="openLightbox('${t.image}')" class="rounded-xl border border-amber-500/30 max-h-64 object-cover cursor-pointer hover:opacity-90 transition" />
-            </div>
-          ` : '<p class="text-slate-500 italic">No chart screenshot attached.</p>'}
-        </div>
-      `;
-    }
+          const wrapper = document.getElementById('canvas-wrapper');
+          const width = wrapper && wrapper.clientWidth > 0 ? wrapper.clientWidth : 320;
+          const height = wrapper && wrapper.clientHeight > 0 ? wrapper.clientHeight : 280;
 
-    // CANVAS CHART RENDERER
-    function renderChart(trades) {
-      const canvas = document.getElementById('equity-chart-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
+          const dpr = window.devicePixelRatio || 1;
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
 
-      if (trades.length === 0) {
-        ctx.fillStyle = '#64748b';
-        ctx.font = '12px "JetBrains Mono"';
-        ctx.textAlign = 'center';
-        ctx.fillText('Log trades to generate equity candlestick price action', canvas.width / 2, canvas.height / 2);
-        return;
-      }
+          ctx.scale(dpr, dpr);
 
-      let cumulative = 0;
-      const points = [0];
-      trades.forEach(t => {
-        cumulative += t.pnl;
-        points.push(cumulative);
-      });
+          const W = width;
+          const H = height;
 
-      const maxP = Math.max(...points, 100);
-      const minP = Math.min(...points, -100);
-      const range = (maxP - minP) || 1;
+          ctx.clearRect(0, 0, W, H);
 
-      const padding = 40;
-      const w = canvas.width - padding * 2;
-      const h = canvas.height - padding * 2;
-      const step = w / (points.length - 1 || 1);
+          // Grid lines
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+          ctx.lineWidth = 1;
+          for (let y = 30; y < H; y += 40) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+          }
 
-      // Draw Grid
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
-        const y = padding + (h / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding, y);
-        ctx.lineTo(canvas.width - padding, y);
-        ctx.stroke();
-      }
+          if (!trades || trades.length === 0) {
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('No trades logged yet. Fill form to draw chart.', W / 2, H / 2);
+            return;
+          }
 
-      // Draw Candlesticks / Line
-      ctx.beginPath();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#f59e0b';
+          let cumulative = 0;
+          const candleData = trades.map(t => {
+            const open = cumulative;
+            const close = cumulative + parseFloat(t.pnl || 0);
+            const high = Math.max(open, close) + Math.abs(parseFloat(t.pnl || 0) * 0.25);
+            const low = Math.min(open, close) - Math.abs(parseFloat(t.pnl || 0) * 0.25);
+            cumulative = close;
+            return { open, close, high, low, trade: t };
+          });
 
-      points.forEach((pt, i) => {
-        const x = padding + i * step;
-        const y = canvas.height - padding - ((pt - minP) / range) * h;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+          let minVal = Math.min(...candleData.map(c => c.low));
+          let maxVal = Math.max(...candleData.map(c => c.high));
+          if (minVal === maxVal) {
+            minVal -= 100;
+            maxVal += 100;
+          }
 
-        // Candle Body
-        if (i > 0) {
-          const prevY = canvas.height - padding - ((points[i-1] - minP) / range) * h;
-          const isGreen = pt >= points[i-1];
-          ctx.fillStyle = isGreen ? '#10b981' : '#f43f5e';
-          const candleW = Math.max(6, step * 0.4);
-          ctx.fillRect(x - candleW/2, Math.min(y, prevY), candleW, Math.abs(y - prevY) || 4);
+          const margin = { top: 25, bottom: 25, left: 35, right: 35 };
+          const chartW = W - margin.left - margin.right;
+          const chartH = H - margin.top - margin.bottom;
+
+          function valToY(val) {
+            return margin.top + chartH - ((val - minVal) / (maxVal - minVal)) * chartH;
+          }
+
+          const numCandles = candleData.length;
+          const slotWidth = Math.max(10, Math.min(26, chartW / (numCandles + 1)));
+          const candleWidth = Math.max(4, Math.min(14, Math.floor(slotWidth * 0.60)));
+
+          candleData.forEach((c, idx) => {
+            const xCenter = margin.left + (idx + 1) * slotWidth;
+            const xBodyLeft = xCenter - (candleWidth / 2);
+
+            const yOpen = valToY(c.open);
+            const yClose = valToY(c.close);
+            const yHigh = valToY(c.high);
+            const yLow = valToY(c.low);
+
+            const isGreen = c.close >= c.open;
+            const candleColor = isGreen ? '#26a69a' : '#ef5350';
+
+            // High/Low Wick Line
+            ctx.beginPath();
+            ctx.strokeStyle = candleColor;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(xCenter, yHigh);
+            ctx.lineTo(xCenter, yLow);
+            ctx.stroke();
+
+            // Candle Body
+            const bodyTop = Math.min(yOpen, yClose);
+            const bodyHeight = Math.max(3, Math.abs(yClose - yOpen));
+
+            ctx.fillStyle = candleColor;
+            ctx.fillRect(xBodyLeft, bodyTop, candleWidth, bodyHeight);
+
+            // Highlight Selected Candle
+            if (idx === selectedCandleIndex) {
+              ctx.strokeStyle = '#f59e0b';
+              ctx.lineWidth = 2;
+              ctx.strokeRect(xBodyLeft - 1, bodyTop - 1, candleWidth + 2, bodyHeight + 2);
+            }
+          });
+
+          canvas.onclick = (e) => {
+            const rectClick = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rectClick.left;
+
+            let closestIdx = -1;
+            let minDiff = 9999;
+            candleData.forEach((_, idx) => {
+              const xCenter = margin.left + (idx + 1) * slotWidth;
+              const diff = Math.abs(clickX - xCenter);
+              if (diff < minDiff && diff < slotWidth) {
+                minDiff = diff;
+                closestIdx = idx;
+              }
+            });
+
+            if (closestIdx !== -1) {
+              selectedCandleIndex = closestIdx;
+              renderDashboard();
+            }
+          };
+        } catch (err) {
+          console.error("Canvas draw error:", err);
         }
       });
-      ctx.stroke();
     }
 
-    // MAIN RENDER APP
-    function renderApp() {
-      const trades = getTrades();
-      let totalPnl = 0;
-      let wins = 0;
-      let losses = 0;
-      let grossWins = 0;
-      let grossLosses = 0;
-      let totalRR = 0;
+    function renderDashboard() {
+      try {
+        const trades = getTrades();
 
-      const tbody = document.getElementById('trade-history-body');
-      tbody.innerHTML = '';
+        let netPnL = 0;
+        let wins = 0;
+        let losses = 0;
+        let grossProfit = 0;
+        let grossLoss = 0;
+        let totalRR = 0;
 
-      trades.forEach(t => {
-        totalPnl += t.pnl;
-        if (t.pnl >= 0) {
-          wins++;
-          grossWins += t.pnl;
-        } else {
-          losses++;
-          grossLosses += Math.abs(t.pnl);
+        trades.forEach(t => {
+          const val = parseFloat(t.pnl) || 0;
+          netPnL += val;
+          if (val > 0) {
+            wins++;
+            grossProfit += val;
+          } else if (val < 0) {
+            losses++;
+            grossLoss += Math.abs(val);
+          }
+          totalRR += parseFloat(t.rr) || 0;
+        });
+
+        const totalCount = trades.length;
+        const winRate = totalCount > 0 ? ((wins / totalCount) * 100).toFixed(1) : '0.0';
+        const avgRR = totalCount > 0 ? (totalRR / totalCount).toFixed(2) : '0.00';
+        const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '99.00' : '0.00');
+
+        const netPnlEl = document.getElementById('stat-net-pnl');
+        if (netPnlEl) {
+          netPnlEl.textContent = `${netPnL >= 0 ? '+' : ''}$${netPnL.toFixed(2)}`;
+          netPnlEl.className = `text-xl sm:text-2xl font-black font-mono ${netPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
         }
 
-        if (t.rr && t.rr !== '--') {
-          const rrVal = parseFloat(t.rr.replace('1:', '')) || 0;
-          totalRR += rrVal;
+        const tradesCountEl = document.getElementById('stat-trades-count');
+        if (tradesCountEl) tradesCountEl.textContent = `${totalCount} Trades Logged`;
+
+        const winRateEl = document.getElementById('stat-win-rate');
+        if (winRateEl) winRateEl.textContent = `${winRate}%`;
+
+        const wlCountEl = document.getElementById('stat-wl-count');
+        if (wlCountEl) wlCountEl.textContent = `${wins}W - ${losses}L`;
+
+        const avgRrEl = document.getElementById('stat-avg-rr');
+        if (avgRrEl) avgRrEl.textContent = `1 : ${avgRR}`;
+
+        const pfEl = document.getElementById('stat-profit-factor');
+        if (pfEl) pfEl.textContent = profitFactor;
+
+        const logCountEl = document.getElementById('log-count-text');
+        if (logCountEl) logCountEl.textContent = `${totalCount} Logs Recorded`;
+
+        if (selectedCandleIndex >= trades.length) {
+          selectedCandleIndex = Math.max(0, trades.length - 1);
         }
 
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-amber-500/5 transition cursor-pointer';
-        tr.onclick = () => selectTradeBreakdown(t.id);
-        tr.innerHTML = `
-          <td class="py-2.5 px-3 text-slate-300 font-bold">${t.date}</td>
-          <td class="py-2.5 px-3 font-bold text-amber-300">${t.pair}</td>
-          <td class="py-2.5 px-3 font-bold ${t.direction === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}">${t.direction}</td>
-          <td class="py-2.5 px-3 font-black ${t.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
-          <td class="py-2.5 px-3 text-amber-300">${t.rr}</td>
-          <td class="py-2.5 px-3">${t.image ? '🖼️' : '--'}</td>
-          <td class="py-2.5 px-3 text-right space-x-1" onclick="event.stopPropagation()">
-            <button onclick="editTrade('${t.id}')" class="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded text-[10px]">Edit</button>
-            <button onclick="deleteTrade('${t.id}')" class="px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded text-[10px]">Del</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+        if (trades.length > 0 && trades[selectedCandleIndex]) {
+          const sel = trades[selectedCandleIndex];
+          const pairEl = document.getElementById('sel-pair');
+          if (pairEl) pairEl.textContent = sel.pair;
 
-      // Stats Update
-      document.getElementById('stat-total-pnl').textContent = `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}`;
-      document.getElementById('stat-total-pnl').className = `text-base sm:text-2xl font-black font-mono ${totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
-      document.getElementById('stat-trade-count').textContent = `${trades.length} Trades Logged`;
+          const dirEl = document.getElementById('sel-direction');
+          if (dirEl) {
+            dirEl.textContent = sel.direction;
+            dirEl.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold ${sel.direction === 'BUY' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`;
+          }
 
-      const totalCount = wins + losses;
-      const winRate = totalCount > 0 ? ((wins / totalCount) * 100).toFixed(1) : '0.0';
-      document.getElementById('stat-win-rate').textContent = `${winRate}%`;
-      document.getElementById('stat-win-loss-count').textContent = `${wins}W - ${losses}L`;
+          const selPnlEl = document.getElementById('sel-pnl');
+          if (selPnlEl) {
+            selPnlEl.textContent = `${parseFloat(sel.pnl) >= 0 ? '+' : ''}$${parseFloat(sel.pnl).toFixed(2)}`;
+            selPnlEl.className = `font-mono font-black text-base ${parseFloat(sel.pnl) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+          }
 
-      const avgRR = totalCount > 0 ? (totalRR / totalCount).toFixed(2) : '0.00';
-      document.getElementById('stat-avg-rr').textContent = `1:${avgRR}`;
+          const notesEl = document.getElementById('sel-notes');
+          if (notesEl) notesEl.textContent = sel.notes || 'No additional notes provided.';
 
-      const profitFactor = grossLosses > 0 ? (grossWins / grossLosses).toFixed(2) : grossWins.toFixed(2);
-      document.getElementById('stat-profit-factor').textContent = profitFactor;
+          const imgContainer = document.getElementById('sel-screenshot-container');
+          const imgEl = document.getElementById('sel-screenshot-img');
+          if (imgContainer && imgEl) {
+            if (sel.screenshot) {
+              imgEl.src = sel.screenshot;
+              imgContainer.classList.remove('hidden');
+            } else {
+              imgContainer.classList.add('hidden');
+            }
+          }
+        }
 
-      document.getElementById('history-count-badge').textContent = `${trades.length} logs`;
+        // Render Trade Log Table
+        const tbody = document.getElementById('trade-table-body');
+        if (tbody) {
+          tbody.innerHTML = '';
+          if (trades.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-500">No trade logs available for this profile.</td></tr>`;
+          } else {
+            trades.forEach((t, idx) => {
+              const tr = document.createElement('tr');
+              tr.className = `hover:bg-amber-500/5 transition ${idx === selectedCandleIndex ? 'bg-amber-500/10' : ''}`;
+              tr.innerHTML = `
+                <td class="py-3 px-4 font-bold text-slate-300">${t.date}</td>
+                <td class="py-3 px-4 font-black text-amber-300">${t.pair}</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.direction === 'BUY' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">${t.direction}</span></td>
+                <td class="py-3 px-4 font-black ${parseFloat(t.pnl) >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${parseFloat(t.pnl) >= 0 ? '+' : ''}$${parseFloat(t.pnl).toFixed(2)}</td>
+                <td class="py-3 px-4 font-bold text-slate-300">${t.rr || '1.0'}</td>
+                <td class="py-3 px-4">${t.screenshot ? `<button onclick="openLightbox('${t.screenshot}')" class="text-amber-400 hover:underline">View 🖼️</button>` : '<span class="text-slate-600">--</span>'}</td>
+                <td class="py-3 px-4 text-right">
+                  <button onclick="deleteTrade('${t.id}')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 rounded-lg text-[10px] font-bold border border-rose-500/30">Delete</button>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+        }
 
-      renderChart(trades);
-    }
-
-    // LEGAL MODAL HANDLERS
-    function checkLegalGate() {
-      const accepted = localStorage.getItem('mm_terms_accepted_v1');
-      if (!accepted) {
-        document.getElementById('legal-modal-overlay').classList.remove('hidden');
+        drawCandlesticks(trades);
+      } catch (err) {
+        console.error("Dashboard render error:", err);
       }
     }
 
-    function openLegalModal() {
-      document.getElementById('legal-modal-overlay').classList.remove('hidden');
+    function openLightbox(src) {
+      const img = document.getElementById('lightbox-img');
+      const overlay = document.getElementById('lightbox-overlay');
+      if (img && overlay) {
+        img.src = src;
+        overlay.classList.remove('hidden');
+      }
     }
 
-    function handleAcceptTerms() {
-      localStorage.setItem('mm_terms_accepted_v1', 'true');
-      document.getElementById('legal-modal-overlay').classList.add('hidden');
+    function closeLightbox() {
+      const overlay = document.getElementById('lightbox-overlay');
+      if (overlay) overlay.classList.add('hidden');
     }
 
-    function handleDeclineTerms() {
-      alert('You must accept the Terms of Service and No-Refund Policy to access MINDMILL Pro.');
-      window.location.href = 'https://google.com';
-    }
+    window.addEventListener('resize', () => {
+      renderDashboard();
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
-      checkLegalGate();
+      updateAuthBtnUI();
       loadProfileDropdown();
-      renderApp();
-      window.addEventListener('resize', () => renderChart(getTrades()));
+      renderDashboard();
     });
+
+    // Fallback trigger for immediate execution
+    setTimeout(() => {
+      renderDashboard();
+    }, 50);
   </script>
 </body>
 </html>
