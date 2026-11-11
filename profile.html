@@ -32,9 +32,8 @@
 </head>
 <body class="min-h-screen p-3 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
 
-  <!-- Ambient Background Illumination -->
+  <!-- Ambient Illumination -->
   <div class="fixed top-0 left-1/4 w-[350px] sm:w-[650px] h-[350px] sm:h-[650px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-  <div class="fixed bottom-0 right-1/4 w-[400px] sm:w-[750px] h-[400px] sm:h-[750px] bg-amber-600/5 rounded-full blur-[160px] pointer-events-none"></div>
 
   <div class="max-w-7xl mx-auto w-full space-y-6 relative z-10 flex-1 flex flex-col">
     
@@ -77,25 +76,38 @@
         </a>
       </div>
 
-      <!-- Profile Selector Dropdown -->
-      <div class="flex items-center justify-end w-full md:w-auto">
-        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow min-w-[160px]">
+      <!-- Profile Selector & Auth Indicator -->
+      <div class="flex items-center justify-end w-full md:w-auto gap-2">
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow min-w-[150px]">
           <span class="text-xs text-slate-400 font-mono font-bold">Account:</span>
           <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
             <!-- Loaded dynamically -->
           </select>
         </div>
+        <button id="auth-header-btn" onclick="openAuthModal()" class="px-3.5 py-2 bg-amber-500/20 border border-amber-400/50 text-amber-200 font-mono text-xs font-bold rounded-2xl transition">
+          🔑 Sign In
+        </button>
       </div>
     </header>
 
     <!-- Main Workspace -->
-    <main class="space-y-6">
+    <main class="space-y-6 relative">
+
+      <!-- AUTH LOCKED OVERLAY BANNER IF GUEST -->
+      <div id="guest-lock-banner" class="hidden glass-card border border-amber-500/50 p-6 rounded-3xl text-center space-y-3 bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-amber-500/10">
+        <h3 class="text-base font-black font-serif-luxury text-amber-300 uppercase tracking-wide">🔒 PROFILE EDITING LOCKED</h3>
+        <p class="text-xs text-slate-300 font-mono max-w-xl mx-auto">
+          You are viewing in <strong>Guest Mode</strong>. You must sign in or create an account before customizing trader aliases, emojis, or modifying prop firm drawdown rules.
+        </p>
+        <button onclick="openAuthModal()" class="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black rounded-xl font-mono text-xs uppercase shadow-lg">
+          Sign In Now
+        </button>
+      </div>
 
       <!-- Trader Identity & Rank Card -->
       <div class="glass-card border border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden glow-gold">
         <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 border-b border-amber-500/20 pb-6">
           
-          <!-- Avatar & Alias -->
           <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
             <div id="avatar-emoji-display" class="h-20 w-20 sm:h-24 sm:w-24 rounded-3xl bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 flex items-center justify-center text-4xl sm:text-5xl shadow-2xl shadow-amber-500/30 border-2 border-amber-200/50 font-mono cursor-pointer transition hover:scale-105" onclick="openProfileEditModal()" title="Customize Avatar">
               🦁
@@ -118,12 +130,11 @@
             </div>
           </div>
 
-          <button onclick="openProfileEditModal()" class="px-5 py-2.5 bg-[#040507] border border-amber-500/30 hover:border-amber-400 text-amber-300 font-mono font-bold text-xs rounded-2xl transition flex items-center space-x-2 shadow-lg hover:shadow-amber-500/10">
+          <button onclick="openProfileEditModal()" class="px-5 py-2.5 bg-[#040507] border border-amber-500/30 hover:border-amber-400 text-amber-300 font-mono font-bold text-xs rounded-2xl transition flex items-center space-x-2 shadow-lg">
             <span>✏️ Customize Identity</span>
           </button>
         </div>
 
-        <!-- Rank XP Bar -->
         <div class="space-y-2.5">
           <div class="flex justify-between items-center text-xs font-mono font-bold">
             <span class="text-slate-300">Rank Progress to <span id="next-rank-title" class="text-amber-300">DISCIPLINED EXECUTIONER</span></span>
@@ -135,14 +146,14 @@
         </div>
       </div>
 
-      <!-- Prop Firm Account Rules & Targets Guardrail -->
+      <!-- Prop Firm Guardrail -->
       <div class="glass-card border border-amber-500/30 rounded-3xl p-6 shadow-xl space-y-5">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-amber-500/15 pb-4">
           <div>
             <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider flex items-center space-x-2">
               <span>🎯 Custom Account Rules &amp; Drawdown Guardrail</span>
             </h3>
-            <p id="account-spec-summary-text" class="text-xs text-slate-400 mt-0.5">Base Balance: $10,000.00 | Target: $800.00 (8.0%) | Max DD: $500.00 (5.0%)</p>
+            <p id="account-spec-summary-text" class="text-xs text-slate-400 mt-0.5">Base Balance: $10,000.00 | Target: $800.00 | Max DD: $500.00</p>
           </div>
           <div class="flex items-center space-x-3">
             <span id="account-status-badge" class="px-3.5 py-1 rounded-xl text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
@@ -155,7 +166,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <!-- Target Progress -->
           <div class="bg-[#040507] border border-amber-500/20 rounded-2xl p-4 space-y-2.5">
             <div class="flex justify-between items-center text-xs font-mono">
               <span id="target-title-label" class="text-slate-300 font-bold">Profit Target Goal</span>
@@ -167,7 +177,6 @@
             <p id="target-remaining-text" class="text-[11px] text-slate-400 font-mono">Need $800.00 more to reach profit target goal.</p>
           </div>
 
-          <!-- Drawdown Buffer -->
           <div class="bg-[#040507] border border-amber-500/20 rounded-2xl p-4 space-y-2.5">
             <div class="flex justify-between items-center text-xs font-mono">
               <span id="drawdown-title-label" class="text-slate-300 font-bold">Max Allowed Loss Limit</span>
@@ -200,6 +209,38 @@
       <p>&copy; 2026 MINDMILL Pro. All rights reserved.</p>
       <a href="./index.html" class="hover:text-amber-400 transition underline">Back to Main Terminal</a>
     </footer>
+  </div>
+
+  <!-- AUTH / SIGN IN MODAL POP-UP -->
+  <div id="auth-modal-overlay" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 relative">
+      <div class="text-center space-y-2 border-b border-amber-500/20 pb-4">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-200 to-amber-600 flex items-center justify-center text-slate-950 font-black font-serif-luxury text-xl mx-auto shadow-lg">
+          MM
+        </div>
+        <h3 class="text-xl font-black text-amber-200 font-serif-luxury tracking-wide">MINDMILL Access Gate</h3>
+        <p class="text-xs text-slate-400 font-mono">Sign in to edit profiles, log trades, and save your progress.</p>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1">Trader Email</label>
+          <input type="email" id="auth-email-input" required placeholder="trader@mindmill.com" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Passcode / Password</label>
+          <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+        
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase">
+          Sign In &amp; Unlock Terminal
+        </button>
+      </form>
+
+      <div class="pt-2 text-center border-t border-amber-500/20">
+        <button onclick="closeAuthModal()" class="text-xs font-mono text-slate-400 hover:text-amber-300 underline">Continue as Guest (Read Only)</button>
+      </div>
+    </div>
   </div>
 
   <!-- Profile Identity Customizer Modal -->
@@ -269,6 +310,63 @@
     const EMOJI_OPTIONS = ['🦁', '🐺', '👑', '⚡', '🎯', '📈', '🦅', '🦈', '🔥', '💎', '🛡️', '🧠'];
     let selectedEmoji = '🦁';
 
+    function isLoggedIn() {
+      return localStorage.getItem('mm_user_logged_in') === 'true';
+    }
+
+    function requireAuth(actionCallback) {
+      if (!isLoggedIn()) {
+        openAuthModal();
+        return false;
+      }
+      if (typeof actionCallback === 'function') actionCallback();
+      return true;
+    }
+
+    function openAuthModal() {
+      document.getElementById('auth-modal-overlay').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal-overlay').classList.add('hidden');
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email-input').value.trim();
+      if (email) {
+        localStorage.setItem('mm_user_logged_in', 'true');
+        localStorage.setItem('mm_user_email', email);
+        closeAuthModal();
+        updateAuthBtnUI();
+        renderProfileData();
+      }
+    }
+
+    function updateAuthBtnUI() {
+      const btn = document.getElementById('auth-header-btn');
+      const lockBanner = document.getElementById('guest-lock-banner');
+      if (!btn) return;
+      if (isLoggedIn()) {
+        const email = localStorage.getItem('mm_user_email') || 'Trader';
+        btn.innerHTML = `👤 ${email.split('@')[0]}`;
+        btn.className = "px-3.5 py-2 bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
+        btn.onclick = () => {
+          if (confirm('Sign out of MINDMILL?')) {
+            localStorage.removeItem('mm_user_logged_in');
+            updateAuthBtnUI();
+            renderProfileData();
+          }
+        };
+        if (lockBanner) lockBanner.classList.add('hidden');
+      } else {
+        btn.innerHTML = `🔑 Sign In`;
+        btn.className = "px-3.5 py-2 bg-amber-500/20 border border-amber-400/50 text-amber-200 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
+        btn.onclick = openAuthModal;
+        if (lockBanner) lockBanner.classList.remove('hidden');
+      }
+    }
+
     function getProfiles() {
       try {
         const d = localStorage.getItem('mm_profiles_v8');
@@ -313,6 +411,10 @@
     }
 
     function handleProfileChange(e) {
+      if (!requireAuth()) {
+        loadDropdown();
+        return;
+      }
       localStorage.setItem('mm_active_prof_v8', e.target.value);
       loadDropdown();
       renderProfileData();
@@ -330,6 +432,7 @@
     }
 
     function openProfileEditModal() {
+      if (!requireAuth()) return;
       const nick = localStorage.getItem('mm_trader_nickname') || 'Apex Trader';
       selectedEmoji = localStorage.getItem('mm_trader_emoji') || '🦁';
       document.getElementById('edit-nickname-input').value = nick;
@@ -342,6 +445,7 @@
     }
 
     function openRuleConfigModal() {
+      if (!requireAuth()) return;
       const activeProf = getActiveProfile();
       const cfg = getAccountConfig(activeProf);
       document.getElementById('input-base-balance').value = cfg.baseBalance;
@@ -355,6 +459,7 @@
     }
 
     function saveRuleConfig() {
+      if (!requireAuth()) return;
       const activeProf = getActiveProfile();
       const baseBalance = parseFloat(document.getElementById('input-base-balance').value) || 10000;
       const profitTarget = parseFloat(document.getElementById('input-profit-target').value) || 800;
@@ -382,6 +487,7 @@
     }
 
     function saveProfileIdentity() {
+      if (!requireAuth()) return;
       const nick = document.getElementById('edit-nickname-input').value.trim() || 'Apex Trader';
       localStorage.setItem('mm_trader_nickname', nick);
       localStorage.setItem('mm_trader_emoji', selectedEmoji);
@@ -409,7 +515,6 @@
         totalYield += parseFloat(t.pnl) || 0;
       });
 
-      // Streaks
       let currentWinningStreak = 0;
       for (let i = trades.length - 1; i >= 0; i--) {
         if ((parseFloat(trades[i].pnl) || 0) > 0) currentWinningStreak++;
@@ -466,7 +571,6 @@
       document.getElementById('rank-progress-percent').textContent = `${progressPct}%`;
       document.getElementById('rank-progress-fill').style.width = `${progressPct}%`;
 
-      // Target progress
       const targetPct = Math.min(100, Math.max(0, (totalYield / cfg.profitTarget) * 100)).toFixed(1);
       document.getElementById('target-title-label').textContent = `Profit Target Goal ($${cfg.profitTarget.toLocaleString()})`;
       document.getElementById('target-progress-val').textContent = `${totalYield >= 0 ? '+' : ''}$${totalYield.toFixed(2)} (${targetPct}%)`;
@@ -476,7 +580,6 @@
         ? `Need $${targetDiff.toFixed(2)} more to reach target goal.`
         : `🎉 Profit target achieved!`;
 
-      // Drawdown buffer
       const currentDrawdown = totalYield < 0 ? Math.abs(totalYield) : 0;
       const drawdownBufferPct = Math.max(0, 100 - ((currentDrawdown / cfg.maxDrawdown) * 100)).toFixed(0);
       document.getElementById('drawdown-title-label').textContent = `Max Allowed Loss Limit (-$${cfg.maxDrawdown.toLocaleString()})`;
@@ -487,7 +590,6 @@
         ? `Safety Distance: $${bufferRemaining.toFixed(2)} away from max loss.`
         : `🔴 MAX DRAWDOWN BREACHED!`;
 
-      // Render Trophies
       const trophiesGrid = document.getElementById('trophy-badges-grid');
       trophiesGrid.innerHTML = '';
 
@@ -524,6 +626,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      updateAuthBtnUI();
       loadDropdown();
       renderProfileData();
     });
