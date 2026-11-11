@@ -1,3 +1,5 @@
+I will now generate the complete, fully updated calendar.html file in a clean, easily copyable format.
+Here is the updated calendar.html file:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +8,7 @@
   <title>MINDMILL - Volatility & Economic Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
     body { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -16,10 +18,18 @@
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .font-serif-luxury { font-family: 'Cinzel', serif; }
     
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #060709; }
     ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+    .glow-gold {
+      box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.2);
+    }
+    .glass-card {
+      background: linear-gradient(135deg, rgba(15, 17, 24, 0.95) 0%, rgba(10, 12, 18, 0.98) 100%);
+      backdrop-filter: blur(16px);
+    }
 
     input[type="date"], input[type="time"] {
       color-scheme: dark !important;
@@ -33,105 +43,85 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
+<body class="min-h-screen p-3 sm:p-6 md:p-8 flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 relative overflow-x-hidden">
 
-  <!-- Ambient Luxury Glows -->
-  <div class="fixed top-0 left-1/3 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[180px] pointer-events-none"></div>
-  <div class="fixed bottom-0 right-1/4 w-[700px] h-[700px] bg-rose-500/5 rounded-full blur-[200px] pointer-events-none"></div>
+  <!-- Ambient Glow -->
+  <div class="fixed top-0 left-1/3 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none"></div>
 
-  <div class="max-w-7xl mx-auto w-full space-y-6 relative z-10">
+  <div class="max-w-7xl mx-auto w-full space-y-4 sm:space-y-6 relative z-10 flex-1 flex flex-col">
     
-    <!-- Top Header Navigation -->
-    <header class="bg-gradient-to-r from-[#0D0F17] via-[#131724] to-[#0D0F17] border border-amber-500/30 rounded-3xl p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 backdrop-blur-xl relative overflow-hidden">
-      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent"></div>
+    <!-- Unified Header -->
+    <header class="glass-card border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent"></div>
 
-      <div class="flex items-center space-x-4">
-        <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center font-serif-luxury font-black text-slate-950 text-xl shadow-xl shadow-amber-500/20 border border-amber-200/40">
-          MM
-        </div>
-        <div>
-          <div class="flex items-center space-x-2.5">
-            <h1 class="text-xl md:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500 font-serif-luxury uppercase">
-              MINDMILL
-            </h1>
-            <span class="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30 tracking-widest uppercase font-mono flex items-center space-x-1">
-              <span class="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse"></span>
-              <span>VOLATILITY RADAR</span>
-            </span>
+      <div class="flex items-center space-x-3.5 w-full md:w-auto justify-between md:justify-start">
+        <div class="flex items-center space-x-3.5">
+          <div class="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-500 to-amber-700 flex items-center justify-center font-serif-luxury font-black text-slate-950 text-xl sm:text-2xl shadow-xl shadow-amber-500/25 border border-amber-200/50 shrink-0">
+            MM
           </div>
-          <p class="text-xs text-slate-400 tracking-wider font-light mt-0.5">High-Impact Market Catalysts & Risk Analyzer</p>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-xl sm:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500 font-serif-luxury uppercase">
+                MINDMILL
+              </h1>
+              <span class="text-[9px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 tracking-widest uppercase font-mono">
+                PRO TERMINAL
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 tracking-wider font-semibold mt-0.5">Master the Mindset Behind the Chart</p>
+          </div>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <div class="flex items-center bg-[#040507] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
-        <a href="./index.html" class="px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-amber-200 transition-all duration-300">
-          📈 Dashboard & Journal
+      <!-- Navigation Links -->
+      <div class="flex items-center justify-center w-full md:w-auto bg-[#040507] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
+        <a href="./index.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition">
+          Chart &amp; Journal
         </a>
         <div class="h-4 w-[1px] bg-amber-500/20"></div>
-        <a href="./calendar.html" class="px-5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 flex items-center space-x-2">
-          <span class="h-2 w-2 rounded-full bg-slate-950 animate-pulse"></span>
-          <span>Vol Terminal</span>
+        <a href="./calendar.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 transition">
+          Volatility Calendar
+        </a>
+        <div class="h-4 w-[1px] bg-amber-500/20"></div>
+        <a href="./profile.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition flex items-center justify-center space-x-1">
+          <span>👤 Profile</span>
         </a>
       </div>
 
-      <div class="flex items-center space-x-3">
-        <!-- Multi-Profile Selector Dropdown -->
-        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow">
+      <!-- Account Switcher & Auth Gate -->
+      <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-2">
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow min-w-[140px]">
           <span class="text-xs text-slate-400 font-mono">Profile:</span>
-          <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer">
-            <!-- Loaded dynamically -->
+          <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
+            <option value="Main Account">✓ Main Account</option>
           </select>
         </div>
 
-        <!-- Owner Lock/Unlock Button -->
-        <button id="owner-toggle-btn" onclick="promptOwnerAuth()" class="px-3.5 py-2 bg-[#040507] border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 hover:bg-amber-500/10 transition flex items-center space-x-1.5">
-          <span id="owner-lock-icon">🔒</span>
-          <span id="owner-btn-label">Owner Portal</span>
+        <button onclick="createNewProfilePrompt()" class="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 transition whitespace-nowrap">
+          ➕ New
         </button>
 
-        <div class="hidden sm:flex items-center space-x-2.5 bg-[#040507] border border-amber-500/20 px-4 py-2 rounded-2xl text-xs font-mono">
-          <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#10B981] animate-pulse"></span>
-          <span id="header-clock" class="text-amber-200/90 font-bold">00:00:00 UTC</span>
-        </div>
+        <button id="auth-header-btn" onclick="openAuthModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-mono text-xs font-black rounded-2xl transition shadow-md whitespace-nowrap">
+          🔑 Sign In
+        </button>
       </div>
     </header>
 
-    <!-- Owner Management Bar (Hidden by Default) -->
-    <div id="owner-control-bar" class="hidden bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/40 rounded-3xl p-5 shadow-2xl flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center space-x-3">
-        <span class="text-xl">🔑</span>
-        <div>
-          <h3 class="text-sm font-bold text-amber-200 font-mono">OWNER NEWS CONTROL CENTER</h3>
-          <p class="text-xs text-slate-300">You are logged in as Owner. Manually manage future weekly economic releases.</p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3">
-        <button onclick="openAddEventModal()" class="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 font-bold rounded-2xl text-xs shadow-lg hover:brightness-110 transition flex items-center space-x-1">
-          <span>+ Add Single Event</span>
-        </button>
-        <button onclick="resetToDefaultNews()" class="px-4 py-2 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-mono hover:bg-rose-500/30 transition">
-          Reset to Week Nov 2-6
-        </button>
-      </div>
-    </div>
-
     <!-- Main Volatility Feed Panel -->
-    <div class="bg-gradient-to-b from-[#0F111B] via-[#0A0C14] to-[#06070B] border border-amber-500/25 rounded-3xl p-6 shadow-2xl space-y-5">
+    <div class="glass-card border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5">
       
       <!-- Date & Filter Controls -->
-      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-amber-500/15 pb-5">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3.5 border-b border-amber-500/20 pb-4 sm:pb-5">
         <div>
-          <h2 class="text-sm font-bold text-amber-100 font-mono tracking-wide flex items-center space-x-2">
+          <h2 class="text-xs sm:text-sm font-black text-amber-200 font-mono uppercase tracking-wider flex items-center space-x-2">
             <span class="text-rose-400 font-black">🔥 HIGH-IMPACT MARKET CALENDAR (NOV 2 - NOV 6)</span>
           </h2>
-          <p id="filter-status-text" class="text-xs text-slate-400 mt-0.5">Filter releases by single date or target currency.</p>
+          <p id="filter-status-text" class="text-xs text-slate-400 font-mono mt-0.5">Filter releases by single date or target currency.</p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full lg:w-auto">
           <!-- Currency Filter -->
-          <select id="currency-select" onchange="applyFilters()" class="bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 text-xs text-amber-400 font-mono font-bold focus:outline-none cursor-pointer">
+          <select id="currency-select" onchange="applyFilters()" class="flex-1 sm:flex-initial bg-[#040507] border border-amber-500/30 rounded-xl px-3 py-2 text-xs text-amber-300 font-mono font-bold focus:outline-none cursor-pointer">
             <option value="ALL">All Currencies</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
@@ -144,41 +134,40 @@
           </select>
 
           <!-- Single-Day Date Picker -->
-          <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow-inner">
-            <span class="text-xs text-amber-400 font-mono font-bold">Isolate Day:</span>
+          <div class="flex-1 sm:flex-initial flex items-center justify-between space-x-1.5 bg-[#040507] border border-amber-500/30 rounded-xl px-3 py-1.5 shadow-inner">
+            <span class="text-xs text-amber-400 font-mono font-bold whitespace-nowrap">Isolate:</span>
             <input 
               type="date"
               id="event-date-picker"
               onchange="applyFilters()"
-              class="bg-[#040507] text-xs text-amber-400 font-mono font-bold focus:outline-none cursor-pointer border border-amber-500/20 px-2 py-1 rounded-xl"
+              class="bg-[#040507] text-xs text-amber-300 font-mono font-bold focus:outline-none cursor-pointer border border-amber-500/20 px-1.5 py-0.5 rounded-lg w-full"
             />
             <button onclick="clearDateFilter()" class="text-slate-500 hover:text-amber-400 text-xs font-bold pl-1 transition" title="Clear Date Filter">✕</button>
           </div>
 
           <!-- Quick Presets -->
-          <div class="flex items-center space-x-1 bg-[#040507] border border-amber-500/20 p-1 rounded-2xl">
-            <button id="btn-nov2" onclick="setDateExplicit('2026-11-02', 'nov2')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Mon Nov 2</button>
-            <button id="btn-nov3" onclick="setDateExplicit('2026-11-03', 'nov3')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Tue Nov 3</button>
-            <button id="btn-nov4" onclick="setDateExplicit('2026-11-04', 'nov4')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Wed Nov 4</button>
-            <button id="btn-nov5" onclick="setDateExplicit('2026-11-05', 'nov5')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Thu Nov 5</button>
-            <button id="btn-nov6" onclick="setDateExplicit('2026-11-06', 'nov6')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition">Fri Nov 6</button>
-            <button id="btn-all" onclick="setDateExplicit('', 'all')" class="px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">All Week</button>
+          <div class="w-full sm:w-auto flex items-center justify-between space-x-1 bg-[#040507] border border-amber-500/20 p-1 rounded-xl overflow-x-auto">
+            <button id="btn-nov2" onclick="setDateExplicit('2026-11-02', 'nov2')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-300 hover:text-amber-300 transition whitespace-nowrap">Mon 2</button>
+            <button id="btn-nov3" onclick="setDateExplicit('2026-11-03', 'nov3')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-300 hover:text-amber-300 transition whitespace-nowrap">Tue 3</button>
+            <button id="btn-nov4" onclick="setDateExplicit('2026-11-04', 'nov4')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-300 hover:text-amber-300 transition whitespace-nowrap">Wed 4</button>
+            <button id="btn-nov5" onclick="setDateExplicit('2026-11-05', 'nov5')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-300 hover:text-amber-300 transition whitespace-nowrap">Thu 5</button>
+            <button id="btn-nov6" onclick="setDateExplicit('2026-11-06', 'nov6')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-300 hover:text-amber-300 transition whitespace-nowrap">Fri 6</button>
+            <button id="btn-all" onclick="setDateExplicit('', 'all')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 whitespace-nowrap">All Week</button>
           </div>
         </div>
       </div>
 
       <!-- Feed Table -->
-      <div class="overflow-x-auto rounded-2xl border border-amber-500/15 bg-[#040507] shadow-inner">
-        <table class="w-full text-left text-xs font-mono">
+      <div class="overflow-x-auto rounded-xl border border-amber-500/15 bg-[#040507] shadow-inner">
+        <table class="w-full text-left text-xs font-mono min-w-[600px]">
           <thead>
             <tr class="bg-[#0B0D15] text-amber-300/80 uppercase border-b border-amber-500/20">
-              <th class="py-4 px-4">Date & Time</th>
-              <th class="py-4 px-4">Currency</th>
-              <th class="py-4 px-4">Event Title</th>
-              <th class="py-4 px-4">Market Volatility Risk</th>
-              <th class="py-4 px-4 text-emerald-400">Forecast</th>
-              <th class="py-4 px-4 text-slate-400">Previous</th>
-              <th id="owner-col-header" class="hidden py-4 px-4 text-right">Actions</th>
+              <th class="py-3 px-4">Date &amp; Time</th>
+              <th class="py-3 px-4">Currency</th>
+              <th class="py-3 px-4">Event Title</th>
+              <th class="py-3 px-4">Market Volatility Risk</th>
+              <th class="py-3 px-4 text-emerald-400">Forecast</th>
+              <th class="py-3 px-4 text-slate-400">Previous</th>
             </tr>
           </thead>
           <tbody id="events-list" class="divide-y divide-slate-800/60">
@@ -190,83 +179,62 @@
     </div>
   </div>
 
-  <!-- Modal: Owner Add/Edit Custom Event -->
-  <div id="event-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-[#0F1118] border border-amber-500/30 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-      <div class="flex justify-between items-center border-b border-amber-500/10 pb-3">
-        <h3 class="text-base font-bold text-amber-200 font-mono">Add / Edit Economic Release</h3>
-        <button onclick="closeAddEventModal()" class="text-slate-400 hover:text-white">✕</button>
+  <!-- CREATE NEW PROFILE MODAL (THEMED) -->
+  <div id="new-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 relative">
+      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
+        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">➕ Create New Profile</h3>
+        <button onclick="closeNewProfileModal()" class="text-slate-400 hover:text-amber-300 text-base font-bold">✕</button>
       </div>
 
-      <form onsubmit="saveCustomEvent(event)" class="space-y-3 text-xs">
+      <div class="space-y-4 text-xs font-mono">
         <div>
-          <label class="text-slate-400 block mb-1">Event Title</label>
-          <input id="modal-title" type="text" required placeholder="e.g. Non-Farm Payrolls (NFP)" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
+          <label class="block text-slate-300 mb-1.5 font-bold">Trading Profile Name</label>
+          <input type="text" id="new-profile-name-input" placeholder="e.g. FTMO $100K, Demo Account..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-slate-400 block mb-1">Currency</label>
-            <select id="modal-currency" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-amber-300 font-bold focus:border-amber-500 focus:outline-none font-mono">
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="JPY">JPY (¥)</option>
-              <option value="AUD">AUD ($)</option>
-              <option value="CAD">CAD ($)</option>
-              <option value="NZD">NZD ($)</option>
-              <option value="CHF">CHF (Fr)</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-slate-400 block mb-1">Impact Level</label>
-            <select id="modal-impact" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono">
-              <option value="HIGH">HIGH IMPACT</option>
-              <option value="CRITICAL">CRITICAL IMPACT</option>
-              <option value="MEDIUM">MEDIUM IMPACT</option>
-              <option value="LOW">LOW IMPACT</option>
-            </select>
-          </div>
+        <div class="pt-2 flex justify-end space-x-2.5">
+          <button type="button" onclick="closeNewProfileModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold hover:bg-slate-700 transition">Cancel</button>
+          <button type="button" onclick="saveNewProfile()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition">Create Profile</button>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-slate-400 block mb-1">Release Date</label>
-            <input id="modal-date" type="date" required class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-amber-400 focus:border-amber-500 focus:outline-none font-mono" />
-          </div>
-          <div>
-            <label class="text-slate-400 block mb-1">Release Time</label>
-            <input id="modal-time" type="text" required placeholder="08:30 AM" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
-          </div>
+  <!-- AUTH MODAL -->
+  <div id="auth-modal-overlay" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 relative">
+      <div class="text-center space-y-2 border-b border-amber-500/20 pb-4">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-200 to-amber-600 flex items-center justify-center text-slate-950 font-black font-serif-luxury text-xl mx-auto shadow-lg">
+          MM
         </div>
+        <h3 class="text-xl font-black text-amber-200 font-serif-luxury tracking-wide">MINDMILL Access Gate</h3>
+        <p class="text-xs text-slate-400 font-mono">Sign in to log trades, switch profiles, and save data.</p>
+      </div>
 
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4 text-xs font-mono">
         <div>
-          <label class="text-slate-400 block mb-1">Volatility Risk Description</label>
-          <input id="modal-risk" type="text" required placeholder="e.g. Extreme Spikes (Gold, NAS100)" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-100 focus:border-amber-500 focus:outline-none font-mono" />
+          <label class="block text-slate-300 mb-1">Trader Email</label>
+          <input type="email" id="auth-email-input" required placeholder="trader@mindmill.com" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-slate-400 block mb-1">Forecast</label>
-            <input id="modal-forecast" type="text" placeholder="e.g. 0.3%" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-emerald-400 font-bold focus:border-amber-500 focus:outline-none font-mono" />
-          </div>
-          <div>
-            <label class="text-slate-400 block mb-1">Previous</label>
-            <input id="modal-previous" type="text" placeholder="e.g. 0.2%" class="w-full bg-[#050608] border border-slate-800 rounded-2xl p-3 text-slate-400 focus:border-amber-500 focus:outline-none font-mono" />
-          </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Passcode / Password</label>
+          <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
         </div>
-
-        <div class="flex justify-end space-x-2 pt-3 border-t border-slate-800">
-          <button type="button" onclick="closeAddEventModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-xs text-slate-950 shadow-lg shadow-amber-500/20">Save Release</button>
-        </div>
+        
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase">
+          Sign In &amp; Access Terminal
+        </button>
       </form>
+
+      <div class="pt-2 text-center border-t border-amber-500/20">
+        <button onclick="closeAuthModal()" class="text-xs font-mono text-slate-400 hover:text-amber-300 underline">Continue as Guest (Read Only)</button>
+      </div>
     </div>
   </div>
 
   <script>
     const DEFAULT_EVENTS = [
-      // MON NOV 2
       { id: 'n2-1', date: '2026-11-02', time: '02:00 AM', currency: 'AUD', title: 'MI Inflation Gauge m/m', impact: 'LOW', risk: 'Low Volatility', forecast: '--', previous: '0.1%' },
       { id: 'n2-2', date: '2026-11-02', time: '02:30 AM', currency: 'AUD', title: 'Building Approvals m/m', impact: 'MEDIUM', risk: 'AUD Crosses Volatility', forecast: '2.1%', previous: '-4.4%' },
       { id: 'n2-3', date: '2026-11-02', time: '02:30 AM', currency: 'JPY', title: 'Final Manufacturing PMI', impact: 'LOW', risk: 'Low Volatility', forecast: '49.0', previous: '49.0' },
@@ -278,7 +246,6 @@
       { id: 'n2-9', date: '2026-11-02', time: '05:00 PM', currency: 'USD', title: 'ISM Manufacturing PMI', impact: 'HIGH', risk: 'High Volatility (US Tech & Gold)', forecast: '47.6', previous: '47.2' },
       { id: 'n2-10', date: '2026-11-02', time: '05:00 PM', currency: 'USD', title: 'ISM Manufacturing Prices', impact: 'HIGH', risk: 'US Inflation Sentiment', forecast: '48.9', previous: '48.3' },
 
-      // TUE NOV 3
       { id: 'n3-1', date: '2026-11-03', time: 'All Day', currency: 'JPY', title: 'Bank Holiday (Culture Day)', impact: 'LOW', risk: 'Thin JPY Liquidity', forecast: '--', previous: '--' },
       { id: 'n3-2', date: '2026-11-03', time: '05:30 AM', currency: 'AUD', title: 'RBA Cash Rate Decision', impact: 'CRITICAL', risk: 'Extreme Spike (AUD/USD & AUD Crosses)', forecast: '4.35%', previous: '4.35%' },
       { id: 'n3-3', date: '2026-11-03', time: '05:30 AM', currency: 'AUD', title: 'RBA Rate Statement & Monetary Policy', impact: 'CRITICAL', risk: 'Policy Shift Catalyst', forecast: '--', previous: '--' },
@@ -290,7 +257,6 @@
       { id: 'n3-9', date: '2026-11-03', time: '11:45 PM', currency: 'NZD', title: 'Employment Change q/q', impact: 'CRITICAL', risk: 'NZD Liquidity Spike', forecast: '-0.4%', previous: '0.4%' },
       { id: 'n3-10', date: '2026-11-03', time: '11:45 PM', currency: 'NZD', title: 'Unemployment Rate', impact: 'CRITICAL', risk: 'NZD Massive Volatility', forecast: '5.0%', previous: '4.6%' },
 
-      // WED NOV 4
       { id: 'n4-1', date: '2026-11-04', time: '11:00 AM', currency: 'EUR', title: 'Final Services PMI', impact: 'MEDIUM', risk: 'EUR/USD Movement', forecast: '51.2', previous: '51.2' },
       { id: 'n4-2', date: '2026-11-04', time: '11:30 AM', currency: 'GBP', title: 'Final Services PMI', impact: 'MEDIUM', risk: 'GBP Movement', forecast: '51.8', previous: '51.8' },
       { id: 'n4-3', date: '2026-11-04', time: '12:00 PM', currency: 'EUR', title: 'Core CPI Flash Estimate y/y', impact: 'HIGH', risk: 'Eurozone Inflation Volatility', forecast: '2.7%', previous: '2.7%' },
@@ -298,7 +264,6 @@
       { id: 'n4-5', date: '2026-11-04', time: '05:00 PM', currency: 'USD', title: 'ISM Services PMI', impact: 'CRITICAL', risk: 'Massive Volatility (NAS100, S&P, Gold)', forecast: '53.8', previous: '54.9' },
       { id: 'n4-6', date: '2026-11-04', time: '05:30 PM', currency: 'USD', title: 'Crude Oil Inventories', impact: 'MEDIUM', risk: 'WTI Oil Price Spike', forecast: '--', previous: '2.1M' },
 
-      // THU NOV 5
       { id: 'n5-1', date: '2026-11-05', time: '11:30 AM', currency: 'GBP', title: 'Construction PMI', impact: 'MEDIUM', risk: 'GBP Volatility', forecast: '53.1', previous: '57.2' },
       { id: 'n5-2', date: '2026-11-05', time: '12:00 PM', currency: 'EUR', title: 'PPI Producer Prices m/m', impact: 'MEDIUM', risk: 'EUR Volatility', forecast: '-0.1%', previous: '0.6%' },
       { id: 'n5-3', date: '2026-11-05', time: '02:00 PM', currency: 'GBP', title: 'BOE Official Bank Rate Decision', impact: 'CRITICAL', risk: 'Maximum Spike (GBP Pairs)', forecast: '4.75%', previous: '5.00%' },
@@ -307,7 +272,6 @@
       { id: 'n5-6', date: '2026-11-05', time: '03:30 PM', currency: 'USD', title: 'Unemployment Claims', impact: 'HIGH', risk: 'US Market Volatility', forecast: '221K', previous: '216K' },
       { id: 'n5-7', date: '2026-11-05', time: '08:00 PM', currency: 'EUR', title: 'ECB President Lagarde Speaks', impact: 'HIGH', risk: 'EUR/USD Volatility', forecast: '--', previous: '--' },
 
-      // FRI NOV 6
       { id: 'n6-1', date: '2026-11-06', time: '03:30 PM', currency: 'USD', title: 'Non-Farm Employment Change (NFP)', impact: 'CRITICAL', risk: 'MAXIMUM VOLATILITY (Gold, NAS100, FX)', forecast: '113K', previous: '254K' },
       { id: 'n6-2', date: '2026-11-06', time: '03:30 PM', currency: 'USD', title: 'Unemployment Rate', impact: 'CRITICAL', risk: 'US Economic Health Spike', forecast: '4.1%', previous: '4.1%' },
       { id: 'n6-3', date: '2026-11-06', time: '03:30 PM', currency: 'USD', title: 'Average Hourly Earnings m/m', impact: 'HIGH', risk: 'Wage Inflation Volatility', forecast: '0.3%', previous: '0.4%' },
@@ -316,31 +280,95 @@
       { id: 'n6-6', date: '2026-11-06', time: '06:00 PM', currency: 'JPY', title: 'BOJ Gov Ueda Speaks', impact: 'HIGH', risk: 'USD/JPY Spikes', forecast: '--', previous: '--' }
     ];
 
-    let isOwner = false;
-    const OWNER_PASSCODE = "1234";
-
-    // --- Clean Profile Engine (Main Account Default) ---
-    function getProfilesList() {
-      const data = localStorage.getItem('mm_profiles_v3');
-      if (!data) {
-        const singleDefault = ['Main Account'];
-        localStorage.setItem('mm_profiles_v3', JSON.stringify(singleDefault));
-        return singleDefault;
-      }
-      return JSON.parse(data);
+    function safeGetItem(key, fallback) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+      } catch (e) { return fallback; }
     }
 
-    function saveProfilesList(list) {
-      localStorage.setItem('mm_profiles_v3', JSON.stringify(list));
+    function safeSetItem(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch (e) {}
+    }
+
+    function isLoggedIn() {
+      try {
+        return localStorage.getItem('mm_user_logged_in') === 'true';
+      } catch (e) { return false; }
+    }
+
+    function requireAuth(actionCallback) {
+      if (!isLoggedIn()) {
+        openAuthModal();
+        return false;
+      }
+      if (typeof actionCallback === 'function') actionCallback();
+      return true;
+    }
+
+    function openAuthModal() {
+      const modal = document.getElementById('auth-modal-overlay');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('auth-modal-overlay');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('auth-email-input');
+      const email = emailInput ? emailInput.value.trim() : '';
+      if (email) {
+        try {
+          localStorage.setItem('mm_user_logged_in', 'true');
+          localStorage.setItem('mm_user_email', email);
+        } catch (err) {}
+        closeAuthModal();
+        updateAuthBtnUI();
+      }
+    }
+
+    function updateAuthBtnUI() {
+      const btn = document.getElementById('auth-header-btn');
+      if (!btn) return;
+      if (isLoggedIn()) {
+        let email = 'Trader';
+        try { email = localStorage.getItem('mm_user_email') || 'Trader'; } catch(e){}
+        btn.innerHTML = `👤 ${email.split('@')[0]}`;
+        btn.className = "px-3.5 py-1.5 bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
+        btn.onclick = () => {
+          if (confirm('Sign out of MINDMILL?')) {
+            try { localStorage.removeItem('mm_user_logged_in'); } catch(e){}
+            updateAuthBtnUI();
+          }
+        };
+      } else {
+        btn.innerHTML = `🔑 Sign In`;
+        btn.className = "px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-mono text-xs font-black rounded-2xl transition shadow-md cursor-pointer";
+        btn.onclick = openAuthModal;
+      }
+    }
+
+    function getProfiles() {
+      return safeGetItem('mm_profiles_v9', ['Main Account']);
+    }
+
+    function getActiveProfile() {
+      try {
+        return localStorage.getItem('mm_active_prof_v9') || getProfiles()[0] || 'Main Account';
+      } catch(e) { return 'Main Account'; }
     }
 
     function loadProfileDropdown() {
       const dropdown = document.getElementById('profile-select-dropdown');
       if (!dropdown) return;
       dropdown.innerHTML = '';
-
-      const profiles = getProfilesList();
-      const activeProf = localStorage.getItem('mm_active_profile_v3') || profiles[0] || 'Main Account';
+      const profiles = getProfiles();
+      const activeProf = getActiveProfile();
 
       profiles.forEach(p => {
         const opt = document.createElement('option');
@@ -349,75 +377,45 @@
         if (p === activeProf) opt.selected = true;
         dropdown.appendChild(opt);
       });
-
-      const addOpt = document.createElement('option');
-      addOpt.value = '__ADD_NEW__';
-      addOpt.textContent = '➕ Add New Profile...';
-      dropdown.appendChild(addOpt);
     }
 
     function handleProfileChange(e) {
-      const val = e.target.value;
-      if (val === '__ADD_NEW__') {
-        const name = prompt("Enter a name for your new trading profile:");
-        if (name && name.trim() !== '') {
-          const cleanName = name.trim();
-          const profiles = getProfilesList();
-          if (!profiles.includes(cleanName)) {
-            profiles.push(cleanName);
-            saveProfilesList(profiles);
-          }
-          localStorage.setItem('mm_active_profile_v3', cleanName);
-        }
+      if (!requireAuth()) {
         loadProfileDropdown();
-      } else {
-        localStorage.setItem('mm_active_profile_v3', val);
+        return;
+      }
+      try { localStorage.setItem('mm_active_prof_v9', e.target.value); } catch(err){}
+      loadProfileDropdown();
+    }
+
+    function createNewProfilePrompt() {
+      if (!requireAuth()) return;
+      document.getElementById('new-profile-name-input').value = '';
+      document.getElementById('new-profile-modal').classList.remove('hidden');
+    }
+
+    function closeNewProfileModal() {
+      document.getElementById('new-profile-modal').classList.add('hidden');
+    }
+
+    function saveNewProfile() {
+      const input = document.getElementById('new-profile-name-input');
+      const name = input ? input.value.trim() : '';
+      if (name) {
+        const profiles = getProfiles();
+        if (!profiles.includes(name)) {
+          profiles.push(name);
+          safeSetItem('mm_profiles_v9', profiles);
+        }
+        safeSetItem(`mm_trades_v9_${name}`, []);
+        try { localStorage.setItem('mm_active_prof_v9', name); } catch(e){}
+        closeNewProfileModal();
         loadProfileDropdown();
       }
     }
 
     function loadStoredEvents() {
-      const data = localStorage.getItem('mm_owner_news_v2');
-      if (!data) {
-        localStorage.setItem('mm_owner_news_v2', JSON.stringify(DEFAULT_EVENTS));
-        return DEFAULT_EVENTS;
-      }
-      return JSON.parse(data);
-    }
-
-    function saveEventsToStorage(events) {
-      localStorage.setItem('mm_owner_news_v2', JSON.stringify(events));
-    }
-
-    function updateClock() {
-      const now = new Date();
-      const str = now.toISOString().slice(11, 19) + ' UTC';
-      const el = document.getElementById('header-clock');
-      if (el) el.textContent = str;
-    }
-
-    function promptOwnerAuth() {
-      if (isOwner) {
-        isOwner = false;
-        document.getElementById('owner-control-bar').classList.add('hidden');
-        document.getElementById('owner-col-header').classList.add('hidden');
-        document.getElementById('owner-lock-icon').textContent = '🔒';
-        document.getElementById('owner-btn-label').textContent = 'Owner Portal';
-        applyFilters();
-        return;
-      }
-
-      const pass = prompt("Enter Owner Security Passcode:");
-      if (pass === OWNER_PASSCODE) {
-        isOwner = true;
-        document.getElementById('owner-control-bar').classList.remove('hidden');
-        document.getElementById('owner-col-header').classList.remove('hidden');
-        document.getElementById('owner-lock-icon').textContent = '🔓';
-        document.getElementById('owner-btn-label').textContent = 'Owner Mode (Active)';
-        applyFilters();
-      } else if (pass !== null) {
-        alert("Incorrect Security Passcode.");
-      }
+      return safeGetItem('mm_owner_news_v2', DEFAULT_EVENTS);
     }
 
     function renderEvents(events) {
@@ -428,7 +426,7 @@
       if (events.length === 0) {
         listContainer.innerHTML = `
           <tr>
-            <td colSpan="7" class="py-12 text-center text-slate-500">
+            <td colspan="6" class="py-12 text-center text-slate-500 font-mono">
               No economic releases scheduled for the selected date filter.
             </td>
           </tr>
@@ -448,23 +446,18 @@
           : 'bg-slate-800 text-slate-400';
 
         row.innerHTML = `
-          <td class="py-4 px-4 text-slate-200 font-bold">${evt.date} &bull; ${evt.time}</td>
-          <td class="py-4 px-4 font-black text-amber-300">
+          <td class="py-3 px-4 text-slate-200 font-bold">${evt.date} &bull; ${evt.time}</td>
+          <td class="py-3 px-4 font-black text-amber-300">
             <span class="px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30">${evt.currency}</span>
           </td>
-          <td class="py-4 px-4 font-bold text-slate-100">${evt.title}</td>
-          <td class="py-4 px-4">
+          <td class="py-3 px-4 font-bold text-slate-100">${evt.title}</td>
+          <td class="py-3 px-4">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] uppercase ${impactBadge}">
               ${evt.risk}
             </span>
           </td>
-          <td class="py-4 px-4 font-black text-emerald-400">${evt.forecast || '--'}</td>
-          <td class="py-4 px-4 text-slate-400">${evt.previous || '--'}</td>
-          ${isOwner ? `
-            <td class="py-4 px-4 text-right">
-              <button onclick="deleteEvent('${evt.id}')" class="px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded-lg border border-rose-500/30 text-[10px]">Delete</button>
-            </td>
-          ` : '<td class="hidden"></td>'}
+          <td class="py-3 px-4 font-black text-emerald-400">${evt.forecast || '--'}</td>
+          <td class="py-3 px-4 text-slate-400">${evt.previous || '--'}</td>
         `;
         listContainer.appendChild(row);
       });
@@ -502,59 +495,14 @@
         const btn = document.getElementById(`btn-${k}`);
         if (btn) {
           if (k === btnKey) {
-            btn.className = 'px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+            btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
           } else {
-            btn.className = 'px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-bold text-slate-300 hover:text-amber-300 transition';
+            btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-300 hover:text-amber-300 transition';
           }
         }
       });
 
       applyFilters();
-    }
-
-    function openAddEventModal() {
-      document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('event-modal').classList.remove('hidden');
-    }
-
-    function closeAddEventModal() {
-      document.getElementById('event-modal').classList.add('hidden');
-    }
-
-    function saveCustomEvent(e) {
-      e.preventDefault();
-      const newEvt = {
-        id: Date.now().toString(),
-        title: document.getElementById('modal-title').value,
-        currency: document.getElementById('modal-currency').value,
-        impact: document.getElementById('modal-impact').value,
-        date: document.getElementById('modal-date').value,
-        time: document.getElementById('modal-time').value,
-        risk: document.getElementById('modal-risk').value,
-        forecast: document.getElementById('modal-forecast').value,
-        previous: document.getElementById('modal-previous').value
-      };
-
-      const events = loadStoredEvents();
-      events.unshift(newEvt);
-      saveEventsToStorage(events);
-      closeAddEventModal();
-      applyFilters();
-    }
-
-    function deleteEvent(id) {
-      if (confirm('Delete this economic release?')) {
-        let events = loadStoredEvents().filter(e => e.id !== id);
-        saveEventsToStorage(events);
-        applyFilters();
-      }
-    }
-
-    function resetToDefaultNews() {
-      if (confirm('Reset economic calendar back to Week Nov 2-6 schedule?')) {
-        saveEventsToStorage(DEFAULT_EVENTS);
-        applyFilters();
-      }
     }
 
     function clearDateFilter() {
@@ -564,9 +512,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      updateAuthBtnUI();
       loadProfileDropdown();
-      updateClock();
-      setInterval(updateClock, 1000);
       setDateExplicit('', 'all');
     });
   </script>
