@@ -64,11 +64,11 @@
       <!-- Navigation Links -->
       <div class="flex items-center justify-center w-full md:w-auto bg-[#040507] p-1.5 rounded-2xl border border-amber-500/20 shadow-inner">
         <a href="./index.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition">
-          📈 Chart &amp; Journal
+          Chart &amp; Journal
         </a>
         <div class="h-4 w-[1px] bg-amber-500/20"></div>
         <a href="./calendar.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-amber-200 transition">
-          🔥 Volatility Calendar
+          Volatility Calendar
         </a>
         <div class="h-4 w-[1px] bg-amber-500/20"></div>
         <a href="./profile.html" class="flex-1 md:flex-initial text-center px-4 sm:px-5 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 transition">
@@ -77,14 +77,19 @@
       </div>
 
       <!-- Profile Selector & Auth Indicator -->
-      <div class="flex items-center justify-end w-full md:w-auto gap-2">
-        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3.5 py-2 shadow min-w-[150px]">
-          <span class="text-xs text-slate-400 font-mono font-bold">Account:</span>
+      <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-2">
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow min-w-[140px]">
+          <span class="text-xs text-slate-400 font-mono">Profile:</span>
           <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
             <!-- Loaded dynamically -->
           </select>
         </div>
-        <button id="auth-header-btn" onclick="openAuthModal()" class="px-3.5 py-2 bg-amber-500/20 border border-amber-400/50 text-amber-200 font-mono text-xs font-bold rounded-2xl transition">
+
+        <button onclick="createNewProfilePrompt()" class="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-2xl text-xs font-mono font-bold text-amber-300 transition whitespace-nowrap">
+          ➕ New
+        </button>
+
+        <button id="auth-header-btn" onclick="openAuthModal()" class="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-mono text-xs font-black rounded-2xl transition shadow-md whitespace-nowrap">
           🔑 Sign In
         </button>
       </div>
@@ -214,6 +219,28 @@
     </footer>
   </div>
 
+  <!-- CREATE NEW PROFILE MODAL (THEMED) -->
+  <div id="new-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 relative">
+      <div class="flex justify-between items-center border-b border-amber-500/20 pb-3">
+        <h3 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wide">➕ Create New Profile</h3>
+        <button onclick="closeNewProfileModal()" class="text-slate-400 hover:text-amber-300 text-base font-bold">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs font-mono">
+        <div>
+          <label class="block text-slate-300 mb-1.5 font-bold">Trading Profile Name</label>
+          <input type="text" id="new-profile-name-input" placeholder="e.g. FTMO $100K, Demo Account..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-3 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2.5">
+          <button type="button" onclick="closeNewProfileModal()" class="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-bold hover:bg-slate-700 transition">Cancel</button>
+          <button type="button" onclick="saveNewProfile()" class="px-5 py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition">Create Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- AUTH / SIGN IN MODAL POP-UP -->
   <div id="auth-modal-overlay" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-[#0D0F17] border border-amber-500/40 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 relative">
@@ -327,6 +354,21 @@
     const EMOJI_OPTIONS = ['🦁', '🐺', '👑', '⚡', '🎯', '📈', '🦅', '🦈', '🔥', '💎', '🛡️', '🧠'];
     let selectedEmoji = '🦁';
 
+    function safeGetItem(key, fallback) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function safeSetItem(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch (e) {}
+    }
+
     function isLoggedIn() {
       return localStorage.getItem('mm_user_logged_in') === 'true';
     }
@@ -367,7 +409,7 @@
       if (isLoggedIn()) {
         const email = localStorage.getItem('mm_user_email') || 'Trader';
         btn.innerHTML = `👤 ${email.split('@')[0]}`;
-        btn.className = "px-3.5 py-2 bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
+        btn.className = "px-3.5 py-1.5 bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
         btn.onclick = () => {
           if (confirm('Sign out of MINDMILL?')) {
             localStorage.removeItem('mm_user_logged_in');
@@ -378,23 +420,46 @@
         if (lockBanner) lockBanner.classList.add('hidden');
       } else {
         btn.innerHTML = `🔑 Sign In`;
-        btn.className = "px-3.5 py-2 bg-amber-500/20 border border-amber-400/50 text-amber-200 font-mono text-xs font-bold rounded-2xl transition cursor-pointer";
+        btn.className = "px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-mono text-xs font-black rounded-2xl transition shadow-md cursor-pointer";
         btn.onclick = openAuthModal;
         if (lockBanner) lockBanner.classList.remove('hidden');
       }
     }
 
     function getProfiles() {
-      try {
-        const d = localStorage.getItem('mm_profiles_v9');
-        return d ? JSON.parse(d) : ['Main Account'];
-      } catch (e) {
-        return ['Main Account'];
-      }
+      return safeGetItem('mm_profiles_v9', ['Main Account']);
     }
 
     function getActiveProfile() {
       return localStorage.getItem('mm_active_prof_v9') || getProfiles()[0] || 'Main Account';
+    }
+
+    function createNewProfilePrompt() {
+      if (!requireAuth()) return;
+      document.getElementById('new-profile-name-input').value = '';
+      document.getElementById('new-profile-modal').classList.remove('hidden');
+    }
+
+    function closeNewProfileModal() {
+      document.getElementById('new-profile-modal').classList.add('hidden');
+    }
+
+    function saveNewProfile() {
+      const input = document.getElementById('new-profile-name-input');
+      const name = input ? input.value.trim() : '';
+      if (name) {
+        const profiles = getProfiles();
+        if (!profiles.includes(name)) {
+          profiles.push(name);
+          safeSetItem('mm_profiles_v9', profiles);
+        }
+        safeSetItem(`mm_trades_v9_${name}`, []);
+        
+        try { localStorage.setItem('mm_active_prof_v9', name); } catch(e){}
+        closeNewProfileModal();
+        loadDropdown();
+        renderProfileData();
+      }
     }
 
     function getAccountConfig(profName) {
@@ -445,11 +510,13 @@
         if (data) {
           return JSON.parse(data);
         }
-        // Fallback default sample trade logs matching index.html
-        return [
-          { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
-          { id: '2', date: '2026-11-05', pair: 'NAS100', direction: 'SELL', pnl: -250, rr: '1.5', sl: '20450', notes: 'Stopped out during high-impact news release.', screenshot: '' }
-        ];
+        if (prof === 'Main Account') {
+          return [
+            { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
+            { id: '2', date: '2026-11-05', pair: 'NAS100', direction: 'SELL', pnl: -250, rr: '1.5', sl: '20450', notes: 'Stopped out during high-impact news release.', screenshot: '' }
+          ];
+        }
+        return [];
       } catch (e) {
         return [];
       }
@@ -500,7 +567,7 @@
       if (!requireAuth()) return;
       if (confirm("Are you sure you want to reset goals and clear trades for this account? This will set rank progress back to 0.")) {
         const activeProf = getActiveProfile();
-        localStorage.removeItem(`mm_trades_v9_${activeProf}`);
+        safeSetItem(`mm_trades_v9_${activeProf}`, []);
         closeRuleConfigModal();
         renderProfileData();
       }
