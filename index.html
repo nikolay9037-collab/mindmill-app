@@ -37,7 +37,7 @@
 
   <div class="max-w-7xl mx-auto w-full space-y-4 sm:space-y-6 relative z-10 flex-1 flex flex-col">
     
-    <!-- Header -->
+    <!-- Unified Header -->
     <header class="glass-card border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent"></div>
 
@@ -77,7 +77,7 @@
 
       <!-- Account Switcher & Auth Gate -->
       <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-2">
-        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow min-w-[130px]">
+        <div class="flex items-center space-x-2 bg-[#040507] border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow min-w-[140px]">
           <span class="text-xs text-slate-400 font-mono">Profile:</span>
           <select id="profile-select-dropdown" onchange="handleProfileChange(event)" class="w-full bg-[#040507] text-xs font-mono font-bold text-amber-300 focus:outline-none cursor-pointer truncate">
             <option value="Main Account">✓ Main Account</option>
@@ -98,25 +98,25 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
       <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
         <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">TOTAL NET YIELD</span>
-        <div id="stat-net-pnl" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">+$250.00</div>
-        <div id="stat-trades-count" class="text-[11px] text-slate-400 font-mono">2 Trades Logged</div>
+        <div id="stat-net-pnl" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">+$0.00</div>
+        <div id="stat-trades-count" class="text-[11px] text-slate-400 font-mono">0 Trades Logged</div>
       </div>
 
       <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
         <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">WIN RATE</span>
-        <div id="stat-win-rate" class="text-xl sm:text-2xl font-black font-mono text-amber-300">50.0%</div>
-        <div id="stat-wl-count" class="text-[11px] text-slate-400 font-mono">1W - 1L</div>
+        <div id="stat-win-rate" class="text-xl sm:text-2xl font-black font-mono text-amber-300">0.0%</div>
+        <div id="stat-wl-count" class="text-[11px] text-slate-400 font-mono">0W - 0L</div>
       </div>
 
       <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
         <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">AVG RISK:REWARD</span>
-        <div id="stat-avg-rr" class="text-xl sm:text-2xl font-black font-mono text-amber-300">1 : 2.00</div>
+        <div id="stat-avg-rr" class="text-xl sm:text-2xl font-black font-mono text-amber-300">1 : 0.00</div>
         <div class="text-[11px] text-slate-400 font-mono">Target Ratio</div>
       </div>
 
       <div class="glass-card border border-amber-500/20 rounded-2xl p-4 space-y-1">
         <span class="text-[10px] sm:text-xs font-mono text-slate-400 uppercase font-bold tracking-wider">PROFIT FACTOR</span>
-        <div id="stat-profit-factor" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">2.00</div>
+        <div id="stat-profit-factor" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">0.00</div>
         <div class="text-[11px] text-slate-400 font-mono">Gross W / Gross L</div>
       </div>
     </div>
@@ -151,9 +151,9 @@
               <span id="sel-pair" class="font-mono font-black text-amber-300 text-sm">EURUSD</span>
               <span id="sel-direction" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300">BUY</span>
             </div>
-            <div id="sel-pnl" class="font-mono font-black text-emerald-400 text-base">+$500.00</div>
+            <div id="sel-pnl" class="font-mono font-black text-emerald-400 text-base">+$0.00</div>
           </div>
-          <p id="sel-notes" class="text-xs text-slate-300 font-mono italic">Bullish order block retest during London session.</p>
+          <p id="sel-notes" class="text-xs text-slate-300 font-mono italic">No trade selected.</p>
           <div id="sel-screenshot-container" class="hidden pt-1">
             <span class="text-[10px] font-mono text-slate-400 block mb-1">Attached Screenshot:</span>
             <img id="sel-screenshot-img" src="" alt="Chart Screenshot" class="max-h-32 rounded-lg border border-amber-500/30 cursor-pointer object-cover" onclick="openLightbox(this.src)" />
@@ -161,59 +161,120 @@
         </div>
       </div>
 
-      <!-- Trade Logger Form -->
-      <div class="glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
-        <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
-          <h2 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider">✍️ LOG NEW TRADE</h2>
-          <span class="text-xs font-mono text-amber-400 font-bold" id="form-account-label">Main Account</span>
+      <!-- Trade Logger & Lot Size Calculator Sidebar -->
+      <div class="space-y-5">
+        
+        <!-- Trade Logger Form -->
+        <div class="glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
+          <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+            <h2 class="text-sm font-black text-amber-200 font-mono uppercase tracking-wider">✍️ LOG NEW TRADE</h2>
+            <span class="text-xs font-mono text-amber-400 font-bold" id="form-account-label">Main Account</span>
+          </div>
+
+          <form onsubmit="handleTradeSubmit(event)" class="space-y-3.5 text-xs font-mono">
+            <div>
+              <label class="block text-slate-400 mb-1">Asset Pair / Ticker</label>
+              <input type="text" id="input-pair" required placeholder="e.g. EURUSD, NAS100, XAUUSD" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-400 mb-1">Direction</label>
+                <select id="input-direction" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none">
+                  <option value="BUY">BUY / LONG</option>
+                  <option value="SELL">SELL / SHORT</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1">Net P&amp;L Amount ($)</label>
+                <input type="number" step="0.01" id="input-pnl" required placeholder="+500 or -250" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-400 mb-1">Risk:Reward Ratio</label>
+                <input type="text" id="input-rr" placeholder="e.g. 2.5" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1">Stop Loss Price</label>
+                <input type="text" id="input-sl" placeholder="e.g. 1.0850" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 mb-1">Trade Notes &amp; Confluences</label>
+              <textarea id="input-notes" rows="2" placeholder="Key setup reasons..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-amber-400"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 mb-1">Chart Screenshot URL (Optional)</label>
+              <input type="url" id="input-screenshot" placeholder="https://..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 focus:outline-none focus:border-amber-400" />
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase tracking-wider">
+              Log Trade Entry
+            </button>
+          </form>
         </div>
 
-        <form onsubmit="handleTradeSubmit(event)" class="space-y-3.5 text-xs font-mono">
-          <div>
-            <label class="block text-slate-400 mb-1">Asset Pair / Ticker</label>
-            <input type="text" id="input-pair" required placeholder="e.g. EURUSD, NAS100, XAUUSD" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+        <!-- Lot Size & Position Calculator -->
+        <div class="glass-card border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-3.5">
+          <div class="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
+            <h3 class="text-xs font-black text-amber-200 font-mono uppercase tracking-wider flex items-center space-x-1.5">
+              <span>🧮 LOT SIZE &amp; POSITION CALCULATOR</span>
+            </h3>
+            <span class="text-[10px] font-mono text-emerald-400 font-bold">Live Risk Engine</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-3 text-xs font-mono">
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-slate-400 mb-1 text-[11px]">Account Size ($)</label>
+                <input type="number" id="calc-account-size" value="10000" oninput="calculateLotSize()" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2 text-amber-300 font-bold focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 text-[11px]">Risk Percentage (%)</label>
+                <input type="number" step="0.1" id="calc-risk-pct" value="1.0" oninput="calculateLotSize()" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2 text-amber-300 font-bold focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-slate-400 mb-1 text-[11px]">Entry Price</label>
+                <input type="number" step="0.00001" id="calc-entry-price" value="1.08500" oninput="calculateLotSize()" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2 text-slate-200 font-bold focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 text-[11px]">Stop Loss Price</label>
+                <input type="number" step="0.00001" id="calc-sl-price" value="1.08300" oninput="calculateLotSize()" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2 text-rose-400 font-bold focus:outline-none" />
+              </div>
+            </div>
+
             <div>
-              <label class="block text-slate-400 mb-1">Direction</label>
-              <select id="input-direction" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none">
-                <option value="BUY">BUY / LONG</option>
-                <option value="SELL">SELL / SHORT</option>
+              <label class="block text-slate-400 mb-1 text-[11px]">Asset Class</label>
+              <select id="calc-asset-type" onchange="calculateLotSize()" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2 text-amber-300 font-bold focus:outline-none cursor-pointer">
+                <option value="FOREX">Standard Forex (EURUSD, GBPUSD)</option>
+                <option value="JPY">JPY Pair (USDJPY, EURJPY)</option>
+                <option value="GOLD">XAUUSD / Gold ($1/pip/lot)</option>
+                <option value="INDICES">Indices / NAS100 / US30</option>
+                <option value="CRYPTO">Crypto / BTCUSD</option>
               </select>
             </div>
-            <div>
-              <label class="block text-slate-400 mb-1">Net P&amp;L Amount ($)</label>
-              <input type="number" step="0.01" id="input-pnl" required placeholder="+500 or -250" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
+
+            <!-- Output Card -->
+            <div class="bg-[#040507] border border-amber-500/20 rounded-2xl p-3 space-y-1.5 text-center">
+              <span class="text-[10px] font-mono text-slate-400 uppercase font-bold">RECOMMENDED LOT SIZE</span>
+              <div id="calc-result-lots" class="text-2xl font-black font-mono text-emerald-400">0.50 Lots</div>
+              <div class="flex justify-between items-center text-[11px] text-slate-300 pt-1 border-t border-slate-800">
+                <span>Risk Amount: <strong id="calc-result-risk" class="text-amber-300">$100.00</strong></span>
+                <span>Distance: <strong id="calc-result-pips" class="text-slate-300">20 pips</strong></span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-slate-400 mb-1">Risk:Reward Ratio</label>
-              <input type="text" id="input-rr" placeholder="e.g. 2.5" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
-            </div>
-            <div>
-              <label class="block text-slate-400 mb-1">Stop Loss Price</label>
-              <input type="text" id="input-sl" placeholder="e.g. 1.0850" class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 font-bold focus:outline-none focus:border-amber-400" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-slate-400 mb-1">Trade Notes &amp; Confluences</label>
-            <textarea id="input-notes" rows="2" placeholder="Key setup reasons..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-amber-400"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-slate-400 mb-1">Chart Screenshot URL (Optional)</label>
-            <input type="url" id="input-screenshot" placeholder="https://..." class="w-full bg-[#040507] border border-amber-500/30 rounded-xl p-2.5 text-amber-300 focus:outline-none focus:border-amber-400" />
-          </div>
-
-          <button type="submit" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/25 hover:brightness-110 transition uppercase tracking-wider">
-            Log Trade Entry
-          </button>
-        </form>
       </div>
+
     </div>
 
     <!-- History Log Table -->
@@ -443,7 +504,6 @@
           profiles.push(name);
           safeSetItem('mm_profiles_v9', profiles);
         }
-        // Initialize new profile with EMPTY trade log list
         safeSetItem(`mm_trades_v9_${name}`, []);
         
         try { localStorage.setItem('mm_active_prof_v9', name); } catch(e){}
@@ -456,7 +516,6 @@
 
     function getTrades() {
       const prof = getActiveProfile();
-      // Default sample logs ONLY for default "Main Account"
       if (prof === 'Main Account') {
         const defaultSamples = [
           { id: '1', date: '2026-11-04', pair: 'EURUSD', direction: 'BUY', pnl: 500, rr: '2.5', sl: '1.0820', notes: 'Bullish order block retest during London session.', screenshot: '' },
@@ -464,7 +523,6 @@
         ];
         return safeGetItem(`mm_trades_v9_${prof}`, defaultSamples);
       }
-      // For any custom/new profile, default to EMPTY array
       return safeGetItem(`mm_trades_v9_${prof}`, []);
     }
 
@@ -513,6 +571,43 @@
       saveTrades(trades);
       selectedCandleIndex = 0;
       renderDashboard();
+    }
+
+    function calculateLotSize() {
+      const balance = parseFloat(document.getElementById('calc-account-size').value) || 10000;
+      const riskPct = parseFloat(document.getElementById('calc-risk-pct').value) || 1.0;
+      const entry = parseFloat(document.getElementById('calc-entry-price').value) || 1.0;
+      const sl = parseFloat(document.getElementById('calc-sl-price').value) || 1.0;
+      const assetType = document.getElementById('calc-asset-type').value;
+
+      const riskAmount = (balance * (riskPct / 100));
+      const distance = Math.abs(entry - sl);
+
+      let lots = 0;
+      let pips = 0;
+
+      if (distance > 0) {
+        if (assetType === 'FOREX') {
+          pips = distance * 10000;
+          lots = riskAmount / (pips * 10);
+        } else if (assetType === 'JPY') {
+          pips = distance * 100;
+          lots = riskAmount / (pips * 10);
+        } else if (assetType === 'GOLD') {
+          pips = distance * 10; // $1 movement = 10 pips
+          lots = riskAmount / (pips * 10);
+        } else if (assetType === 'INDICES') {
+          pips = distance; // Points
+          lots = riskAmount / (pips * 1);
+        } else {
+          pips = distance;
+          lots = riskAmount / distance;
+        }
+      }
+
+      document.getElementById('calc-result-risk').textContent = `$${riskAmount.toFixed(2)}`;
+      document.getElementById('calc-result-pips').textContent = `${pips.toFixed(1)} ${assetType === 'INDICES' ? 'pts' : 'pips'}`;
+      document.getElementById('calc-result-lots').textContent = `${lots > 0 ? lots.toFixed(2) : '0.00'} Lots`;
     }
 
     function drawCandlesticks(trades) {
@@ -737,7 +832,6 @@
             }
           }
         } else {
-          // Hide selected panel if no trades exist
           if (selPanel) selPanel.classList.add('hidden');
         }
 
@@ -768,6 +862,7 @@
         }
 
         drawCandlesticks(trades);
+        calculateLotSize();
       } catch (err) {
         console.error("Dashboard render error:", err);
       }
